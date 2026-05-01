@@ -13,18 +13,18 @@ const nextConfig: NextConfig = {
 
   },
 
-  async rewrites() {
-    return [
-      {
-        source: '/api/auth/:path*',
-        destination:`${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/:path*`,
-      },
-      {
-        source: '/api/v1/:path*',
-        destination:`${process.env.NEXT_PUBLIC_API_BASE_URL}/:path*`,
-      },
-    ]
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/auth/:path*',
+  //       destination:`${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/auth/:path*`,
+  //     },
+  //     {
+  //       source: '/api/v1/:path*',
+  //       destination:`${process.env.NEXT_PUBLIC_API_BASE_URL}/:path*`,
+  //     },
+  //   ]
+  // },
 };
 
 export default nextConfig;

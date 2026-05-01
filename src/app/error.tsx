@@ -1,7 +1,7 @@
 'use client'
 const ErrorPage = () => {
   return (
-    <div className="text-red-500">errors</div>
+    <div className="text-red-500">error</div>
   )
 }
 

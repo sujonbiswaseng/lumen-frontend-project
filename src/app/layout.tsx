@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {  Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
+import FloatingChatbot from "@/components/chatbot/FloatingChatbot";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body className="w-full overflow-x-hidden min-h-screen font-sans antialiased bg-background">
         <ToastContainer autoClose={1000} theme="dark" />
         {children}
+        <FloatingChatbot/>
       </body>
     </html>
   );

@@ -19,25 +19,31 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { authClient } from "@/lib/authClient";
 import { loginZodSchema } from "@/validations/auth.validation";
-import { loginUserAction, loginWithGoogleAction } from "@/actions/auth.actions";
+import { loginUserAction } from "@/actions/auth.actions";
 import { forgotPasswordEmailOtpAction } from "@/actions/auth.actions";
 import { useState } from "react";
 import { FormInput } from "@/components/ui/frominput";
 import Link from "next/link";
 import { createAuthClient } from "better-auth/react";
 
+const Admin_Demo_Email = "admin1@gmail.com";
+const Admin_Demo_PASSWORD = "Admin12!@";
+
+const Demo_User_Email = "user1@gmail.com";
+const Demo_User_Password = "User12!@";
+
 export function SigninForm() {
   const router = useRouter();
   const [email, setemail] = useState("");
 
   const authClient = createAuthClient();
-const signIn = async () => {
-  const data = await authClient.signIn.social({
-    provider: "google",
-  });
-};
+
+  const signIn = async () => {
+    const data = await authClient.signIn.social({
+      provider: "google",
+    });
+  };
 
   const handleForgetPassword = async (email: string) => {
     if (!email) {
@@ -66,6 +72,7 @@ const signIn = async () => {
     }
   };
 
+  // Initialize with demo values as default
   const form = useForm({
     defaultValues: {
       email: "",
@@ -95,7 +102,16 @@ const signIn = async () => {
       }
     },
   });
-  
+
+  const fillDemoCredentials = () => {
+    form.setFieldValue("email", Admin_Demo_Email);
+    form.setFieldValue("password", Admin_Demo_PASSWORD);
+  };
+
+  const fillUserDemoCredentials = () => {
+    form.setFieldValue("email", Demo_User_Email);
+    form.setFieldValue("password", Demo_User_Password);
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted py-1 px-2 sm:px-0">
@@ -117,6 +133,30 @@ const signIn = async () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+
+          {/* Demo Credentials Banner */}
+          <div className="mb-4 w-full flex flex-col sm:flex-row items-center justify-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="w-full sm:w-auto font-medium border-blue-500 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-200 dark:hover:bg-gray-800 transition-colors"
+              onClick={fillDemoCredentials}
+            >
+              Admin Demo Credentials
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="w-full sm:w-auto font-medium border-green-500 text-green-700 hover:bg-green-50 dark:border-green-400 dark:text-green-200 dark:hover:bg-gray-800 transition-colors"
+              onClick={fillUserDemoCredentials}
+            >
+              User Demo Credentials
+            </Button>
+          </div>
+     
+
           <form
             id="signin-form"
             onSubmit={(e) => {
@@ -170,72 +210,71 @@ const signIn = async () => {
                 validators={{ onChange: loginZodSchema.shape.password }}
                 children={(field) => {
                   const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                    field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field data-invalid={isInvalid} className="">
-                    <div className="flex items-center justify-between ">
-                      <FieldLabel htmlFor={field.name} className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                        Password
-                      </FieldLabel>
-                      <button
-                        type="button"
-                        className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
-                        onClick={async () => {
-                          if (!email) {
-                            toast.error("Please enter your email first.", {
-                              theme: "dark",
-                            });
-                            return;
-                          }
-                          const res = await handleForgetPassword(email);
-                          if (res?.success) {
-                            const encodedEmail = encodeURIComponent(email);
-                            router.push(`/reset-password?email=${encodedEmail}`);
-                          }
-                        }}
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-                    <FormInput
-                      field={field}
-                      isPassword
-                      className=""
-                    />  </Field>
+                      <div className="flex items-center justify-between ">
+                        <FieldLabel htmlFor={field.name} className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                          Password
+                        </FieldLabel>
+                        <button
+                          type="button"
+                          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+                          onClick={async () => {
+                            if (!email) {
+                              toast.error("Please enter your email first.", {
+                                theme: "dark",
+                              });
+                              return;
+                            }
+                            const res = await handleForgetPassword(email);
+                            if (res?.success) {
+                              const encodedEmail = encodeURIComponent(email);
+                              router.push(`/reset-password?email=${encodedEmail}`);
+                            }
+                          }}
+                        >
+                          Forgot password?
+                        </button>
+                      </div>
+                      <FormInput
+                        field={field}
+                        isPassword
+                        className=""
+                      />
+                    </Field>
                   );
                 }}
               />
             </FieldGroup>
           </form>
 
-        <div className="flex flex-col items-center mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full flex items-center justify-center gap-2"
-            onClick={async () => {
-              signIn()
-            }}
-          >
-            <svg
-              className="h-5 w-5"
-              aria-hidden="true"
-              focusable="false"
-              viewBox="0 0 24 24"
+          <div className="flex flex-col items-center mt-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+              onClick={async () => {
+                signIn()
+              }}
             >
-              <g>
-                <path fill="#EA4335" d="M12 10.8v3.6h5.1c-.225 1.2-1.35 3.525-5.1 3.525-3.075 0-5.625-2.55-5.625-5.625s2.55-5.625 5.625-5.625c1.755 0 2.94.75 3.615 1.425l2.46-2.4C16.62 4.05 14.55 3 12 3a8.996 8.996 0 000 18c5.175 0 8.55-3.675 8.55-8.85 0-.6-.075-1.05-.165-1.5H12z"/>
-                <path fill="#34A853" d="M12 21c2.43 0 4.47-.81 5.94-2.19l-2.88-2.34c-.81.54-1.86.87-3.06.87-2.355 0-4.35-1.59-5.07-3.72H3.06v2.34A8.97 8.97 0 0012 21z"/>
-                <path fill="#FBBC05" d="M6.93 13.62A5.38 5.38 0 016.6 12c0-.57.09-1.13.25-1.62v-2.34H3.06A9.02 9.02 0 003 12c0 1.41.33 2.76.93 3.96l2.88-2.34z"/>
-                <path fill="#4285F4" d="M12 6.75c1.305 0 2.47.45 3.39 1.32l2.55-2.55C16.47 3.87 14.43 3 12 3 9.24 3 6.81 4.53 5.19 6.66l2.94 2.34C8.37 8.19 10.05 6.75 12 6.75z"/>
-                <path fill="none" d="M3 3h18v18H3z"/>
-              </g>
-            </svg>
-            Sign in with Google
-          </Button>
-        </div>
-
-
+              <svg
+                className="h-5 w-5"
+                aria-hidden="true"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <g>
+                  <path fill="#EA4335" d="M12 10.8v3.6h5.1c-.225 1.2-1.35 3.525-5.1 3.525-3.075 0-5.625-2.55-5.625-5.625s2.55-5.625 5.625-5.625c1.755 0 2.94.75 3.615 1.425l2.46-2.4C16.62 4.05 14.55 3 12 3a8.996 8.996 0 000 18c5.175 0 8.55-3.675 8.55-8.85 0-.6-.075-1.05-.165-1.5H12z"/>
+                  <path fill="#34A853" d="M12 21c2.43 0 4.47-.81 5.94-2.19l-2.88-2.34c-.81.54-1.86.87-3.06.87-2.355 0-4.35-1.59-5.07-3.72H3.06v2.34A8.97 8.97 0 0012 21z"/>
+                  <path fill="#FBBC05" d="M6.93 13.62A5.38 5.38 0 016.6 12c0-.57.09-1.13.25-1.62v-2.34H3.06A9.02 9.02 0 003 12c0 1.41.33 2.76.93 3.96l2.88-2.34z"/>
+                  <path fill="#4285F4" d="M12 6.75c1.305 0 2.47.45 3.39 1.32l2.55-2.55C16.47 3.87 14.43 3 12 3 9.24 3 6.81 4.53 5.19 6.66l2.94 2.34C8.37 8.19 10.05 6.75 12 6.75z"/>
+                  <path fill="none" d="M3 3h18v18H3z"/>
+                </g>
+              </svg>
+              Sign in with Google
+            </Button>
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-1 items-center">
           <div className="text-sm text-center w-full mb-0.5">
