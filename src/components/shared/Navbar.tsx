@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,11 @@ import Image from 'next/image';
 interface NavbarProps { user: IBaseUser | null }
 
 export default function Navbar({ user }: NavbarProps) {
+  const [hash, setHash] = useState(() =>
+    typeof window !== "undefined" ? window.location.hash : ""
+  );
+  const [open, setOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -53,6 +58,17 @@ export default function Navbar({ user }: NavbarProps) {
   };
 
   const isActive = (path: string) => pathname === path;
+
+  useEffect(() => {
+    const handleHashChange = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
 
   return (
     <nav className="fixed max-w-[1480px] mx-auto top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-border">
@@ -109,6 +125,13 @@ export default function Navbar({ user }: NavbarProps) {
 
         {/* Right Side */}
         <div className="hidden md:flex items-center gap-3">
+             {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="text-lg text-muted-foreground hover:text-primary transition"
+        >
+          {darkMode ? "🌙" : "☀️"}
+        </button>
           {user ? (
 
             <div className='flex items-center  gap-4 space-x-2'>
