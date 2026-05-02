@@ -40,7 +40,7 @@ export function SigninForm() {
   const authClient = createAuthClient();
 
   const signIn = async () => {
-    const data = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "google",
     });
   };
@@ -50,7 +50,6 @@ export function SigninForm() {
       toast.error("Please enter your email first.", { theme: "dark" });
       return { success: false };
     }
-
     try {
       const toastId = toast.loading("Sending reset OTP...");
       const res = await forgotPasswordEmailOtpAction({ email });
@@ -72,7 +71,6 @@ export function SigninForm() {
     }
   };
 
-  // Initialize with demo values as default
   const form = useForm({
     defaultValues: {
       email: "",
@@ -114,197 +112,261 @@ export function SigninForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted py-1 px-2 sm:px-0">
-      <Card className="w-full max-w-md shadow-lg border-0 bg-white dark:bg-gray-900 transition-all sm:rounded-2xl">
-        <CardHeader className="text-center">
-          <div className="flex flex-col gap-1 mb-0.5">
-            <Link
-              href="/"
-              className="inline-block text-sm text-blue-600 hover:underline"
-            >
-              ← Back to Home
-            </Link>
-          </div>
-          <CardTitle className="text-2xl font-semibold mb-0.5">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="text-base text-muted-foreground">
-            Please sign in to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <main
+      className="min-h-screen w-full bg-[var(--background)] flex items-center justify-center px-2"
+      style={{
+        minHeight: "100dvh",
+      }}
+    >
+      <div className="w-full max-w-[1440px] mx-auto flex flex-col items-center justify-center px-2">
+        <div className="w-full flex justify-center items-center">
+          <Card className="w-full sm:w-[400px] md:w-[420px] xl:w-[430px] max-w-full border border-[var(--border)] bg-[var(--card)] shadow-md sm:rounded-2xl transition-all">
+            <CardHeader className="flex flex-col items-center text-center px-4 pt-8 pb-0 gap-3">
+              <div className="w-full flex flex-row items-center justify-between">
+                <Link
+                  href="/"
+                  className="text-sm font-medium transition text-[var(--primary)] hover:underline focus-visible:ring-2 focus-visible:ring-[var(--ring)] rounded px-1 py-0.5"
+                  tabIndex={0}
+                >
+                  ← Back to Home
+                </Link>
+                {/* Place for SaaS/Event/Chat logo if needed */}
+              </div>
+              <CardTitle className="text-2xl sm:text-2.5xl font-semibold text-[var(--card-foreground)] leading-tight">
+                Welcome Back
+              </CardTitle>
+              <CardDescription className="text-base text-[var(--muted-foreground)] font-normal">
+                Please sign in to your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-4 pt-5 pb-1 flex flex-col gap-5">
+              {/* Demo Credentials */}
+              <div className="flex flex-row w-full gap-2 mb-2.5">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="flex-1 text-[var(--secondary-foreground)] bg-[var(--secondary)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors font-medium px-2 py-1"
+                  onClick={fillDemoCredentials}
+                >
+                  Admin Demo
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="flex-1 text-[var(--secondary-foreground)] bg-[var(--secondary)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors font-medium px-2 py-1"
+                  onClick={fillUserDemoCredentials}
+                >
+                  User Demo
+                </Button>
+              </div>
 
-          {/* Demo Credentials Banner */}
-          <div className="mb-4 w-full flex flex-col sm:flex-row items-center justify-center gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="w-full sm:w-auto font-medium border-blue-500 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-200 dark:hover:bg-gray-800 transition-colors"
-              onClick={fillDemoCredentials}
-            >
-              Admin Demo Credentials
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="w-full sm:w-auto font-medium border-green-500 text-green-700 hover:bg-green-50 dark:border-green-400 dark:text-green-200 dark:hover:bg-gray-800 transition-colors"
-              onClick={fillUserDemoCredentials}
-            >
-              User Demo Credentials
-            </Button>
-          </div>
-     
-
-          <form
-            id="signin-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.handleSubmit();
-            }}
-            className="Z"
-          >
-            <FieldGroup>
-              {/* Email Field */}
-              <form.Field
-                name="email"
-                validators={{ onChange: loginZodSchema.shape.email }}
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid} className="">
-                      <FieldLabel htmlFor={field.name} className=" text-sm font-medium">
-                        Email
-                      </FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        type="email"
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => {
-                          field.handleChange(e.target.value);
-                          setemail(e.target.value);
-                        }}
-                        placeholder="Enter your email"
-                        autoComplete="off"
-                        aria-invalid={isInvalid}
-                        className="block w-full"
-                      />
-                      {isInvalid && (
-                        <FieldError
-                          errors={field.state.meta.errors}
-                          className="mt-0.5"
-                        />
-                      )}
-                    </Field>
-                  );
+              <form
+                id="signin-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  form.handleSubmit();
                 }}
-              />
-
-              {/* Password Field */}
-              <form.Field
-                name="password"
-                validators={{ onChange: loginZodSchema.shape.password }}
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid} className="">
-                      <div className="flex items-center justify-between ">
-                        <FieldLabel htmlFor={field.name} className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                          Password
-                        </FieldLabel>
-                        <button
-                          type="button"
-                          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
-                          onClick={async () => {
-                            if (!email) {
-                              toast.error("Please enter your email first.", {
-                                theme: "dark",
-                              });
-                              return;
-                            }
-                            const res = await handleForgetPassword(email);
-                            if (res?.success) {
-                              const encodedEmail = encodeURIComponent(email);
-                              router.push(`/reset-password?email=${encodedEmail}`);
-                            }
-                          }}
-                        >
-                          Forgot password?
-                        </button>
-                      </div>
-                      <FormInput
-                        field={field}
-                        isPassword
-                        className=""
-                      />
-                    </Field>
-                  );
-                }}
-              />
-            </FieldGroup>
-          </form>
-
-          <div className="flex flex-col items-center mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2"
-              onClick={async () => {
-                signIn()
-              }}
-            >
-              <svg
-                className="h-5 w-5"
-                aria-hidden="true"
-                focusable="false"
-                viewBox="0 0 24 24"
+                className="flex flex-col gap-5"
+                autoComplete="off"
+                noValidate
               >
-                <g>
-                  <path fill="#EA4335" d="M12 10.8v3.6h5.1c-.225 1.2-1.35 3.525-5.1 3.525-3.075 0-5.625-2.55-5.625-5.625s2.55-5.625 5.625-5.625c1.755 0 2.94.75 3.615 1.425l2.46-2.4C16.62 4.05 14.55 3 12 3a8.996 8.996 0 000 18c5.175 0 8.55-3.675 8.55-8.85 0-.6-.075-1.05-.165-1.5H12z"/>
-                  <path fill="#34A853" d="M12 21c2.43 0 4.47-.81 5.94-2.19l-2.88-2.34c-.81.54-1.86.87-3.06.87-2.355 0-4.35-1.59-5.07-3.72H3.06v2.34A8.97 8.97 0 0012 21z"/>
-                  <path fill="#FBBC05" d="M6.93 13.62A5.38 5.38 0 016.6 12c0-.57.09-1.13.25-1.62v-2.34H3.06A9.02 9.02 0 003 12c0 1.41.33 2.76.93 3.96l2.88-2.34z"/>
-                  <path fill="#4285F4" d="M12 6.75c1.305 0 2.47.45 3.39 1.32l2.55-2.55C16.47 3.87 14.43 3 12 3 9.24 3 6.81 4.53 5.19 6.66l2.94 2.34C8.37 8.19 10.05 6.75 12 6.75z"/>
-                  <path fill="none" d="M3 3h18v18H3z"/>
-                </g>
-              </svg>
-              Sign in with Google
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-1 items-center">
-          <div className="text-sm text-center w-full mb-0.5">
-            Don't have an account?{" "}
-            <a
-              className="text-blue-500 dark:text-blue-400 hover:underline cursor-pointer transition"
-              href="/register"
-            >
-              Sign up
-            </a>
-          </div>
-          <div className="flex w-full gap-1 mt-0.5">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => form.reset()}
-              className="flex-1"
-            >
-              Reset
-            </Button>
-            <Button
-              type="submit"
-              form="signin-form"
-              className="flex-1"
-            >
-              Submit
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+                <FieldGroup className="flex flex-col gap-4">
+                  {/* Email Field */}
+                  <form.Field
+                    name="email"
+                    validators={{ onChange: loginZodSchema.shape.email }}
+                  >
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field
+                          data-invalid={isInvalid}
+                          className="flex flex-col gap-1"
+                        >
+                          <FieldLabel
+                            htmlFor={field.name}
+                            className="text-sm font-medium text-[var(--card-foreground)]"
+                          >
+                            Email
+                          </FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            type="email"
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => {
+                              field.handleChange(e.target.value);
+                              setemail(e.target.value);
+                            }}
+                            placeholder="Enter your email"
+                            autoComplete="off"
+                            aria-invalid={isInvalid}
+                            className={`
+                              w-full px-3 py-2 rounded-md bg-[var(--input)]
+                              border border-[var(--border)]
+                              text-[var(--foreground)]
+                              placeholder:text-[var(--muted-foreground)]
+                              focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+                              transition
+                              ${isInvalid ? 'border-[var(--accent)] ring-[var(--accent)]' : ''}
+                              `}
+                          />
+                          {isInvalid && (
+                            <FieldError
+                              errors={field.state.meta.errors}
+                              className="mt-0.5 text-xs text-[var(--accent-foreground)]"
+                            />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
+
+                  {/* Password Field */}
+                  <form.Field
+                    name="password"
+                    validators={{ onChange: loginZodSchema.shape.password }}
+                  >
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid} className="flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <FieldLabel
+                              htmlFor={field.name}
+                              className="text-sm font-medium text-[var(--card-foreground)]"
+                            >
+                              Password
+                            </FieldLabel>
+                            <button
+                              type="button"
+                              className="text-xs font-medium text-[var(--primary)] hover:underline transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] rounded"
+                              style={{ minWidth: 0 }}
+                              onClick={async () => {
+                                if (!email) {
+                                  toast.error("Please enter your email first.", {
+                                    theme: "dark",
+                                  });
+                                  return;
+                                }
+                                const res = await handleForgetPassword(email);
+                                if (res?.success) {
+                                  const encodedEmail = encodeURIComponent(email);
+                                  router.push(`/reset-password?email=${encodedEmail}`);
+                                }
+                              }}
+                            >
+                              Forgot password?
+                            </button>
+                          </div>
+                          <FormInput
+                            field={field}
+                            isPassword
+                            className={`
+                              w-full px-3 py-2 rounded-md bg-[var(--input)]
+                              border border-[var(--border)]
+                              text-[var(--foreground)]
+                              placeholder:text-[var(--muted-foreground)]
+                              focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+                              transition
+                              ${isInvalid ? 'border-[var(--accent)] ring-[var(--accent)]' : ''}
+                              `}
+                          />
+                          {isInvalid && (
+                            <FieldError
+                              errors={field.state.meta.errors}
+                              className="mt-0.5 text-xs text-[var(--accent-foreground)]"
+                            />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
+                </FieldGroup>
+              </form>
+
+              {/* Divider */}
+              <div className="flex items-center my-3">
+                <span className="w-full h-px bg-[var(--border)]" />
+                <span className="mx-2 text-xs text-[var(--muted-foreground)] font-normal select-none">
+                  or
+                </span>
+                <span className="w-full h-px bg-[var(--border)]" />
+              </div>
+
+              {/* Google sign in */}
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full flex items-center gap-2 justify-center bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] focus-visible:ring-2 focus-visible:ring-[var(--ring)] transition-colors font-medium py-2"
+                onClick={signIn}
+              >
+                <svg
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <g>
+                    <circle cx="12" cy="12" r="12" fill="var(--input)" />
+                    <path
+                      fill="#EA4335"
+                      d="M12 10.8v3.6h5.1c-.225 1.2-1.35 3.525-5.1 3.525-3.075 0-5.625-2.55-5.625-5.625s2.55-5.625 5.625-5.625c1.755 0 2.94.75 3.615 1.425l2.46-2.4C16.62 4.05 14.55 3 12 3a8.996 8.996 0 000 18c5.175 0 8.55-3.675 8.55-8.85 0-.6-.075-1.05-.165-1.5H12z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 21c2.43 0 4.47-.81 5.94-2.19l-2.88-2.34c-.81.54-1.86.87-3.06.87-2.355 0-4.35-1.59-5.07-3.72H3.06v2.34A8.97 8.97 0 0012 21z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M6.93 13.62A5.38 5.38 0 016.6 12c0-.57.09-1.13.25-1.62v-2.34H3.06A9.02 9.02 0 003 12c0 1.41.33 2.76.93 3.96l2.88-2.34z"
+                    />
+                    <path
+                      fill="#4285F4"
+                      d="M12 6.75c1.305 0 2.47.45 3.39 1.32l2.55-2.55C16.47 3.87 14.43 3 12 3 9.24 3 6.81 4.53 5.19 6.66l2.94 2.34C8.37 8.19 10.05 6.75 12 6.75z"
+                    />
+                    <path fill="none" d="M3 3h18v18H3z" />
+                  </g>
+                </svg>
+                <span>Sign in with Google</span>
+              </Button>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-1.5 items-center px-4 pb-7 pt-2">
+              <div className="text-sm text-center w-full">
+                <span className="text-[var(--muted-foreground)]">Don't have an account? </span>
+                <Link
+                  className="text-[var(--primary)] hover:underline cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--ring)] rounded transition"
+                  href="/register"
+                >
+                  Sign up
+                </Link>
+              </div>
+              <div className="flex w-full gap-2 mt-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => form.reset()}
+                  className="flex-1 border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[var(--accent-foreground)] hover:bg-[var(--accent)] transition-colors"
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  form="signin-form"
+                  className="flex-1 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors"
+                >
+                  Submit
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </main>
   );
 }

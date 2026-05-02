@@ -1,13 +1,10 @@
 "use client";
-import { useStore } from "@tanstack/react-form";
 import { useForm } from "@tanstack/react-form";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -20,7 +17,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 import { registerUserAction, resendVerificationCodeAction } from "@/actions/auth.actions";
 import { UserCreateInput } from "@/types/auth.types";
@@ -28,11 +24,11 @@ import { createUserSchema } from "@/validations/auth.validation";
 import { FormInput } from "@/components/ui/frominput";
 import Link from "next/link";
 import { useState } from "react";
-import VerifyOtp from "../VerifyEmailOtp";
 
 export function SignupForm() {
   const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -45,7 +41,7 @@ export function SignupForm() {
       onSubmit: createUserSchema as any,
     },
     onSubmit: async ({ value }) => {
-      const toastId = toast.loading("user creating.........");
+      const toastId = toast.loading("user creating...");
       try {
         const result = await registerUserAction(value as UserCreateInput);
         setPreview(null);
@@ -56,203 +52,362 @@ export function SignupForm() {
         }
         toast.dismiss(toastId);
         toast.success(result.message || "User signed up successfully!");
-        await resendVerificationCodeAction({email:value.email})
+        await resendVerificationCodeAction({ email: value.email });
         router.push(`/verify-email?email=${value.email}`);
       } catch (error: any) {
         toast.dismiss(toastId);
-        toast.error("Something went wrong . please try again ", error.message);
+        toast.error("Something went wrong. Please try again.", error.message);
       }
     },
   });
+
   return (
-    <Card className="w-full sm:max-w-md mx-auto">
-      <CardHeader>
-        <div className="mb-3">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
-            ← Back to Home
-          </Link>
-        </div>
-        <CardTitle className="text-center text-2xl font-bold">
-          Create a New Account
-        </CardTitle>
-        <div className="flex justify-center mt-2">
-          <span className="h-1 w-32 rounded-full bg-gradient-to-r from-blue-400 via-fuchsia-500 to-emerald-400 opacity-70 animate-pulse"></span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="bug-report-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
-          }}
-        >
-          <FieldGroup>
-            <form.Field
-              name="name"
-              validators={{ onChange: createUserSchema.shape.name }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Please enter your name"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            />
-
-            <form.Field
-              name="email"
-              validators={{ onChange: createUserSchema.shape.email }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="please enter your email"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            />
-
-            <form.Field
-              name="password"
-              validators={{ onChange: createUserSchema.shape.password }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FormInput
-                      field={field}
-                      label="Password"
-                      isPassword
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="please enter your password"
-                      name={field.name}
-                      value={field.state.value}
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            />
-
-            <form.Field
-              name="image"
-              children={(field) => (
-                <Field>
-                  <FieldLabel>profile Image *</FieldLabel>
-
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        if (file.size > 1 * 1024 * 1024) {
-                          toast.error("Image size must be less than 1MB!");
-                          e.target.value = "";
-                          field.handleChange(null);
-                          setPreview(null);
-                          return;
-                        }
-                        field.handleChange(file);
-                        setPreview(URL.createObjectURL(file));
-                      }
+    <div
+      className="
+        min-h-screen
+        flex items-center justify-center
+        bg-[var(--background)]
+        "
+    >
+      <div className="w-full px-4">
+        <div className="mx-auto max-w-[1440px] flex flex-col items-center justify-center">
+          <Card
+            className="
+              w-full
+              max-w-full
+              sm:max-w-[420px]
+              md:max-w-[440px]
+              lg:max-w-[480px]
+              xl:max-w-[500px]
+              bg-[var(--card)]
+              border border-[var(--border)]
+              shadow-md
+              rounded-2xl
+              px-6 py-8
+              md:px-10 md:py-12
+              transition-shadow
+              "
+          >
+            <CardHeader className="w-full flex flex-col gap-2 mb-4">
+              <div>
+                <Link
+                  href="/"
+                  className="
+                    text-sm
+                    font-medium
+                    text-[var(--primary)]
+                    hover:underline
+                    transition-colors
+                  "
+                  style={{
+                    transition: "color .2s",
+                  }}
+                >
+                  ← Back to Home
+                </Link>
+              </div>
+              <CardTitle
+                className="
+                  w-full
+                  text-center
+                  text-2xl
+                  md:text-3xl
+                  font-bold
+                  text-[var(--card-foreground)]
+                  tracking-tight
+                "
+              >
+                Create a New Account
+              </CardTitle>
+              <div className="flex justify-center mt-2">
+                <span
+                  className="
+                    h-1 w-24
+                    rounded-full
+                    bg-[var(--primary)]
+                    opacity-70 animate-pulse
+                    transition-all
+                  "
+                  aria-hidden
+                ></span>
+              </div>
+            </CardHeader>
+            <CardContent className="py-0">
+              <form
+                id="register-form"
+                className="flex flex-col gap-6"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  form.handleSubmit();
+                }}
+                autoComplete="off"
+                spellCheck={false}
+              >
+                <FieldGroup className="flex flex-col gap-4">
+                  <form.Field
+                    name="name"
+                    validators={{ onChange: createUserSchema.shape.name }}
+                  >
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid} className="flex flex-col gap-1.5">
+                          <FieldLabel htmlFor={field.name} className="font-semibold text-[var(--card-foreground)]">
+                            Name
+                          </FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            placeholder="Enter your name"
+                            autoComplete="off"
+                            className={`
+                              bg-[var(--input)]
+                              border border-[var(--input)]
+                              rounded-lg
+                              focus:border-[var(--primary)]
+                              focus:ring-2 focus:ring-[var(--primary)]
+                              transition
+                              text-[var(--foreground)]
+                            `}
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
                     }}
-                  />
+                  </form.Field>
 
-                  {preview && (
-                    <img
-                      src={preview}
-                      className="h-32 rounded-md object-cover mt-2"
-                    />
-                  )}
-                </Field>
-              )}
-            />
-            <form.Field
-              name="phone"
-              validators={{ onChange: createUserSchema.shape.phone as any }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Phone</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="please enter your phone number"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                  <form.Field
+                    name="email"
+                    validators={{ onChange: createUserSchema.shape.email }}
+                  >
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid} className="flex flex-col gap-1.5">
+                          <FieldLabel htmlFor={field.name} className="font-semibold text-[var(--card-foreground)]">
+                            Email
+                          </FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            placeholder="Enter your email"
+                            autoComplete="off"
+                            className={`
+                              bg-[var(--input)]
+                              border border-[var(--input)]
+                              rounded-lg
+                              focus:border-[var(--primary)]
+                              focus:ring-2 focus:ring-[var(--primary)]
+                              transition
+                              text-[var(--foreground)]
+                            `}
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
+
+                  <form.Field
+                    name="password"
+                    validators={{ onChange: createUserSchema.shape.password }}
+                  >
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid} className="flex flex-col gap-1.5">
+                          <FormInput
+                            field={field}
+                            label="Password"
+                            isPassword
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            placeholder="Enter a secure password"
+                            name={field.name}
+                            value={field.state.value}
+                            autoComplete="off"
+                            className={`
+                              bg-[var(--input)]
+                              border border-[var(--input)]
+                              rounded-lg
+                              focus:border-[var(--primary)]
+                              focus:ring-2 focus:ring-[var(--primary)]
+                              transition
+                              text-[var(--foreground)]
+                            `}
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
+
+                  <form.Field name="image">
+                    {(field) => (
+                      <Field
+                        className="flex flex-col gap-1.5"
+                        data-optional
+                      >
+                        <FieldLabel className="font-semibold text-[var(--card-foreground)]">
+                          Profile Image&nbsp;
+                          <span className="text-[var(--muted-foreground)] font-normal text-xs">(max 1MB)</span>
+                        </FieldLabel>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          className={`
+                            bg-[var(--input)]
+                            border border-[var(--input)]
+                            rounded-lg
+                            focus:border-[var(--primary)]
+                            focus:ring-2 focus:ring-[var(--primary)]
+                            transition
+                            file:border-0 file:bg-[var(--accent)]
+                            file:text-[var(--accent-foreground)]
+                            file:py-2 file:px-3
+                            file:rounded-md
+                            file:font-medium
+                          `}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (file.size > 1 * 1024 * 1024) {
+                                toast.error("Image size must be less than 1MB!");
+                                e.target.value = "";
+                                field.handleChange(null);
+                                setPreview(null);
+                                return;
+                              }
+                              field.handleChange(file);
+                              setPreview(URL.createObjectURL(file));
+                            }
+                          }}
+                        />
+                        {preview && (
+                          <img
+                            src={preview}
+                            alt="Profile preview"
+                            className="h-32 w-32 object-cover rounded-lg mt-2 mx-auto border border-[var(--border)] shadow-sm"
+                          />
+                        )}
+                      </Field>
                     )}
-                  </Field>
-                );
-              }}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
+                  </form.Field>
 
-      <CardFooter className=" flex flex-col space-y-3 justify-center items-center">
-        <Link
-          href="/login"
-          className="inline-block text-sm text-blue-600 hover:underline"
-        >
-          Already have an account? Login
-        </Link>
-        <Field
-          orientation="horizontal"
-          className="flex items-center justify-center"
-        >
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button type="submit" form="bug-report-form">
-            Submit
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+                  <form.Field
+                    name="phone"
+                    validators={{ onChange: createUserSchema.shape.phone as any }}
+                  >
+                    {(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid} className="flex flex-col gap-1.5">
+                          <FieldLabel htmlFor={field.name} className="font-semibold text-[var(--card-foreground)]">
+                            Phone
+                          </FieldLabel>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            placeholder="Enter your phone number"
+                            autoComplete="off"
+                            className={`
+                              bg-[var(--input)]
+                              border border-[var(--input)]
+                              rounded-lg
+                              focus:border-[var(--primary)]
+                              focus:ring-2 focus:ring-[var(--primary)]
+                              transition
+                              text-[var(--foreground)]
+                            `}
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  </form.Field>
+                </FieldGroup>
+              </form>
+            </CardContent>
+            <CardFooter className="w-full mt-4 flex flex-col gap-4 items-center">
+              <Link
+                href="/login"
+                className="
+                  text-sm
+                  font-medium
+                  text-[var(--primary)]
+                  hover:text-[var(--accent)]
+                  hover:underline
+                  transition-colors
+                "
+                style={{
+                  transition: "color .2s",
+                }}
+              >
+                Already have an account? Login
+              </Link>
+              <div className="w-full flex flex-row gap-3 justify-between">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className={`
+                    flex-1
+                    bg-[var(--secondary)]
+                    text-[var(--secondary-foreground)]
+                    border border-[var(--border)]
+                    hover:bg-[var(--accent)]
+                    hover:text-[var(--accent-foreground)]
+                    transition
+                  `}
+                  onClick={() => form.reset()}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  form="register-form"
+                  className={`
+                    flex-1
+                    bg-[var(--primary)]
+                    text-[var(--primary-foreground)]
+                    hover:bg-[var(--accent)]
+                    hover:text-[var(--accent-foreground)]
+                    border border-[var(--primary)]
+                    transition
+                    font-semibold
+                  `}
+                >
+                  Sign Up
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 }
