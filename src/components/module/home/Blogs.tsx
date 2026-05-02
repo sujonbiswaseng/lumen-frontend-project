@@ -27,7 +27,7 @@ const BlogsContent = ({blogs}:{blogs:TResponseBlog<{ author: IBaseUser; event: I
     
   }, [blogs]);
   return (
-    <div>
+    <div className='p-4 md:p-8'>
       <div className="w-full flex flex-wrap justify-center gap-6">
         <div className="w-full flex flex-col items-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 text-center">

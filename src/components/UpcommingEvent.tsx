@@ -10,109 +10,179 @@ import { IgetReviewData } from '@/types/review.types';
 
 const CARDS_PER_SLIDE = 4;
 
-const UpcommingEvent = ({events}:{events:(TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]}) => {
-  const [upcommingEvent, setUpcomingEvent] = useState<any[]>(events);
-  const [loading, setLoading] = useState(false);
+import { motion, AnimatePresence } from "framer-motion";
+
+const UpcommingEvent = ({
+  events,
+}: {
+  events: (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[] }> | null)[];
+}) => {
+  const [upcomingEvent] = useState<any[]>(events);
+  const [loading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    // Only auto-slide if there are more events than cards per slide
-    if (upcommingEvent.length > CARDS_PER_SLIDE) {
+    if (upcomingEvent.length > CARDS_PER_SLIDE) {
       intervalRef.current = setInterval(() => {
-        setCurrentIndex(prev =>
-          prev + CARDS_PER_SLIDE >= upcommingEvent.length
-            ? 0 // Loop back to first slide
-            : prev + CARDS_PER_SLIDE
+        setCurrentIndex((prev) =>
+          prev + CARDS_PER_SLIDE >= upcomingEvent.length
+            ? 0
+            : prev + CARDS_PER_SLIDE,
         );
       }, 6000);
     }
-
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [upcommingEvent.length]);
-
-  
+  }, [upcomingEvent.length]);
 
   const handleNext = () => {
-    setCurrentIndex(prev =>
-      prev + CARDS_PER_SLIDE >= upcommingEvent.length
+    setCurrentIndex((prev) =>
+      prev + CARDS_PER_SLIDE >= upcomingEvent.length
         ? 0
-        : prev + CARDS_PER_SLIDE
+        : prev + CARDS_PER_SLIDE,
     );
   };
 
   const handlePrev = () => {
-    setCurrentIndex(prev =>
+    setCurrentIndex((prev) =>
       prev - CARDS_PER_SLIDE < 0
-        ? Math.max(upcommingEvent.length - CARDS_PER_SLIDE, 0)
-        : prev - CARDS_PER_SLIDE
+        ? Math.max(upcomingEvent.length - CARDS_PER_SLIDE, 0)
+        : prev - CARDS_PER_SLIDE,
     );
   };
 
-  // Determine the events to show in the current "slide"
-  const visibleEvents = upcommingEvent.slice(currentIndex, currentIndex + CARDS_PER_SLIDE).slice(0,9);
-  // Calculate if an extra 'empty card' is needed for even width when not completely filled
+  const visibleEvents = upcomingEvent
+    .slice(currentIndex, currentIndex + CARDS_PER_SLIDE)
+    .slice(0, 9);
   const emptySlots = CARDS_PER_SLIDE - visibleEvents.length;
 
+  // Framer Motion variants for subtle enter/exit
+  const cardVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.36,
+        type: "spring",
+        stiffness: 62,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: 18,
+      transition: { duration: 0.25, ease: "easeOut" },
+    },
+  };
+
   return (
-    <div className="w-full">
-      <section id="events" className="w-full py-12 md:py-14 bg-slate-50">
-        <div className="w-full px-4 md:px-8">
-          <div className="text-center mb-7 md:mb-10">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight mb-2 md:mb-3">
-              Upcoming Events
-            </h2>
-            <p className="mt-2 md:mt-3 text-sm md:text-base lg:text-lg text-slate-600 font-medium">
-              Browse {upcommingEvent.length || 9} upcoming public events and join in seconds.
-            </p>
-          </div>
-          <div className="flex justify-between items-center mb-5 md:mb-7 max-w-2xl md:max-w-3xl mx-auto gap-2 md:gap-4">
-            <Button
-              onClick={handlePrev}
-              disabled={upcommingEvent.length <= CARDS_PER_SLIDE}
-              className="transition px-5 py-1.5 text-base md:text-lg"
-              variant="outline"
-            >
-              Prev
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={upcommingEvent.length <= CARDS_PER_SLIDE}
-              className="transition px-5 py-1.5 text-base md:text-lg"
-              variant="outline"
-            >
-              Next
-            </Button>
-          </div>
-          <div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 w-full"
-            style={{
-              minHeight: 310, // Decreased height for tighter look
-            }}
+    <section
+      id="events"
+      className="bg-background w-full py-8 md:py-12"
+      aria-labelledby="upcoming-events-header"
+    >
+      <div className="max-w-[1440px] mx-auto w-full px-4 md:px-8 flex flex-col items-center">
+        <motion.header
+          className="w-full flex flex-col items-center text-center mb-6 md:mb-8"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.36, ease: "easeOut" }}
+        >
+          <h2
+            id="upcoming-events-header"
+            className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground mb-2"
           >
-         {loading
-              ? Array.from({ length: CARDS_PER_SLIDE }).map((_, i) => (
-                  <EventCardSkeleton key={i} />
-                ))
-              : (
-                (events == null || events === undefined || events.length === 0)
-                ?  <div className="col-span-full text-center text-gray-500 py-12 text-lg">
-                No Upcomming events found.
-              </div>
-                : visibleEvents.map((event) => {
-                return <EventCard key={event.id} {...event} />
-              }))}
-            {/* Fill remaining columns with empty divs for even width */}
-           {!loading && emptySlots > 0 &&
-              Array.from({ length: emptySlots }).map((_, idx) => (
-                <div key={`empty-${idx}`} className="invisible" aria-hidden="true"></div>
-              ))
-            }
-          </div>
+            Upcoming Events
+          </h2>
+          <p className="text-base md:text-lg lg:text-xl text-muted-foreground font-medium max-w-xl">
+            Browse {upcomingEvent.length || 9} upcoming public events and join in seconds.
+          </p>
+        </motion.header>
+        <div className="flex justify-between items-center mb-6 md:mb-8 gap-2 w-full max-w-xl">
+          <Button
+            onClick={handlePrev}
+            disabled={upcomingEvent.length <= CARDS_PER_SLIDE}
+            className="transition px-5 py-1.5 text-base md:text-lg bg-secondary text-secondary-foreground border-border"
+            variant="secondary"
+            aria-label="Previous Events"
+          >
+            Prev
+          </Button>
+          <Button
+            onClick={handleNext}
+            disabled={upcomingEvent.length <= CARDS_PER_SLIDE}
+            className="transition px-5 py-1.5 text-base md:text-lg bg-secondary text-secondary-foreground border-border"
+            variant="secondary"
+            aria-label="Next Events"
+          >
+            Next
+          </Button>
         </div>
-      </section>
-    </div>
+        <motion.div
+          className="
+            grid grid-cols-1
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4
+            gap-4 md:gap-6
+            w-full
+            min-h-[340px]
+            px-0"
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={{
+            visible: {
+              transition: { staggerChildren: 0.06 },
+            },
+          }}
+        >
+          {loading ? (
+            Array.from({ length: CARDS_PER_SLIDE }).map((_, i) => (
+              <motion.div key={i} >
+                <EventCardSkeleton />
+              </motion.div>
+            ))
+          ) : events == null || events === undefined || events.length === 0 ? (
+            <motion.div
+              className="col-span-full text-center text-muted-foreground py-10 text-lg"
+             
+            >
+              No Upcoming events found.
+            </motion.div>
+          ) : (
+            <AnimatePresence>
+              {visibleEvents.map((event) =>
+                event ? (
+                  <motion.div
+                    key={event.id}
+                  
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    layout
+                  >
+                    <EventCard {...event} />
+                  </motion.div>
+                ) : null,
+              )}
+              {/* fill for grid alignment */}
+              {!loading &&
+                emptySlots > 0 &&
+                Array.from({ length: emptySlots }).map((_, idx) => (
+                  <div
+                    key={`empty-${idx}`}
+                    className="invisible"
+                    aria-hidden="true"
+                  ></div>
+                ))}
+            </AnimatePresence>
+          )}
+        </motion.div>
+      </div>
+    </section>
   );
 };
 

@@ -11,7 +11,7 @@ export default function ImageSkeleton({
 }: {
   src: string;
   alt: string;
-  className:string;
+  className?:string;
 }) {
   const [loading, setLoading] = useState(true);
 

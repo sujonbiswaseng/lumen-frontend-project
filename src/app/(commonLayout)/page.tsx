@@ -23,6 +23,7 @@ import { getAllBlogsAction } from "@/actions/blog.actions";
 import BlogsContent from "@/components/module/home/Blogs";
 import { TResponseBlog } from "@/types/blog.type";
 import NewsLatter from "@/components/module/home/NewsLatter";
+import { FAQ } from "@/components/module/home/FAQ";
 
 export default async function Home({
   searchParams,
@@ -79,6 +80,7 @@ export default async function Home({
 
         <BlogsContent  blogs={blogsResponse.data as TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[]}/>
               <NewsLatter/>
+              <FAQ />
  
      {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />
