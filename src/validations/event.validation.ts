@@ -69,8 +69,7 @@ export const CreateEventSchema = z.object({
   time: z.string().min(1, "Time is required"),
   location: z.string().min(3, "location is required"),
   images: z
-    .union([z.array(z.instanceof(File)), z.array(z.string())])
-    .default([]),
+    .union([z.array(z.instanceof(File)).min(1, "At least 1 image is required"), z.array(z.string()).min(1, "At least 1 image is required")]),
   visibility: EventTypeEnum.default("PUBLIC"),
   priceType: PricingTypeEnum.default('FREE'),
   fee: z

@@ -219,7 +219,7 @@ export function CreateEvent() {
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
-                      Venue <span style={{ color: "red" }}>*</span>
+                      location <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Input
                       id={field.name}
@@ -241,57 +241,69 @@ export function CreateEvent() {
 
             <form.Field
               name="images"
-              children={(field) => (
-                <Field>
-                  <FieldLabel>Event Images (Max 5)</FieldLabel>
-
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-
-                      if (!files.length) return;
-
-                      if (files.length > 6) {
-                        toast.error("Maximum 5 images allowed");
-                        return;
-                      }
-
-                      const oversized = files.find(
-                        (file) => file.size > 10 * 1024 * 1024,
-                      );
-
-                      if (oversized) {
-                        toast.error("Each image must be less than 10MB");
-                        return;
-                      }
-
-                      field.handleChange(files);
-
-                      const urls = files.map((file) =>
-                        URL.createObjectURL(file),
-                      );
-
-                      setPreview(urls);
-                    }}
-                  />
-
-                  {preview.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
-                      {preview.map((img, index) => (
-                        <img
-                          key={index}
-                          src={img}
-                          alt="preview"
-                          className="h-28 w-full rounded-md object-cover border"
-                        />
-                      ))}
+              validators={{ onChange: CreateEventSchema.shape.images as any }}
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field>
+                    <div className="flex gap-2">
+                      <FieldLabel>Event Images (Max 3)</FieldLabel>{" "}
+                      <span style={{ color: "red" }}>*</span>
                     </div>
-                  )}
-                </Field>
-              )}
+
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+
+                        if (!files.length) return;
+
+                        if (files.length > 3) {
+                          toast.error("Maximum 3 images allowed");
+                          return;
+                        }
+
+                        const oversized = files.find(
+                          (file) => file.size > 6 * 1024 * 1024,
+                        );
+
+                        if (oversized) {
+                          toast.error("Each image must be less than 6MB");
+                          return;
+                        }
+
+                        field.handleChange(files);
+
+                        const urls = files.map((file) =>
+                          URL.createObjectURL(file),
+                        );
+
+                        setPreview(urls);
+                      }}
+                    />
+
+                    {preview.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                        {preview.map((img, index) => (
+                          <img
+                            key={index}
+                            src={img}
+                            alt="preview"
+                            className="h-28 w-full rounded-md object-cover border"
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
             />
 
             <form.Field
@@ -311,7 +323,7 @@ export function CreateEvent() {
                       htmlFor={field.name}
                       className="flex items-center gap-1 text-base font-medium text-foreground"
                     >
-                      Visibility <span className="text-[--accent]">*</span>
+                      Visibility <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
                       value={field.state.value}
@@ -365,7 +377,7 @@ export function CreateEvent() {
                       htmlFor={field.name}
                       className="flex items-center gap-1 text-base font-medium text-foreground"
                     >
-                      Price Type <span className="text-[--accent]">*</span>
+                      Price Type <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
                       value={field.state.value}
@@ -417,7 +429,7 @@ export function CreateEvent() {
                       htmlFor={field.name}
                       className="flex items-center gap-1 text-base font-medium text-foreground"
                     >
-                      Categories <span className="text-[--primary]">*</span>
+                      Categories <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
                       value={field.state.value}
@@ -469,7 +481,7 @@ export function CreateEvent() {
                       htmlFor={field.name}
                       className="flex items-center gap-1 text-base font-medium text-foreground"
                     >
-                      Status <span className="text-[--primary]">*</span>
+                      Status <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
                       value={field.state.value}
