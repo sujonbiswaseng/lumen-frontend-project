@@ -15,6 +15,8 @@ import ShareProfileButton from "./profileshare";
 import VerifyOtp from "@/components/auth/VerifyEmailOtp";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { TNotification } from "@/types/notification.type";
+import { IBaseEvent } from "@/types/event.types";
 
 const fadeUpAnim = {
   initial: { opacity: 0, y: 24 },
@@ -28,7 +30,7 @@ function ProfileModal({
   notification,
 }: {
   user: IBaseUser;
-  notification: React.ReactNode;
+  notification?: TNotification<{ user: IBaseUser; event: IBaseEvent }>[];
 }) {
   const router = useRouter();
   const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user });
@@ -151,8 +153,12 @@ function ProfileModal({
       }}
     >
       <div className="w-full max-w-2xl mx-auto bg-card shadow-lg rounded-2xl border border-border flex flex-col divide-y divide-border">
-        {/* Notification */}
-        <div className="flex justify-end px-6 pt-6">{notification}</div>
+        {/* Notification summary */}
+        <div className="flex justify-end px-6 pt-6">
+          <span className="text-sm text-muted-foreground">
+            Notifications: {notification?.length ?? 0}
+          </span>
+        </div>
 
         {/* Profile header section */}
         <div

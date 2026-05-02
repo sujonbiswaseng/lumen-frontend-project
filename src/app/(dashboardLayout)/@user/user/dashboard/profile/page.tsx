@@ -20,7 +20,7 @@ const ProfilePage = async() => {
   return (
     <div>
         <ErrorBoundary fallback={<ErrorFallback title="Profile load failed" message="Something went wrong while loading your profile." />}>
-          <ProfileUserInfo user={userinfo.data as IBaseUser} notification={notification.data as any}/>
+          <ProfileUserInfo user={userinfo.data as IBaseUser} notification={notification.data ?? []}/>
         </ErrorBoundary>
     </div>
   )
