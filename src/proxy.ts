@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionAction } from "./actions/auth.actions";
 
-export type TUserRole = "USER" | "ADMIN";
+export type TUserRole = "USER" | "ADMIN" | "MANAGER";
 
 export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
@@ -33,6 +33,12 @@ export const proxy = async (request: NextRequest) => {
       }
     }
 
+    if (pathname.startsWith("/manager")) {
+      if (role !== "MANAGER") {
+        return NextResponse.redirect(new URL("/login?Access_denied_Admins_only", request.url));
+      }
+    }
+
     if (pathname.startsWith("/payment")) {
       if (role !== "ADMIN" && role !== "USER") {
         return NextResponse.redirect(new URL("/login?Access_denied_Only_users_and_admins_can_access_payment_routes.", request.url));
@@ -52,6 +58,9 @@ export const proxy = async (request: NextRequest) => {
       } else if (role === "USER") {
         return NextResponse.redirect(new URL("/user/dashboard", request.url));
       }
+      else if (role === "MANAGER") {
+        return NextResponse.redirect(new URL("/manager/dashboard", request.url));
+      }
     }
 
     if (pathname === "/user") {
@@ -59,6 +68,10 @@ export const proxy = async (request: NextRequest) => {
     }
     if (pathname === "/admin") {
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+    }
+
+    if (pathname === "/manager") {
+      return NextResponse.redirect(new URL("/manager/dashboard", request.url));
     }
 
     return NextResponse.next();
@@ -69,5 +82,5 @@ export const proxy = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/admin/:path*", "/user/:path*", "/dashboard/:path*"],
+  matcher: ["/admin/:path*","/manager/:path*", "/user/:path*", "/dashboard/:path*"],
 };

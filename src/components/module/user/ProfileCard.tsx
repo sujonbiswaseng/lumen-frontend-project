@@ -26,6 +26,7 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
     'https://res.cloudinary.com/drmeagmkl/image/upload/v1766941482/chatgpt_m8tmep.png';
 
   const router = useRouter();
+  console.log(profile,'profile')
 
   const handleLogout = async () => {
     const toastId = toast.loading('Logging out...');
@@ -81,7 +82,7 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
-              href={profile.role === 'USER' ? '/user/dashboard/profile' : '/admin/dashboard/profile'}
+              href={profile.role === 'USER' ? '/user/dashboard/profile' :profile.role==="ADMIN"? '/admin/dashboard/profile':"/manager/dashboard/profile"}
               className="flex items-center w-full gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
             >
               <User className="w-4 h-4" />
@@ -90,7 +91,7 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
-              href={profile.role=="ADMIN"?"/admin/dashboard/setting":"/user/dashboard/settings"}
+              href={profile.role=="ADMIN"?"/admin/dashboard/setting":profile.role==="USER"?"/user/dashboard/settings":"/manager/dashboard/setting"}
               className="flex items-center w-full gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
             >
               <Settings className="w-4 h-4" />
