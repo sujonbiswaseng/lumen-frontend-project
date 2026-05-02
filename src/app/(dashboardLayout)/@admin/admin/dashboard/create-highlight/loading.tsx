@@ -4,7 +4,7 @@ import React from 'react'
 const LoadignPage = () => {
   return (
     <div>
-       <LoadingContentPage data='create blog page'/>
+       <LoadingContentPage data='highlight page loading..'/>
     </div>
   )
 }

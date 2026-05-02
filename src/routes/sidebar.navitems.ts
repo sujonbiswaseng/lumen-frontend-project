@@ -105,6 +105,7 @@ export const ManagerNavItems: NavSection[] = [
             }
         ]
     },
+
     {
         title: "User Management",
         items: [
@@ -122,6 +123,21 @@ export const ManagerNavItems: NavSection[] = [
                 title: "Reviews",
                 href: "/manager/dashboard/reviews",
                 icon: "Star"
+            }
+        ]
+    },
+    {
+        title: "Highlight Management",
+        items: [
+            {
+                title: "Highlights",
+                href: "/admin/dashboard/highlights",
+                icon: "FileText"
+            },
+            {
+                title: "Create Highlight",
+                href: "/admin/dashboard/create-highlight",
+                icon: "PlusSquare"
             }
         ]
     },
@@ -171,6 +187,21 @@ export const adminNavItems: NavSection[] = [
             {
                 title: "Create Blog",
                 href: "/admin/dashboard/create-blog",
+                icon: "PlusSquare"
+            }
+        ]
+    },
+    {
+        title: "Highlight Management",
+        items: [
+            {
+                title: "Highlights",
+                href: "/admin/dashboard/highlights",
+                icon: "FileText"
+            },
+            {
+                title: "Create Highlight",
+                href: "/admin/dashboard/create-highlight",
                 icon: "PlusSquare"
             }
         ]
