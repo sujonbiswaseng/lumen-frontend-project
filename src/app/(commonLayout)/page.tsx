@@ -13,8 +13,15 @@ import { IgetReviewData } from "@/types/review.types";
 import { getUserNotificationsAction } from "@/actions/notification";
 import Featured from "@/components/module/home/Featured";
 import Services from "@/components/module/home/Services";
+import { getAllHighlightsAction } from "@/actions/highlight.action";
+import HighLightContent from "@/components/module/home/HighLight";
+import { TResponseHighlight } from "@/types/highlight.types";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const res = await getUserNotificationsAction();
   const userinfo = await getSessionAction();
   const role = userinfo.data?.role;
@@ -31,7 +38,20 @@ export default async function Home() {
     );
   }
 
-  console.log(isfeatured.data,'s')
+  
+  let highlightResponse;
+  try {
+    const search = await searchParams;
+    highlightResponse = await getAllHighlightsAction(search);
+  } catch (err) {
+    console.error("Highlights fetch error:", err);
+    highlightResponse = {
+      data: [],
+      pagination: { total: 0, page: 1, limit: 10, totalpage: 1 },
+      success: false,
+    };
+  }
+  console.log(highlightResponse,'idds')
   return (
     <div className="flex flex-col">
       {/* Removed sdfsdf */}
@@ -42,6 +62,8 @@ export default async function Home() {
       )}
       <Featured/>
       <Services/>
+      <HighLightContent highlight={highlightResponse.data as TResponseHighlight<{user:IBaseUser}>[]} />
+ 
      {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />
       <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>
