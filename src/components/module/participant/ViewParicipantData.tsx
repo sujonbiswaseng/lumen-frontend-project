@@ -145,9 +145,9 @@ const ViewParticipantData = ({
           {/* Top: Event Info */}
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
             <div className="flex-shrink-0 w-28 h-28 flex items-center justify-center border border-input rounded-xl bg-muted shadow-inner overflow-hidden">
-              {viewData.event?.image ? (
+              {viewData.event?.images[0] ? (
                 <img
-                  src={viewData.event.image}
+                  src={viewData.event.images[0]}
                   alt={viewData.event?.title ?? 'Event'}
                   className="w-full h-full object-cover rounded-xl"
                   loading="lazy"
@@ -213,7 +213,7 @@ const ViewParticipantData = ({
                     </svg>
                   </span>
                   <span className="font-medium text-muted-foreground">
-                    {viewData.event?.venue || '-'}
+                    {viewData.event?.location || '-'}
                   </span>
                 </div>
               </div>

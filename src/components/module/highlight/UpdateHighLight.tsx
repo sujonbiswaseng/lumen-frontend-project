@@ -5,20 +5,32 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { updateBlogSchema } from "@/validations/blog.validation";
-import { updateBlogAction } from "@/actions/blog.actions";
+import { updateHighlightSchema } from "@/validations/highlight.validation";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadein } from "@/lib/frammer.motion";
+import { updateHighlightAction } from "@/actions/highlight.action";
 
-type IUpdateBlogData = z.infer<typeof updateBlogSchema>;
+type IUpdateHighlightData = z.infer<typeof updateHighlightSchema>;
 
-
-export default function UpdateBlog({ id }: { id: string }) {
-  const [blogData, setBlogData] = React.useState<IUpdateBlogData>({
+export default function UpdateHighlight({ id }: { id: string }) {
+  const [highlightData, setHighlightData] = React.useState<IUpdateHighlightData>({
+    title: "",
+    description: "",
+    image: "",
   });
   const [submitting, setSubmitting] = React.useState(false);
 
-  const parsedata = updateBlogSchema.safeParse(blogData);
+  const parsedata = updateHighlightSchema.safeParse(highlightData);
+
+  const handleImageInput = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (file.size > 6 * 1024 * 1024) {
+      toast.error("Image must be less than 6MB");
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setHighlightData(prev => ({ ...prev, image: url }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +40,13 @@ export default function UpdateBlog({ id }: { id: string }) {
     }
     setSubmitting(true);
     try {
-      const data = await updateBlogAction(id, parsedata.data);
+      const data = await updateHighlightAction(id, parsedata.data);
       if (!data?.success) {
-        toast.error(data?.message || "Failed to update blog");
+        toast.error(data?.message || "Failed to update highlight");
         return;
       }
-      toast.success(data?.message || "Blog updated successfully");
-      setBlogData({});
+      toast.success(data?.message || "Highlight updated successfully");
+      setHighlightData({ title: "", description: "", image: "" });
     } finally {
       setSubmitting(false);
     }
@@ -46,152 +58,111 @@ export default function UpdateBlog({ id }: { id: string }) {
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-center">
         <AnimatePresence>
           <motion.form
-            key="update-blog"
+            key="update-highlight"
             initial="hidden"
             animate="visible"
             exit="hidden"
-            // variants={fadein("left",0.12) as any}
             onSubmit={handleSubmit}
             className="w-full max-w-2xl mx-auto rounded-2xl bg-card shadow-xl p-6 md:p-8 space-y-8 border border-border"
-            aria-label="Update Blog"
+            aria-label="Update Highlight"
           >
             <h2 className="text-2xl md:text-4xl font-bold text-center text-card-foreground mb-2">
-              Update Blog
+              Update Highlight
             </h2>
             <p className="text-muted-foreground text-center text-base md:text-lg font-normal mb-1">
-              Update your blog post details below. Fields marked * are required.
+              Update your highlight details below. Fields marked * are required.
             </p>
 
-            {/* Blog Title */}
-            <motion.div
-              custom={0}
-              className="flex flex-col gap-2"
-            >
+            {/* Highlight Title */}
+            <motion.div className="flex flex-col gap-2">
               <Label htmlFor="title" className="font-semibold text-card-foreground">
-                Blog Title*
+                Title*
               </Label>
               <input
                 id="title"
                 type="text"
-                placeholder="Blog Title"
-                value={blogData.title ?? ""}
-                onChange={e => setBlogData({ ...blogData, title: e.target.value })}
+                placeholder="Title"
+                value={highlightData.title}
+                onChange={e => setHighlightData({ ...highlightData, title: e.target.value })}
                 className="w-full bg-input border border-input rounded-lg px-4 py-3 md:py-3.5 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition outline-none"
                 autoComplete="off"
                 maxLength={120}
               />
             </motion.div>
 
-            {/* Blog Description/Content */}
-            <motion.div
-              className="flex flex-col gap-2"
-            >
-              <Label htmlFor="content" className="font-semibold text-card-foreground">
-                Content*
+            {/* Highlight Description */}
+            <motion.div className="flex flex-col gap-2">
+              <Label htmlFor="description" className="font-semibold text-card-foreground">
+                Description*
               </Label>
               <textarea
-                id="content"
-                placeholder="Blog content or description"
-                value={blogData.content ?? ""}
-                onChange={e => setBlogData({ ...blogData, content: e.target.value })}
+                id="description"
+                placeholder="Highlight description"
+                value={highlightData.description}
+                onChange={e => setHighlightData({ ...highlightData, description: e.target.value })}
                 className="w-full bg-input border border-input rounded-lg px-4 py-3 md:py-3.5 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary transition outline-none resize-y min-h-[96px] max-h-[340px]"
                 rows={4}
                 maxLength={5000}
               />
             </motion.div>
 
-            {/* Blog Images */}
-            <motion.div
-              custom={2}
-              className="flex flex-col gap-2"
-            >
-              <Label htmlFor="images-upload" className="font-semibold text-card-foreground">
-                Blog Images
+            {/* Single Highlight Image */}
+            <motion.div className="flex flex-col gap-2">
+              <Label htmlFor="image-upload" className="font-semibold text-card-foreground">
+                Highlight Image*
               </Label>
               <p className="text-muted-foreground text-sm mb-1">
-                (Max 3 images. Upload or paste URLs, each ≤ 6MB)
+                (Upload an image or paste its URL. Only 1 image, ≤ 6MB)
               </p>
               <input
-                id="images-upload"
+                id="image-upload"
                 type="file"
                 accept="image/*"
-                multiple
-                aria-label="Upload blog images"
+                aria-label="Upload highlight image"
                 onChange={e => {
-                  const files = Array.from(e.target.files || []);
-                  if (!files.length) return;
-                  if (files.length > 3) {
-                    toast.error("Maximum 3 images allowed");
-                    return;
-                  }
-                  const oversized = files.find(file => file.size > 6 * 1024 * 1024);
-                  if (oversized) {
-                    toast.error("Each image must be less than 6MB");
-                    return;
-                  }
-                  const urls = files.map(file => URL.createObjectURL(file));
-                  setBlogData({ ...blogData, images: urls });
+                  handleImageInput(e.target.files);
                 }}
                 className="w-full bg-input border border-input rounded-lg px-4 py-3 text-foreground focus:ring-2 focus:ring-accent focus:border-accent transition cursor-pointer"
                 tabIndex={0}
               />
               <input
-                id="images"
+                id="image-url"
                 type="text"
                 autoComplete="off"
-                placeholder="Paste image URLs separated by commas"
-                value={
-                  Array.isArray(blogData.images)
-                    ? blogData.images.filter(img => typeof img === "string").join(", ")
-                    : ""
-                }
+                placeholder="Paste image URL"
+                value={typeof highlightData.image === "string" ? highlightData.image : ""}
                 onChange={e =>
-                  setBlogData({
-                    ...blogData,
-                    images: e.target.value
-                      .split(",")
-                      .map(url => url.trim())
-                      .filter(url => url.length > 0),
-                  })
+                  setHighlightData({ ...highlightData, image: e.target.value })
                 }
                 className="w-full bg-input border border-input rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent focus:border-accent transition mt-2"
-                aria-label="Image URLs"
+                aria-label="Image URL"
               />
               <AnimatePresence>
-                {Array.isArray(blogData.images) && blogData.images.length > 0 && (
+                {highlightData.image && (
                   <motion.div
                     key="preview"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.3, ease: "easeOut" }}
-                    className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"
+                    className="flex mt-2"
                   >
-                    {blogData.images.map(
-                      (img, index) =>
-                        typeof img === "string" && (
-                          <img
-                            key={index}
-                            src={img}
-                            alt="preview"
-                            className="h-28 w-full object-cover rounded-md border border-border bg-muted"
-                          />
-                        )
-                    )}
+                    <img
+                      src={highlightData.image}
+                      alt="preview"
+                      className="h-28 w-full object-cover rounded-md border border-border bg-muted"
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
 
             {/* Actions */}
-            <motion.div
-              custom={3}
-              className="flex justify-end gap-4 pt-2"
-            >
+            <motion.div className="flex justify-end gap-4 pt-2">
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setBlogData({ images: [] })}
+                onClick={() => setHighlightData({ title: "", description: "", image: "" })}
                 className="min-w-[96px]"
                 disabled={submitting}
               >

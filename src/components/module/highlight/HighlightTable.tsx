@@ -16,6 +16,7 @@ import { createBlogColumns } from "./CreateHightlightcolumn";
 import PaginationPage from "../event/Pagination";
 import UpdateBlog from "./UpdateHighLight";
 import { deleteBlogAction } from "@/actions/blog.actions";
+import ViewHighLightData from "./ViewHighLightData";
 
 interface MyHighlightsTableProps {
   highlights: TResponseBlog[];
@@ -27,6 +28,9 @@ export default function HighlightTable({ highlights, pagination, role }: MyHighl
   const router = useRouter();
   const [tableHighlights, setTableHighlights] = useState<TResponseBlog[]>([]);
   const { updateFilters, reset, isPending } = useFilter();
+
+  const [viewMode, setViewMode] = useState(false);
+  const [viewData, setViewData] = useState<any | null>(null);
 
   const [open, setOpen] = useState(false);
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
@@ -88,16 +92,19 @@ export default function HighlightTable({ highlights, pagination, role }: MyHighl
     {
       icon: Eye,
       label: "View",
-      onClick: (highlight: TResponseBlog) => {
+      onClick: (highlight: any) => {
         setSelectedHighlightId(highlight.id);
         setOpen(true);
+        setViewData(highlight)
+        setViewMode(true)
+        
       },
       className: "text-green-500",
     },
     {
       icon: Pencil,
       label: "Edit",
-      onClick: (highlight: TResponseBlog) => {
+      onClick: (highlight: any) => {
         setSelectedHighlightId(highlight.id);
         setOpen(true);
       },
@@ -106,7 +113,7 @@ export default function HighlightTable({ highlights, pagination, role }: MyHighl
     {
       icon: Trash2,
       label: "Delete",
-      onClick: (highlight: TResponseBlog) => handleDeleteHighlight(highlight.id),
+      onClick: (highlight: any) => handleDeleteHighlight(highlight.id),
       className: "text-red-500",
     },
   ];
@@ -166,20 +173,16 @@ export default function HighlightTable({ highlights, pagination, role }: MyHighl
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader />
 
-          {/* If a highlight is selected, show the highlight content at top, and then edit form */}
-          {selectedHighlightId && highlightContent !== null && (
-            <div className="mb-4 p-4 bg-blue-50 dark:bg-zinc-900 rounded-lg">
-              <h3 className="text-md font-medium mb-2">Highlight Content</h3>
-              <div className="whitespace-pre-wrap text-sm text-blue-900 dark:text-blue-200">
-                {highlightContent.trim().length > 0
-                  ? highlightContent
-                  : <span className="italic text-gray-500">No highlight content.</span>
-                }
-              </div>
-            </div>
+        {viewData && viewMode && (  <ViewHighLightData
+                viewData={viewData }
+                
+              />)}
+
+          {selectedHighlightId && !viewMode && (
+             <UpdateBlog id={selectedHighlightId as string}/>
           )}
 
-          <UpdateBlog id={selectedHighlightId as string}/>
+         
         </DialogContent>
       </Dialog>
 

@@ -2,8 +2,8 @@ import { getSessionAction } from '@/actions/auth.actions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ErrorFallback from '@/components/ErrorFallback';
 import { TPagination } from '@/types/event.types';
-import HighlightsTable from '@/components/module/highlight/HighlightTable';
 import { getAllHighlightsAction } from '@/actions/highlight.action';
+import HighlightTable from '@/components/module/highlight/HighlightTable';
 
 const HighlightPage = async ({
   searchParams,
@@ -69,7 +69,7 @@ console.log(highlightResponse,'gh')
           />
         ) : (
           <div>
-            <HighlightsTable
+            <HighlightTable
               highlights={highlightResponse.data as any[]}
               pagination={highlightResponse.pagination as TPagination}
               role={role as string}

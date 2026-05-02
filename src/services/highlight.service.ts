@@ -112,16 +112,22 @@ export const HighlightService = {
 
   // Update highlight
   updateHighlight: async (id: string, data: any) => {
+
     const storeCookies = await cookies();
+    const formData = new FormData();
+    const { image, ...rest } = data ;
+
+    formData.append("data", JSON.stringify(rest));
+
+    if (image) {
+      formData.append("file", image);
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/highlight/${id}`, {
         credentials: "include",
         method: "PUT",
-        headers: {
-          Cookie: storeCookies.toString(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        headers: { Cookie: storeCookies.toString() },
+        body: formData,
       });
       const body = await response.json();
       if (!response.ok) {

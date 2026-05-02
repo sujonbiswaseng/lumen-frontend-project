@@ -8,7 +8,7 @@ export const createHighlightSchema = z.object({
 
 export const updateHighlightSchema = z
   .object({
-    title: z.string().min(1, { message: "Title cannot be empty." }).optional(),
-    description: z.string().min(1, { message: "Description cannot be empty." }).optional(),
-    image: z.any()
+    title: z.string().optional(),
+    description: z.string().optional(),
+    image: z.any().optional()
   })
