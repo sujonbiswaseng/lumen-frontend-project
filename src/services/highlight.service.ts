@@ -12,13 +12,12 @@ export const HighlightService = {
   createHighlight: async (value: ICreateHighlightInput) => {
     const storeCookies = await cookies();
     const formData = new FormData();
-
-    const { file, ...rest } = value as any;
+    const { image, ...rest } = value as ICreateHighlightInput;
 
     formData.append("data", JSON.stringify(rest));
 
-    if (file) {
-      formData.append("file", file);
+    if (image) {
+      formData.append("file", image);
     }
 
     try {
