@@ -8,8 +8,8 @@ export async function createBlogAction(data: ICreateBlog) {
 }
 
 // Action to get all blogs
-export async function getAllBlogsAction() {
-  return await BlogService.getAllBlogs();
+export async function getAllBlogsAction(params?: any, options?: { cache?: RequestCache; revalidate?: number }) {
+  return await BlogService.getAllBlogs(params, options);
 }
 
 // Action to get a single blog by id

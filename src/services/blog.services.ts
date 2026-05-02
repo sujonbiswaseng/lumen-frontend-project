@@ -48,24 +48,39 @@ export const BlogService = {
   },
 
   // Get all blogs
-  getAllBlogs: async () => {
+  getAllBlogs: async (params?: any, options?: { cache?: RequestCache; revalidate?: number }) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/blogs`, {
-        next: { tags: ["getAllBlogs"] },
-        method: "GET",
-      });
+      const url = new URL(`${API_BASE_URL}/blogs`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, String(value));
+          }
+        });
+      }
+      const config: RequestInit = {};
+      if (options?.cache) {
+        config.cache = options.cache;
+      }
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["blogs", "blog"] };
+
+      const response = await fetch(url.toString(), config);
       const body = await response.json();
       if (!response.ok) {
         const error = body as ApiErrorResponse;
         return {
           success: false,
-          message: error.message,
+          message: error.message || "Failed to fetch blogs",
         };
       }
       return {
-        success: true,
+        success: body.success ?? true,
         message: body.message || "Fetched blogs successfully",
-        data: body.data,
+        data: body.data?.data || body.data, // support for paginated & non-paginated API shape
+        pagination: body.data?.pagination,
       };
     } catch (error) {
       return { success: false, message: "Something went wrong. Please try again." };
