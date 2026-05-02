@@ -22,6 +22,7 @@ import { PublicStats } from "@/types/stats.types";
 import { getAllBlogsAction } from "@/actions/blog.actions";
 import BlogsContent from "@/components/module/home/Blogs";
 import { TResponseBlog } from "@/types/blog.type";
+import NewsLatter from "@/components/module/home/NewsLatter";
 
 export default async function Home({
   searchParams,
@@ -60,7 +61,6 @@ export default async function Home({
   }
   const getpublicstats=await getPublicStatsAction()
  const blogsResponse = await getAllBlogsAction(search);
- console.log(blogsResponse,'sdfs')
   
   return (
     <div className="flex flex-col">
@@ -78,7 +78,7 @@ export default async function Home({
 
 
         <BlogsContent  blogs={blogsResponse.data as TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[]}/>
-              
+              <NewsLatter/>
  
      {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />
