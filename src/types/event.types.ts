@@ -40,8 +40,8 @@ export type IBaseEvent = {
     description: string;
     date: string;
     time: string;
-    venue: string;
-    image: string;
+    location: string;
+    images: string[];
     visibility?: "PUBLIC" | "PRIVATE";
     priceType?: IEventPricing;
     status: IEventStatusEnum;
@@ -61,8 +61,8 @@ export type IBaseEvent = {
     description?: string;
     date?: string;
     time?: string;
-    venue?: string;
-    image?: string;
+    location?: string;
+    images?: string[];
     categories?: IEventCategory;
     priceType?: "FREE" | "PAID";
     status?: IEventStatusEnum;

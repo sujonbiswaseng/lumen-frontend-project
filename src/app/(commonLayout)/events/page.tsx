@@ -21,6 +21,9 @@ const EventsPage = async ({
     eventsResponse = { data: { UPCOMING: [] }, pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };
   }
 
+ 
+
+
   return (
    <div className={"mt-10"}>
      <React.Suspense fallback={<div>Loading events...</div>}>

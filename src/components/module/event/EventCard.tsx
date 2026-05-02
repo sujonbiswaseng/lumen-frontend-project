@@ -15,7 +15,7 @@ export default function EventCard({
   date,
   time,
   venue,
-  image,
+  images,
   fee,
   avgRating,
   totalReviews,
@@ -35,8 +35,8 @@ export default function EventCard({
 
       {/* IMAGE */}
       <div className="relative w-full h-40 sm:w-1/4 sm:h-auto md:w-full md:h-44 flex-shrink-0">
-        {image ? (
-          <ImageSkeleton src={image} alt={title} />
+        {images ? (
+          <ImageSkeleton src={images[0]} alt={title} />
         ) : (
           <div className="flex items-center justify-center h-full w-full bg-gray-200 dark:bg-gray-800">
             <span className="text-sm text-gray-500">No Image</span>

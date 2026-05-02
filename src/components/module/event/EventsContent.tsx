@@ -47,6 +47,7 @@ export default function EventContent({
   );
   }
 
+
   const { updateFilters, reset, isPending } = useFilter();
 
   const [form, setForm] = useState({
