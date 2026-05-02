@@ -16,6 +16,9 @@ import Services from "@/components/module/home/Services";
 import { getAllHighlightsAction } from "@/actions/highlight.action";
 import HighLightContent from "@/components/module/home/HighLight";
 import { TResponseHighlight } from "@/types/highlight.types";
+import { getPublicStatsAction } from "@/actions/stats.actions";
+import Statics from "@/components/module/home/Statics";
+import { PublicStats } from "@/types/stats.types";
 
 export default async function Home({
   searchParams,
@@ -51,7 +54,8 @@ export default async function Home({
       success: false,
     };
   }
-  console.log(highlightResponse,'idds')
+  const getpublicstats=await getPublicStatsAction()
+  
   return (
     <div className="flex flex-col">
       {/* Removed sdfsdf */}
@@ -63,6 +67,8 @@ export default async function Home({
       <Featured/>
       <Services/>
       <HighLightContent highlight={highlightResponse.data as TResponseHighlight<{user:IBaseUser}>[]} />
+
+        <Statics stats={getpublicstats.data as PublicStats}/>
  
      {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />

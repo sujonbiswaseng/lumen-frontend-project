@@ -11,6 +11,17 @@ export interface ICounts {
   user:number
 }
 
+export type PublicStats = {
+  totalEvents: number;
+  totalUsers: number;
+  totalManagers: number;
+  totalAdmins: number;
+  totalParticipants: number;
+  totalReviews: number;
+  totalNewsletters: number;
+};
+
+
 export interface MonthlyRevenue {
   month: string;
   revenue: number;

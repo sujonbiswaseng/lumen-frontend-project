@@ -38,4 +38,31 @@ export const StatsServices = {
       return { success: false, message: error.message || "Server error", data: null };
     }
   },
+  publicStats: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/publicstats`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+      const body = await response.json();
+
+      if (!response.ok) {
+        const error = body as ApiErrorResponse;
+        return {
+          success: error.success || false,
+          message: error?.message || "Failed to fetch public stats",
+          data: null,
+        };
+      }
+      return { 
+        success: true, 
+        data: body.data,
+        message: body.message ?? "Public stats fetched successfully.",
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || "Server error", data: null };
+    }
+  },
 };
