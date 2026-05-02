@@ -17,6 +17,7 @@ import { TResponseBlog } from "@/types/blog.type";
 import { createBlogColumns } from "./Createblogcolumn";
 import PaginationPage from "../event/Pagination";
 import UpdateBlog from "./UpdateBlog";
+import { deleteBlogAction } from "@/actions/blog.actions";
 
 interface MyBlogsTableProps {
   blogs: TResponseBlog[];
@@ -88,11 +89,22 @@ export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProp
 
   // Blog delete handler (implement your action)
   const handleDeleteBlog = useCallback(async (blogId: string) => {
-    if (!window.confirm("Are you sure you want to delete this blog?")) return;
-    // Implement your blog delete API/action call here!
-    // Show toast or update local state
-    toast.success("Blog deleted (mock).");
-    setTableBlogs(prev => prev.filter(b => b.id !== blogId));
+    if (!window.confirm("Are you sure you want to delete this blog? This action cannot be undone.")) {
+      return;
+    }
+    const toastId = toast.loading("Deleting blog...");
+    try {
+      const res = await deleteBlogAction(blogId);
+      toast.dismiss(toastId);
+      if (res?.success) {
+        toast.success(res.message || "Blog deleted successfully.");
+        setTableBlogs((prev) => prev.filter((item) => item.id !== blogId));
+      } else {
+        toast.error(res?.message || "Failed to delete blog.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Server error");
+    }
   }, []);
 
   // Blog filters (update as your needs)

@@ -10,32 +10,31 @@ import { FilterPanel } from "@/components/Filter";
 import { TPagination } from "@/types/event.types";
 import { TFilterField } from "@/types/filter.types";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-// Blog actions - update/delete if available
-import CopyableId from "@/components/shared/CopyId";
 import { useFilter } from "@/components/ReusableFilter";
 import { TResponseBlog } from "@/types/blog.type";
 import { createBlogColumns } from "./CreateHightlightcolumn";
 import PaginationPage from "../event/Pagination";
 import UpdateBlog from "./UpdateHighLight";
+import { deleteBlogAction } from "@/actions/blog.actions";
 
-interface MyBlogsTableProps {
-  blogs: TResponseBlog[];
+interface MyHighlightsTableProps {
+  highlights: TResponseBlog[];
   pagination?: TPagination;
   role: string;
 }
 
-export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProps) {
+export default function HighlightTable({ highlights, pagination, role }: MyHighlightsTableProps) {
   const router = useRouter();
-  const [tableBlogs, setTableBlogs] = useState<TResponseBlog[]>([]);
-  
+  const [tableHighlights, setTableHighlights] = useState<TResponseBlog[]>([]);
   const { updateFilters, reset, isPending } = useFilter();
 
   const [open, setOpen] = useState(false);
-  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null);
+  const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
+  const [highlightContent, setHighlightContent] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     search: "",
-      createdAt: "",
+    createdAt: "",
   });
 
   const handleChange = useCallback((key: keyof typeof form, value: string | number | boolean) => {
@@ -56,8 +55,32 @@ export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProp
   };
 
   useEffect(() => {
-    setTableBlogs(blogs || []);
-  }, [blogs]);
+    setTableHighlights(highlights || []);
+  }, [highlights]);
+
+  const handleDeleteHighlight = useCallback(async (highlightId: string) => {
+    if (!window.confirm("Are you sure you want to delete this highlight? This action cannot be undone.")) {
+      return;
+    }
+    const toastId = toast.loading("Deleting highlight...");
+    try {
+      const res = await deleteBlogAction(highlightId);
+      toast.dismiss(toastId);
+      if (res?.success) {
+        toast.success(res.message || "Highlight deleted successfully.");
+        setTableHighlights((prev) => prev.filter((item) => item.id !== highlightId));
+        // Clear content if it was the deleted highlight
+        setHighlightContent((prevContent) => {
+          const justDeleted = tableHighlights.find((item) => item.id === highlightId);
+          return justDeleted && prevContent === justDeleted.content ? null : prevContent;
+        });
+      } else {
+        toast.error(res?.message || "Failed to delete highlight.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Server error");
+    }
+  }, [tableHighlights]);
 
   const columns = createBlogColumns();
 
@@ -65,14 +88,17 @@ export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProp
     {
       icon: Eye,
       label: "View",
-      onClick: (blog: TResponseBlog) => router.push(`/blogs/${blog.id}`),
+      onClick: (highlight: TResponseBlog) => {
+        setSelectedHighlightId(highlight.id);
+        setOpen(true);
+      },
       className: "text-green-500",
     },
     {
       icon: Pencil,
       label: "Edit",
-      onClick: (blog: TResponseBlog) => {
-        setSelectedBlogId(blog.id);
+      onClick: (highlight: TResponseBlog) => {
+        setSelectedHighlightId(highlight.id);
         setOpen(true);
       },
       className: "text-blue-500",
@@ -80,22 +106,11 @@ export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProp
     {
       icon: Trash2,
       label: "Delete",
-      // Placeholder function, implement your delete logic for blogs
-      onClick: (blog: TResponseBlog) => handleDeleteBlog(blog.id),
+      onClick: (highlight: TResponseBlog) => handleDeleteHighlight(highlight.id),
       className: "text-red-500",
     },
   ];
 
-  // Blog delete handler (implement your action)
-  const handleDeleteBlog = useCallback(async (blogId: string) => {
-    if (!window.confirm("Are you sure you want to delete this blog?")) return;
-    // Implement your blog delete API/action call here!
-    // Show toast or update local state
-    toast.success("Blog deleted (mock).");
-    setTableBlogs(prev => prev.filter(b => b.id !== blogId));
-  }, []);
-
-  // Blog filters (update as your needs)
   const fields: TFilterField[] = [
     {
       type: "text",
@@ -137,30 +152,40 @@ export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProp
               className="bg-blue-600 px-4 py-2 text-sm font-semibold text-white rounded-lg"
               onClick={() => router.push(
                 role === "ADMIN"
-                  ? "/admin/dashboard/blogs/create"
-                  : "/manager/dashboard/create-blog")}
+                  ? "/admin/dashboard/create-highlight"
+                  : "/manager/dashboard/create-highlight")}
             >
-              + Add Blog
+              + Add Highlight
             </button>
           </div>
-          <ReusableTable columns={columns as any} data={tableBlogs} actions={actions} emptyMessage="No blogs found" />
+          <ReusableTable columns={columns as any} data={tableHighlights} actions={actions} emptyMessage="No highlights found" />
         </div>
       </div>
 
-     
-
-      <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) setSelectedBlogId(null); }}>
+      <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) setSelectedHighlightId(null); }}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader />
 
-          <UpdateBlog id={selectedBlogId as string}/>
-          
+          {/* If a highlight is selected, show the highlight content at top, and then edit form */}
+          {selectedHighlightId && highlightContent !== null && (
+            <div className="mb-4 p-4 bg-blue-50 dark:bg-zinc-900 rounded-lg">
+              <h3 className="text-md font-medium mb-2">Highlight Content</h3>
+              <div className="whitespace-pre-wrap text-sm text-blue-900 dark:text-blue-200">
+                {highlightContent.trim().length > 0
+                  ? highlightContent
+                  : <span className="italic text-gray-500">No highlight content.</span>
+                }
+              </div>
+            </div>
+          )}
+
+          <UpdateBlog id={selectedHighlightId as string}/>
         </DialogContent>
       </Dialog>
 
       <div className="flex justify-center py-4">
-       <PaginationPage pagination={pagination as TPagination}/>
-       </div>
+        <PaginationPage pagination={pagination as TPagination}/>
+      </div>
     </div>
   );
 }
