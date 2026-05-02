@@ -1,11 +1,12 @@
 
 
-import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils";
+import { getDefaultDashboardRoute } from "@/lib/authUtils";
 import { NavSection } from "@/types/dashboard.types";
+import { Role } from "@/types/user.types";
 
 
 
-export const getCommonNavItems = (role : UserRole) : NavSection[] => {
+export const getCommonNavItems = (role : Role) : NavSection[] => {
     const defaultDashboard = getDefaultDashboardRoute(role);
     return [
         {
@@ -126,7 +127,7 @@ export const adminNavItems: NavSection[] = [
 ]
 
 
-export const getNavItemsByRole = (role : UserRole) : NavSection[] => {
+export const getNavItemsByRole = (role : Role) => {
     const commonNavItems = getCommonNavItems(role);
 
     switch (role) {

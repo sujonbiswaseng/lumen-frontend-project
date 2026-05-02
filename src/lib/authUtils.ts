@@ -1,5 +1,6 @@
-export type UserRole = "USER" | "ADMIN" ;
-export const getDefaultDashboardRoute = (role : UserRole) => {
+import { Role } from "@/types/user.types";
+
+export const getDefaultDashboardRoute = (role : Role) => {
     if(role === "ADMIN") {
         return "/admin/dashboard";
     }

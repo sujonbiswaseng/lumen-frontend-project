@@ -1,6 +1,21 @@
 import { updateUserSchema } from "@/validations/user.validation";
 import z from "zod";
 
+export enum Role {
+  ADMIN = "ADMIN",
+  USER = "USER",
+  MANAGER = "MANAGER",
+}
+
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  BLOCKED = "BLOCKED",
+  DELETED = "DELETED",
+}
+
+
+
 export interface IBaseUser {
     id: string;
     name: string;
@@ -8,8 +23,8 @@ export interface IBaseUser {
     phone:string;
     isActive:boolean;
     bgimage:string;
-    role: 'USER' | 'ADMIN';
-    status: 'ACTIVE' | 'BLOCKED' | 'DELETED';
+    role: Role;
+    status: UserStatus;
     image: string | null;
     emailVerified: boolean;
     createdAt: string;

@@ -12,6 +12,7 @@ import { logoutAction } from "@/actions/auth.actions";
 import { toast } from "react-toastify";
 import { NavbarNotifications } from '../module/notification/Notification';
 import Image from 'next/image';
+import ProfileCard from './ProfileDropDown';
 
 interface NavbarProps { user: IBaseUser | null }
 
@@ -146,6 +147,7 @@ export default function Navbar({ user }: NavbarProps) {
             >
               Log out
             </Button>
+            <ProfileCard profile={user}/>
             </div>
           ) : (
             <>
