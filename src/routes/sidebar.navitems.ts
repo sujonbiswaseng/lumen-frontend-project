@@ -94,7 +94,7 @@ export const ManagerNavItems: NavSection[] = [
         title: "User Management",
         items: [
             {
-                title: "manager",
+                title: "users",
                 href: "/manager/dashboard/users",
                 icon: "UserCog"
             },

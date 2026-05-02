@@ -23,9 +23,11 @@ import PaginationPage from "../event/Pagination";
  * Modern production-grade, responsive, color-system-compliant User Table UI.
  */
 export default function UserContentPage({
+  role,
   users,
   pagination,
 }: {
+  role?:string,
   users: TResponseUserData<{ reviews: IgetReviewData[]; events: IBaseEvent[]; accounts: { password: string }[] }>[];
   pagination?: TPagination;
 }) {
@@ -193,14 +195,18 @@ export default function UserContentPage({
         "hover:bg-[var(--accent)] transition-colors duration-150 rounded p-2",
       style: { color: "var(--secondary)" }, // Secondary color
     },
-    {
-      icon: Trash2,
-      label: "Delete",
-      onClick: (item: any) => handleDeleteUser(item.id),
-      className:
-        "hover:bg-[var(--accent)] transition-colors duration-150 rounded p-2",
-      style: { color: "var(--accent)" }, // Accent color for dangerous/actionable
-    },
+   ...(role === "ADMIN"
+     ? [
+         {
+           icon: Trash2,
+           label: "Delete",
+           onClick: (item: any) => handleDeleteUser(item.id),
+           className:
+             "hover:bg-[var(--accent)] transition-colors duration-150 rounded p-2",
+           style: { color: "var(--accent)" },
+         },
+       ]
+     : [])
   ];
 
   const columns = createUserColumns();
@@ -283,9 +289,8 @@ export default function UserContentPage({
               <ReusableTable
                 columns={columns as any}
                 data={tableData}
-                actions={actions}
+                actions={actions as any}
                 className="text-[var(--card-foreground)]"
-                // Pass color system/class for a11y
               />
             ) : (
               <div className="py-16 px-6 text-center text-base select-none" style={{ color: "var(--muted-foreground)" }}>
@@ -348,6 +353,7 @@ export default function UserContentPage({
             {!viewMode && !viewData && selectedUserId && (
               <div className="px-4 py-6">
                 <UpdateUserForm
+                role={role as string}
                   id={selectedUserId}
                   onSuccess={(updated: any) => {
                     setOpen(updated);

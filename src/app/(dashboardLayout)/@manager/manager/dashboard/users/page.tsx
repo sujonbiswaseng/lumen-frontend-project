@@ -40,7 +40,7 @@ const UsersPage =async ({
              <NotFoundItem content="No users found." emoji="😕" filter="" key="no-users"/>
             </ul>
           ) : (
-            <UserTable users={usersResponse.users as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[], accounts: { password: string; }[]}>[]} pagination={usersResponse.pagination as TPagination}/>
+            <UserTable users={usersResponse.users as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[], accounts: { password: string; }[]}>[]} pagination={usersResponse.pagination as TPagination}  />
           )}
         </div>
       </ErrorBoundary>

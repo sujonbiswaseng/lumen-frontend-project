@@ -19,15 +19,17 @@ import {
   FieldGroup,
 } from "@/components/ui/field";
 import { updateUserByAdminAction } from "@/actions/user.actions";
-import { IBaseUser } from "@/types/user.types";
+import { IBaseUser, Role } from "@/types/user.types";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 
 export function UpdateUserForm({
+  role,
   id,
   onSuccess,
   defaultValues,
 }: {
+  role:string,
   id: string;
   onSuccess: any,
   defaultValues?: Partial<IBaseUser>;
@@ -135,7 +137,7 @@ export function UpdateUserForm({
                   </Field>
                 )}
               </form.Field>
-              <form.Field name="role">
+             {role ===Role.ADMIN &&  <form.Field name="role">
                 {(field) => (
                   <Field>
                     <FieldLabel
@@ -194,43 +196,35 @@ export function UpdateUserForm({
                     />
                   </Field>
                 )}
-              </form.Field>
+              </form.Field>}
         
               <form.Field name="status">
                 {(field) => (
                   <Field>
                     <FieldLabel
-                      className="text-sm font-medium mb-2 flex items-center gap-2"
+                      className="text-base sm:text-sm font-semibold mb-2 flex items-center gap-2"
                       style={{ color: "var(--foreground)" }}
                     >
                       <span>Status</span>
-                      <span
-                        className="ml-2 px-2 py-0.5 rounded-full border"
-                        style={{
-                          background: "var(--secondary)",
-                          color: "var(--secondary-foreground)",
-                          borderColor: "var(--border)",
-                          fontWeight: 600,
-                          fontSize: "0.75rem",
-                        }}
-                      >
-                        Required
-                      </span>
                     </FieldLabel>
-                    <div className="relative">
+                    <div className="relative flex items-center w-full">
                       <select
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
                         className={clsx(
-                          "w-full h-11 pr-10 pl-4 py-2 rounded-lg outline-none appearance-none mb-1",
+                          "w-full h-12 sm:h-11 rounded-lg px-4 pr-12 outline-none appearance-none mb-1",
                           "bg-[var(--input)] text-[var(--foreground)]",
                           "border border-[var(--border)]",
-                          "transition-all duration-150",
+                          "transition-all duration-200",
                           "focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--ring)]",
                           "disabled:opacity-50",
                           "shadow-[0_1px_6px_0_var(--muted)]",
-                          "text-base",
+                          "leading-tight text-base font-medium",
+                          "placeholder:text-[var(--muted-foreground)]",
+                          "min-w-0",
+                          "max-w-full",
+                          "sm:text-sm",
                           field.state.meta.errors?.length
                             ? "border-[var(--accent)] focus:border-[var(--accent)] focus:ring-[var(--accent)]"
                             : ""
@@ -240,70 +234,65 @@ export function UpdateUserForm({
                             "url(\"data:image/svg+xml,%3Csvg fill='none' stroke='var(--muted-foreground)' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
                           backgroundRepeat: "no-repeat",
                           backgroundPosition: "right 1rem center",
-                          backgroundSize: "1em",
-                          color: "var(--foreground)",
+                          backgroundSize: "1rem",
                         }}
-                        aria-required="true"
+                        aria-label="Select status"
                       >
-                        <option value="" className="text-[var(--muted-foreground)] bg-[var(--input)]" disabled>
+                        <option
+                          value=""
+                          disabled
+                          className="text-[var(--muted-foreground)] bg-[var(--input)]"
+                        >
                           Select Status
                         </option>
                         <option
                           value="ACTIVE"
-                          className="bg-[var(--card)] text-[var(--primary)]"
-                          style={{
-                            background: "var(--card)",
-                            color: "var(--primary)",
-                          }}
+                          className="bg-[var(--card)] text-[var(--primary)] font-semibold"
                         >
-                          ACTIVE
+                          Active
                         </option>
                         <option
                           value="BLOCKED"
-                          className="bg-[var(--card)] text-[var(--accent)]"
-                          style={{
-                            background: "var(--card)",
-                            color: "var(--accent)",
-                          }}
+                          className="bg-[var(--card)] text-[var(--accent)] font-semibold"
                         >
-                          BLOCKED
+                          Blocked
                         </option>
                         <option
                           value="DELETED"
                           className="bg-[var(--card)] text-[var(--muted-foreground)]"
-                          style={{
-                            background: "var(--card)",
-                            color: "var(--muted-foreground)",
-                          }}
                         >
-                          DELETED
+                          Deleted
                         </option>
                         <option
                           value="INACTIVE"
                           className="bg-[var(--card)] text-[var(--muted-foreground)]"
-                          style={{
-                            background: "var(--card)",
-                            color: "var(--muted-foreground)",
-                          }}
                         >
-                          INACTIVE
+                          Inactive
                         </option>
                       </select>
-                      {/* Chevron Icon */}
-                      <span className="pointer-events-none absolute top-1/2 right-4 transform -translate-y-1/2 text-[var(--muted-foreground)]">
-                        <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                      {/* Chevron Icon for dropdown */}
+                      <span
+                        className="pointer-events-none absolute top-1/2 right-4 transform -translate-y-1/2"
+                        aria-hidden="true"
+                      >
+                        <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" strokeWidth={2}>
+                          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </span>
                     </div>
                     <FieldError
                       errors={field.state.meta.errors}
-                      className="text-xs mt-1"
+                      className={clsx(
+                        "text-xs mt-2 transition-all duration-150",
+                        "text-[var(--accent)]"
+                      )}
                       style={{ color: "var(--accent)" }}
                     />
                   </Field>
                 )}
               </form.Field>
+        
+        
         
          
             </FieldGroup>

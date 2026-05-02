@@ -1,3 +1,4 @@
+import { getSessionAction } from '@/actions/auth.actions';
 import { getAllUsersAction } from '@/actions/user.actions';
 import ErrorBoundary from '@/components/ErrorBoundary'
 import UserTable from '@/components/module/user/UserTable';
@@ -14,6 +15,14 @@ const UsersPage =async ({
 }: {
   searchParams:Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
+  const userinfo= await getSessionAction()
+  if (!userinfo || !userinfo.data || !userinfo.success) {
+    return (
+      <ul>
+        <NotFoundItem content="User information not found or not authorized." emoji="😕" filter="" key="no-userinfo"/>
+      </ul>
+    );
+  }
   let usersResponse;
   try {
     const search = await searchParams;
@@ -40,7 +49,7 @@ const UsersPage =async ({
              <NotFoundItem content="No users found." emoji="😕" filter="" key="no-users"/>
             </ul>
           ) : (
-            <UserTable users={usersResponse.users as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[], accounts: { password: string; }[]}>[]} pagination={usersResponse.pagination as TPagination}/>
+            <UserTable role={userinfo.data.role} users={usersResponse.users as TResponseUserData<{reviews:IgetReviewData[],events:IBaseEvent[], accounts: { password: string; }[]}>[]} pagination={usersResponse.pagination as TPagination}/>
           )}
         </div>
       </ErrorBoundary>
