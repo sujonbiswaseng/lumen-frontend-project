@@ -1,40 +1,15 @@
-"use client";
-import { TResponseBlog } from "@/types/blog.type";
-import { IBaseEvent, TPagination } from "@/types/event.types";
-import { IBaseUser } from "@/types/user.types";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import ImageSkeleton from "@/components/ImageSkeleton";
-import BlogCardSkeleton from "@/components/Skeleton/BlogCardSkeleton";
-import Image from "next/image";
-import PaginationPage from "../event/Pagination";
-import { useFilter } from "@/components/ReusableFilter";
-import { TFilterField } from "@/types/filter.types";
-import { FilterPanel } from "@/components/Filter";
-import Link from "next/link";
+'use client'
+import ImageSkeleton from '@/components/ImageSkeleton';
+import BlogCardSkeleton from '@/components/Skeleton/BlogCardSkeleton';
+import { TResponseBlog } from '@/types/blog.type';
+import { IBaseEvent } from '@/types/event.types';
+import { IBaseUser } from '@/types/user.types';
+import { AnimatePresence,motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
 
-const DEFAULT_AUTHOR_AVATAR = "/logo.png";
-const DEFAULT_BLOG_IMAGE = "/logo.png";
-
-interface BlogCardProps {
-  blogs: TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[];
-  pagination: TPagination;
-}
-
-// Framer motion variants
-const cardVariants = {
-  initial: { opacity: 0, y: 36, scale: 0.975 },
-  animate: { opacity: 1, y: 0, scale: 1 },
-  exit: { opacity: 0, y: 16, scale: 0.98 },
-};
-
-const imageVariants = {
-  initial: { opacity: 0, scale: 1.025 },
-  animate: { opacity: 1, scale: 1 },
-};
-
-const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
+const BlogsContent = ({blogs}:{blogs:TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[]}) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -48,85 +23,50 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
       setIsLoading(false)
     }else{
       setIsLoading(true)
-    }
+    }true
     
   }, [blogs]);
-
-  // Filters logic
-  const { updateFilters, reset, isPending } = useFilter();
-  const [form, setForm] = useState({
-    search: "",
-    createdAt: "",
-  });
-
-  const handleChange = useCallback(
-    (key: keyof typeof form, value: string | number | boolean) => {
-      setForm((prev) => ({ ...prev, [key]: value }));
-    },
-    [],
-  );
-
-  const handleApply = () => updateFilters(form);
-  const handleReset = () => {
-    setForm({ search: "", createdAt: "" });
-    reset();
-  };
-
-  const fields: TFilterField[] = [
-    {
-      type: "text",
-      name: "search",
-      value: form.search,
-      placeholder: "Search...",
-      onChange: (val) => handleChange("search", val),
-    },
-    {
-      type: "date",
-      name: "createdAt",
-      value: form.createdAt,
-      label: "Created At",
-      onChange: (val) => handleChange("createdAt", val),
-    },
-  ];
-
-  // Handle view navigation
-  const handleView = (id: string) => {
-    router.push(`/blogs/${id}`);
-  };
-
   return (
-    <section
-      className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 py-6"
-    >
-      {/* Filter Panel */}
-      <section className="mb-8 w-full">
-        <FilterPanel
-          fields={fields}
-          onApply={handleApply}
-          onReset={handleReset}
-          isPending={isPending}
-        />
-      </section>
-
-      {/* Blog list content */}
+    <div>
       <div className="w-full flex flex-wrap justify-center gap-6">
+        <div className="w-full flex flex-col items-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 text-center">
+            Blogs & Articles
+          </h2>
+          <p className="text-base md:text-lg text-muted-foreground text-center max-w-2xl">
+            Explore our latest blog posts, guides, and insights from industry leaders. Stay informed, inspired, and connected with our curated collection of articles.
+          </p>
+        </div>
+   
         {isLoading ? (
-          <div className="w-full flex justify-center gap-6">
-            {Array.from({ length: 3 }).map((_, idx) => (
-              <BlogCardSkeleton
+          <div className="w-full flex flex-wrap justify-center gap-6">
+            {Array.from({ length: Math.max(blogs.length, 3) }).map((_, idx) => (
+              <div
                 key={idx}
                 className="max-w-[400px] min-w-[320px] w-full"
-                contentLines={4}
-                minHeight="min-h-[370px]"
-                showActions
-                showAvatar
-              />
+                style={{
+                  background: 'var(--card)',
+                  color: 'var(--card-foreground)',
+                  borderRadius: '1rem',
+                  border: '1px solid var(--border)',
+                  boxShadow: '0 4px 16px 0 rgba(0,0,0,0.04)',
+                }}
+              >
+                <BlogCardSkeleton
+                  className="w-full"
+                  contentLines={4}
+                  minHeight="min-h-[370px]"
+                  showActions
+                  showAvatar
+                />
+              </div>
             ))}
           </div>
+    
         ) : (
           <AnimatePresence>
 
-{BlogsData && BlogsData.length > 0 ? (
+          {BlogsData && BlogsData.length > 0 ? (
             <motion.div
               className="w-full max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
               initial="hidden"
@@ -273,18 +213,13 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
               <span className="text-muted-foreground text-lg">No blogs found.</span>
             </div>
           )}
-            
-           
+   
+          
           </AnimatePresence>
         )}
       </div>
+    </div>
+  )
+}
 
-      {/* Pagination */}
-      <div className="max-w-[1440px] mx-auto w-full mt-8 flex justify-center">
-        <PaginationPage pagination={pagination} />
-      </div>
-    </section>
-  );
-};
-
-export default BlogCard;
+export default BlogsContent

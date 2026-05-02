@@ -19,12 +19,16 @@ import { TResponseHighlight } from "@/types/highlight.types";
 import { getPublicStatsAction } from "@/actions/stats.actions";
 import Statics from "@/components/module/home/Statics";
 import { PublicStats } from "@/types/stats.types";
+import { getAllBlogsAction } from "@/actions/blog.actions";
+import BlogsContent from "@/components/module/home/Blogs";
+import { TResponseBlog } from "@/types/blog.type";
 
 export default async function Home({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const search = await searchParams;
   const res = await getUserNotificationsAction();
   const userinfo = await getSessionAction();
   const role = userinfo.data?.role;
@@ -44,7 +48,7 @@ export default async function Home({
   
   let highlightResponse;
   try {
-    const search = await searchParams;
+    
     highlightResponse = await getAllHighlightsAction(search);
   } catch (err) {
     console.error("Highlights fetch error:", err);
@@ -55,6 +59,8 @@ export default async function Home({
     };
   }
   const getpublicstats=await getPublicStatsAction()
+ const blogsResponse = await getAllBlogsAction(search);
+ console.log(blogsResponse,'sdfs')
   
   return (
     <div className="flex flex-col">
@@ -69,6 +75,10 @@ export default async function Home({
       <HighLightContent highlight={highlightResponse.data as TResponseHighlight<{user:IBaseUser}>[]} />
 
         <Statics stats={getpublicstats.data as PublicStats}/>
+
+
+        <BlogsContent  blogs={blogsResponse.data as TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[]}/>
+              
  
      {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />

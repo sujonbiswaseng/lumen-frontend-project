@@ -1,14 +1,17 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function ImageSkeleton({
   src,
   alt,
+  className
 }: {
   src: string;
   alt: string;
+  className:string;
 }) {
   const [loading, setLoading] = useState(true);
 
@@ -26,9 +29,9 @@ export default function ImageSkeleton({
         height={500}
         loading="lazy"
         onLoad={() => setLoading(false)}
-        className={`w-full h-full object-cover transition duration-500 ${
+        className={cn(`w-full h-full object-cover  transition duration-500 ${
           loading ? "opacity-0" : "opacity-100"
-        }`}
+        }`,className)}
       />
     </div>
   );
