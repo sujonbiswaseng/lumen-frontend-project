@@ -1,9 +1,12 @@
+import LoadingContentPage from '@/components/LoadingPage'
 import React from 'react'
 
-const LoadingPage = () => {
+const LoadignPage = () => {
   return (
-    <div>LoadingPage</div>
+    <div>
+       <LoadingContentPage data='blog page'/>
+    </div>
   )
 }
 
-export default LoadingPage
+export default LoadignPage

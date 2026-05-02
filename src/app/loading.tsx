@@ -4,7 +4,6 @@ import React from 'react'
 const LoadingPage = () => {
   return (
     <div>
-      sfjslajfjslafjlsjflakjfljdsalkjflkdsjafjsdf
       <LoadingContentPage data='global loading page'/>
     </div>
   )

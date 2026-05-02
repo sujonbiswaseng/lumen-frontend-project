@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { TPagination } from '@/types/event.types';
 
 const PaginationPage = ({ pagination }: { pagination: TPagination }) => {
-  const { page = 1, totalpage = 1 } = pagination;
+  const { page = 1, totalpage = 1,limit=9 } = pagination;
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -24,13 +24,8 @@ const PaginationPage = ({ pagination }: { pagination: TPagination }) => {
     router.push(`?${params.toString()}`);
   }, [searchParams, router, totalpage]);
 
-  // Number of page buttons to display at once
   const pageWindow = 4;
 
-  /**
-   * Deterministically computes the pagination button list.
-   * This ensures it's always the same on both server and client
-   */
   const getPageNumbers = React.useCallback(() => {
     const windowIndex = Math.floor((Number(page) - 1) / pageWindow);
     const start = windowIndex * pageWindow + 1;

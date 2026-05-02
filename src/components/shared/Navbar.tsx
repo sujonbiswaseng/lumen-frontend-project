@@ -78,12 +78,13 @@ export default function Navbar({ user }: NavbarProps) {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group" aria-label="Planora Home">
           <div className="flex items-center h-10 w-10 relative">
-            <div className="bg-white rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center w-10 h-10 overflow-hidden p-1">
+            <div className="relative bg-white rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center w-10 h-10 overflow-hidden p-1">
               <Image
                 src="/logo.png"
                 alt="Planora logo"
                 fill
-                className="object-cover w-full h-full rounded-full"
+                sizes="40px"
+                className="object-cover rounded-full"
                 priority
               />
         

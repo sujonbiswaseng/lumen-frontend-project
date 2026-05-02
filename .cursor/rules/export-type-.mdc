@@ -1,5 +1,0 @@
----
-alwaysApply: true
----
-
-export type TResponseEvent<T = unknown> = IBaseEvent & T;
