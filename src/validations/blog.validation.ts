@@ -10,8 +10,8 @@ export const createBlogSchema = z.object({
 
 export const updateBlogSchema = z
   .object({
-    title: z.string().min(1, { message: "Title cannot be empty." }).optional(),
-    content: z.string().min(1, { message: "Content cannot be empty." }).optional(),
+    title: z.string().optional(),
+    content: z.string().optional(),
     images: z.array(z.string().url({ message: "Each image must be a valid URL." })).optional(),
     authorId: z.string().min(1, { message: "Author ID cannot be empty." }).optional(),
     eventId: z.string().optional().nullable(),

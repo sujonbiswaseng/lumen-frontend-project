@@ -16,8 +16,9 @@ export const createBlogColumns = () => [
         <CopyableId
           id={row.id}
           showShort={row.id?.slice(0, 8)}
-          className="font-mono tracking-tight text-xs md:text-xs text-[var(--primary)]"
+          className="font-mono tracking-tight text-xs md:text-xs text-primary-foreground bg-primary rounded px-2 py-1 hover:bg-primary/80 transition-colors cursor-pointer"
         />
+  
       </motion.div>
     ),
   },
@@ -56,7 +57,7 @@ export const createBlogColumns = () => [
   // Author Column
   {
     key: "authorId",
-    label: "Author",
+    label: "authorId",
     render: (row: any) => (
       <motion.div
         initial={{ opacity: 0, x: -6 }}
@@ -64,11 +65,10 @@ export const createBlogColumns = () => [
         transition={{ duration: 0.2, type: "spring", stiffness: 290 }}
         className="flex items-center"
       >
-        <CopyableId
+         <CopyableId
           id={row.authorId}
-          href={row.authorId ? `/profile/${row.authorId}` : undefined}
           showShort={row.authorId?.slice(0, 8)}
-          className="font-mono tracking-tight text-xs md:text-xs text-[var(--secondary-foreground)]"
+          className="font-mono tracking-tight text-xs md:text-xs text-primary-foreground bg-primary rounded px-2 py-1 hover:bg-primary/80 transition-colors cursor-pointer"
         />
       </motion.div>
     ),
@@ -76,7 +76,7 @@ export const createBlogColumns = () => [
   // Related Event Column
   {
     key: "eventId",
-    label: "Related Event",
+    label: "eventId",
     render: (row: any) =>
       row.eventId ? (
         <motion.div
@@ -85,12 +85,11 @@ export const createBlogColumns = () => [
           transition={{ duration: 0.22, type: "spring", stiffness: 290 }}
           className="flex items-center"
         >
-          <CopyableId
-            id={row.eventId}
-            href={`/events/${row.eventId}`}
-            showShort={row.eventId?.slice(0, 8)}
-            className="font-mono tracking-tight text-xs md:text-xs text-[var(--accent-foreground)]"
-          />
+         <CopyableId
+          id={row.eventId}
+          showShort={row.eventId?.slice(0, 8)}
+          className="font-mono tracking-tight text-xs md:text-xs text-primary-foreground bg-primary rounded px-2 py-1 hover:bg-primary/80 transition-colors cursor-pointer"
+        />
         </motion.div>
       ) : (
         <span className="text-xs md:text-xs text-[var(--muted-foreground)]">—</span>

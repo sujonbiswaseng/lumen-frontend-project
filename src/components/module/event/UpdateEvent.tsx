@@ -143,11 +143,11 @@ const UpdateEvent = ({
             Venue
           </Label>
           <input
-            id="venue"
+            id="location"
             type="text"
-            placeholder="Venue"
-            value={eventData.venue ?? ""}
-            onChange={e => setEventData({ ...eventData, venue: e.target.value })}
+            placeholder="location"
+            value={eventData.location ?? ""}
+            onChange={e => setEventData({ ...eventData, location: e.target.value })}
             className="w-full border-2 border-gray-300 p-3 rounded-xl focus:outline-none"
           />
         </div>

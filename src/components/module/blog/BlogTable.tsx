@@ -16,6 +16,7 @@ import { useFilter } from "@/components/ReusableFilter";
 import { TResponseBlog } from "@/types/blog.type";
 import { createBlogColumns } from "./Createblogcolumn";
 import PaginationPage from "../event/Pagination";
+import UpdateBlog from "./UpdateBlog";
 
 interface MyBlogsTableProps {
   blogs: TResponseBlog[];
@@ -151,7 +152,9 @@ export default function BlogsTable({ blogs, pagination, role }: MyBlogsTableProp
       <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) setSelectedBlogId(null); }}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader />
-          {/* Implement your update blog component here */}
+
+          <UpdateBlog id={selectedBlogId as string}/>
+          
         </DialogContent>
       </Dialog>
 
