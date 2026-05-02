@@ -104,6 +104,7 @@ getAllUsers: async (params?: any, options?: { cache?: RequestCache; revalidate?:
   }
 },
 updateUserByADmin: async (id: string, body: Partial<IBaseUser>) => {
+  console.log(body,'bodydata')
   try {
     const cookieStore = await cookies();
     const res = await fetch(`${API_BASE_URL}/admin/profile/${id}`, {

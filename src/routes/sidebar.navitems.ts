@@ -73,6 +73,62 @@ export const UserNavItems : NavSection[] = [
 
 
 
+
+export const ManagerNavItems: NavSection[] = [
+    {
+        title: "Event Management",
+        items: [
+            {
+                title: "Events",
+                href: "/manager/dashboard/events",
+                icon: "Calendar"
+            },
+            {
+                title: "Invitations",
+                href: "/manager/dashboard/invitations",
+                icon: "Mail"
+            }
+        ]
+    },
+    {
+        title: "User Management",
+        items: [
+            {
+                title: "manager",
+                href: "/manager/dashboard/users",
+                icon: "UserCog"
+            },
+            {
+                title: "Participants",
+                href: "/manager/dashboard/participants",
+                icon: "Users"
+            },
+            {
+                title: "Reviews",
+                href: "/manager/dashboard/reviews",
+                icon: "Star"
+            }
+        ]
+    },
+    {
+        title: "System",
+        items: [
+            {
+                title: "Payment",
+                href: "/manager/dashboard/payment",
+                icon: "CreditCard"
+            },
+            {
+                title: "Settings",
+                href: "/manager/dashboard/setting",
+                icon: "Settings"
+            }
+        ]
+    }
+]
+
+
+
 export const adminNavItems: NavSection[] = [
     {
         title: "Event Management",
@@ -136,6 +192,8 @@ export const getNavItemsByRole = (role : Role) => {
 
         case "USER":
             return [...commonNavItems, ...UserNavItems];
+        case "MANAGER":
+            return [...commonNavItems, ...ManagerNavItems];
     }
 
 

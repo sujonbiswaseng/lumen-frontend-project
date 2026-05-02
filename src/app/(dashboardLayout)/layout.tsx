@@ -11,10 +11,12 @@ import React from 'react'
 const RootDashboardLayout = async ({
   admin,
   user,
+  manager,
   children,
 }: {
   admin: React.ReactNode
   user: React.ReactNode
+  manager:React.ReactNode
   children: React.ReactNode
 }) => {
   const userinfo = await getSessionAction()
@@ -89,7 +91,7 @@ const RootDashboardLayout = async ({
                   />
                 }
               >
-                {userinfo.data?.role === 'ADMIN' ? admin : user}
+                {userinfo.data?.role === 'ADMIN' ? admin : userinfo.data.role=="MANAGER"?manager:user}
               </ErrorBoundary>
             </div>
           </div>

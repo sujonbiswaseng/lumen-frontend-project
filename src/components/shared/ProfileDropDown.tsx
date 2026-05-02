@@ -58,12 +58,12 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link className='w-full' href={`${profile.role == 'MANAGER' ? "/profile/user" : profile.role == "ADMIN" ? "/admin/dashboard/profile" : profile.role == 'USER' ? "/provider/dashboard/profile" : "/"}`}>👤 profile</Link>
+            <Link className='w-full' href={`${profile.role == 'USER' ? "/profile/user" : profile.role == "ADMIN" ? "/admin/dashboard/profile" : profile.role == 'MANAGER' ? "/manager/dashboard/profile" : "/"}`}>👤 profile</Link>
           </DropdownMenuItem>
           {profile.role === 'USER' ? "" : <DropdownMenuItem><Link className='w-full' href={'/dashboard'}> 📊 Dashboard</Link></DropdownMenuItem>}
           <DropdownMenuItem>
             <Settings />
-            <Link href={profile.role==="USER"?"/settings":profile.role=="MANAGER"?"/provider/dashboard/setting":profile.role==="ADMIN"?"/admin/dashboard/setting":"/"}><span>Settings</span></Link>
+            <Link href={profile.role==="USER"?"/settings":profile.role=="MANAGER"?"/manager/dashboard/setting":profile.role==="ADMIN"?"/admin/dashboard/setting":"/"}><span>Settings</span></Link>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>

@@ -46,7 +46,7 @@ export const updateUserSchema = z.object({
 
 export const UpdateUserCommonData = z
   .object({
-    role: z.enum(["ADMIN", "USER"]).optional(),
+    role: z.enum(["ADMIN", "USER","MANAGER"]).optional(),
 
     status: z
       .enum(["ACTIVE", "INACTIVE", "BLOCKED", "DELETED"])
