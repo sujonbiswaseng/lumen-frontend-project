@@ -14,20 +14,28 @@ import { deleteuserown, updateUserProfileAction } from "@/actions/user.actions";
 import ShareProfileButton from "./profileshare";
 import VerifyOtp from "@/components/auth/VerifyEmailOtp";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+
+const fadeUpAnim = {
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 16 },
+  transition: { duration: 0.3, ease: "easeOut" },
+};
 
 function ProfileModal({
   user,
   notification,
 }: {
   user: IBaseUser;
-  notification: any;
+  notification: React.ReactNode;
 }) {
   const router = useRouter();
   const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user });
   const [isEmailverify, setisEmailverify] = useState(false);
   const [inputvalue, setinputvalue] = useState<Partial<TUpdateUserInput>>({});
   const [editfield, seteditfield] = useState<
-    string | boolean | "bgimage" | "name" | "phone" | "isActive"
+    string | boolean | "bgimage" | "name" | "phone" | "isActive" | "image"
   >("");
   if (!user) {
     toast("user not found", { autoClose: 2000, theme: "colored" });
@@ -35,12 +43,13 @@ function ProfileModal({
   }
   const defaultProfile =
     "https://images.pexels.com/photos/952670/pexels-photo-952670.jpeg";
+    
   const handleUpdateUser = async <k extends keyof IBaseUser>(
     field: k,
     value: IBaseUser[k],
   ) => {
     if (value == null) {
-      toast.error("please provide a value", {
+      toast.error("Please provide a value", {
         theme: "colored",
         position: "bottom-right",
         autoClose: 2000,
@@ -50,7 +59,6 @@ function ProfileModal({
     const parseData = updateUserSchema.safeParse({ [field]: value });
     if (!parseData.success) {
       const errors = parseData.error.flatten().fieldErrors;
-
       Object.values(errors).forEach((err) => {
         if (err) {
           toast.error(err[1], {
@@ -62,24 +70,23 @@ function ProfileModal({
       return;
     }
     try {
-      const toastid = toast.loading(`"user ${field} updating...."`, {
+      const toastid = toast.loading(`Updating user ${field}...`, {
         theme: "dark",
         position: "bottom-right",
         autoClose: 2000,
       });
       const res = await updateUserProfileAction({ [field]: value });
+      toast.dismiss(toastid);
       if (res.error || !res.success) {
-        toast.dismiss(toastid);
-        toast.error(res.message || `"user ${field} update failed"`, {
+        toast.error(res.message || `User ${field} update failed`, {
           theme: "dark",
           position: "bottom-right",
           autoClose: 2000,
         });
         return;
       }
-      toast.dismiss(toastid);
       toast.success(
-        res.result?.message || `"user ${field} update successfully"`,
+        res.result?.message || `User ${field} updated successfully`,
         {
           theme: "dark",
           position: "bottom-right",
@@ -87,341 +94,452 @@ function ProfileModal({
         },
       );
       setuserinfo((prev) => ({ ...prev, [field]: value }));
-    } catch (error: any) {
-      toast.error(`someting went wrong please try again`);
+    } catch {
+      toast.error("Something went wrong, please try again.");
     }
   };
+
   const handleDelete = async () => {
-    const toastid = toast.loading("user deleting....");
+    const toastid = toast.loading("Deleting user account...");
     const res = await deleteuserown();
+    toast.dismiss(toastid);
     if (res.error) {
-      toast.dismiss(toastid);
-      toast.error(res.message || "user account delete fail");
+      toast.error(res.message || "User account delete failed");
       return;
     }
-    toast.dismiss(toastid);
-    toast.success(res.result?.message || "user account delete successfully");
+    toast.success(res.result?.message || "User account deleted successfully");
     router.refresh();
     window.location.reload();
   };
-  return (
-    <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-end"> {notification}</div>
-      <div
-        className="flex items-center justify-between border-b p-6 max-w-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${useinfo.bgimage})`,
-        }}
+
+  // Helper for status
+  function UserStatusBadge() {
+    const status = user.status;
+    let text = "Unknown";
+    let statusClass = "bg-muted text-muted-foreground";
+    if (status === "ACTIVE") {
+      text = "Active";
+      statusClass = "bg-primary text-primary-foreground";
+    } else if (status === "BLOCKED") {
+      text = "Blocked";
+      statusClass = "bg-secondary text-secondary-foreground";
+    } else if (status === "DELETED") {
+      text = "Deleted";
+      statusClass = "bg-accent text-accent-foreground";
+    }
+    return (
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusClass} transition`}
       >
-        <div className="flex items-center gap-4">
-          {editfield !== "image" ? (
-            <div className="flex items-center justify-between px-6 py-4">
-              <div className="flex gap-1 pr-1">
-                <div className="flex items-end" style={{ minHeight: 180 }}>
-                  <Image
-                    src={useinfo.image || defaultProfile}
-                    alt="profile"
-                    width={100}
-                    height={100}
-                    className="rounded-full border-2 border-white shadow-lg"
-                    style={{
-                      minHeight: 100,
-                      minWidth: 100,
-                      objectFit: "cover",
-                    }}
-                  />
-                </div>
-                <button
-                  className="w-[5px] -ml-3 -mt-4"
-                  onClick={() => seteditfield("image")}
-                >
-                  <Pencil className="bg-gray-100 text-blue-800 shadow-sm p-1 rounded-md  text-[5px]" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-1 bg-blue-200 rounded-sm">
-              <Input
-                className="focus:ring-2 placeholder:text-black"
-                onChange={(e) =>
-                  setinputvalue({ ...inputvalue, image: e.target.value })
-                }
-                placeholder="Enter your image url"
+        {text}
+        <span className="ml-2 text-muted-foreground">{user.status}</span>
+      </span>
+    );
+  }
+
+  return (
+    <motion.section
+      className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 py-8 flex flex-col items-center"
+      initial={fadeUpAnim.initial}
+      animate={fadeUpAnim.animate}
+      exit={fadeUpAnim.exit}
+      transition={{
+        type: "spring",
+        damping: 20,
+        stiffness: 100,
+        duration: 0.4,
+      }}
+    >
+      <div className="w-full max-w-2xl mx-auto bg-card shadow-lg rounded-2xl border border-border flex flex-col divide-y divide-border">
+        {/* Notification */}
+        <div className="flex justify-end px-6 pt-6">{notification}</div>
+
+        {/* Profile header section */}
+        <div
+          className="relative flex flex-col md:flex-row gap-6 items-center justify-between p-6 border-b border-border bg-cover bg-center rounded-t-2xl"
+          style={{ backgroundImage: useinfo.bgimage ? `url(${useinfo.bgimage})` : "none" }}
+        >
+          <div className="flex flex-row items-center gap-6 w-full md:w-auto">
+            <div className="relative">
+              <Image
+                src={useinfo.image || defaultProfile}
+                alt="Profile photo"
+                width={96}
+                height={96}
+                className="rounded-full border-4 border-background shadow-md object-cover w-24 h-24"
+                priority
               />
-              <button
-                className="w-[5px] -ml-3 -mt-4"
-                onClick={() => {
-                  handleUpdateUser("image", inputvalue.image as string);
-                  seteditfield("");
-                }}
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div>
-        <div>
-          <div className="flex items-center gap-4">
-            {editfield !== "bgimage" ? (
-              <div className="flex items-center justify-between px-6 py-4">
-                <div className="flex gap-1 pr-1">
-                  <button
-                    className="w-[5px] ml-30 -mt-30"
-                    onClick={() => seteditfield("bgimage")}
+              <AnimatePresence>
+                {editfield !== "image" && (
+                  <motion.button
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => seteditfield("image")}
+                    className="absolute -bottom-2 -right-2 bg-card border border-border rounded-full shadow hover:bg-accent hover:text-accent-foreground focus:outline-none p-1 transition"
+                    aria-label="Edit profile image"
                   >
-                    <Pencil className="bg-gray-100 text-blue-800 shadow-sm p-1 rounded-md  text-[5px]" />
-                  </button>
+                    <Pencil className="w-4 h-4 text-primary" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {editfield === "image" && (
+                  <motion.div
+                    initial={fadeUpAnim.initial}
+                    animate={fadeUpAnim.animate}
+                    exit={fadeUpAnim.exit}
+                    
+                    className="absolute -bottom-14 left-1/2 -translate-x-1/2 z-30 bg-card shadow-lg border border-border rounded-xl px-4 py-3 flex flex-col gap-2"
+                  >
+                    <Input
+                      className="w-48 focus:ring-2 ring-primary focus:border-primary placeholder:text-muted-foreground"
+                      onChange={(e) =>
+                        setinputvalue({ ...inputvalue, image: e.target.value })
+                      }
+                      placeholder="Image URL"
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        className="text-sm font-medium px-3 py-1 rounded bg-background border border-border hover:bg-secondary transition"
+                        onClick={() => seteditfield("")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="text-sm font-medium px-3 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition"
+                        onClick={() => {
+                          handleUpdateUser("image", inputvalue.image as string);
+                          seteditfield("");
+                        }}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-foreground font-medium text-base sm:text-lg">Name</Label>
+                  {editfield !== "name" && (
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="p-1 rounded hover:bg-accent transition"
+                      onClick={() => seteditfield("name")}
+                      aria-label="Edit name"
+                    >
+                      <Pencil className="w-4 h-4 text-secondary" />
+                    </motion.button>
+                  )}
                 </div>
+                {editfield !== "name" ? (
+                  <p className="text-card-foreground font-semibold text-lg">{useinfo?.name}</p>
+                ) : (
+                  <motion.div
+                    initial={fadeUpAnim.initial}
+                    animate={fadeUpAnim.animate}
+                    exit={fadeUpAnim.exit}
+                   
+                    className="flex gap-2 items-center"
+                  >
+                    <Input
+                      onChange={(e) =>
+                        setinputvalue({ ...inputvalue, name: e.target.value })
+                      }
+                      placeholder="Enter your name"
+                      className="w-40 focus:ring-2 ring-primary focus:border-primary placeholder:text-muted-foreground"
+                    />
+                    <button
+                      className="text-sm font-medium px-2 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition"
+                      onClick={() => {
+                        handleUpdateUser("name", inputvalue.name as string);
+                        seteditfield("");
+                      }}
+                    >
+                      Save
+                    </button>
+                  </motion.div>
+                )}
               </div>
+            </div>
+          </div>
+          {/* BG Image edit */}
+          <div className="flex flex-col items-end w-full md:w-auto">
+            {editfield !== "bgimage" ? (
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => seteditfield("bgimage")}
+                className="p-2 rounded hover:bg-accent ml-auto transition"
+                aria-label="Edit background image"
+              >
+                <Pencil className="w-4 h-4 text-secondary" />
+              </motion.button>
             ) : (
-              <div className="flex items-center justify-between gap-1 bg-blue-200 rounded-sm">
+              <motion.div
+                initial={fadeUpAnim.initial}
+                animate={fadeUpAnim.animate}
+                exit={fadeUpAnim.exit}
+            
+                className="flex gap-2 items-center bg-card px-2 py-2 border border-border rounded"
+              >
                 <Input
-                  className="focus:ring-2 placeholder:text-black"
+                  className="focus:ring-2 ring-primary placeholder:text-muted-foreground"
                   onChange={(e) =>
                     setinputvalue({ ...inputvalue, bgimage: e.target.value })
                   }
-                  placeholder="Enter your image url"
+                  placeholder="Background image URL"
                 />
                 <button
-                  className="w-[5px] -ml-3 -mt-4"
+                  className="text-sm font-medium px-2 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition"
                   onClick={() => {
                     handleUpdateUser("bgimage", inputvalue.bgimage as string);
                     seteditfield("");
                   }}
                 >
-                  {/* Uncommented update call button */}
                   Save
                 </button>
-              </div>
+                <button
+                  className="text-sm font-medium px-2 py-1 rounded bg-background border border-border hover:bg-secondary transition"
+                  onClick={() => seteditfield("")}
+                >
+                  Cancel
+                </button>
+              </motion.div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Details */}
-      <div className="divide-y">
-        {editfield !== "name" ? (
-          <div className="flex items-center justify-between px-6 py-4">
-            <Label className="text-gray-600">Name</Label>
-            <div className="flex gap-1 pr-1">
-              <p className="text-gray-900">{useinfo?.name}</p>
-              <button className="w-[5px]" onClick={() => seteditfield("name")}>
-                <Pencil className="text-green-800 text-[5px]" />
-              </button>
+        {/* Details Section */}
+        <div className="bg-card p-6 flex flex-col gap-6">
+          {/* Email */}
+          <InfoRow label="Email Address" value={user.email} />
+
+          {/* Phone */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Label className="text-foreground">Phone</Label>
+              {editfield !== "phone" && (
+                <motion.button
+                  whileHover={{ scale: 1.07 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="p-1 rounded hover:bg-accent transition"
+                  onClick={() => seteditfield("phone")}
+                  aria-label="Edit phone"
+                >
+                  <Pencil className="w-4 h-4 text-secondary" />
+                </motion.button>
+              )}
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between px-6 py-4 gap-1">
-            <Input
-              onChange={(e) =>
-                setinputvalue({ ...inputvalue, name: e.target.value })
-              }
-              placeholder="Enter your name"
-            />
-            <button
-              onClick={() => {
-                handleUpdateUser("name", inputvalue.name as string);
-                seteditfield("");
-              }}
-            >
-              Save
-            </button>
-          </div>
-        )}
-
-        <InfoRow label="Email Address" value={user.email} />
-
-        {/* Phone */}
-        {editfield !== "phone" ? (
-          <div className="flex items-center justify-between px-6 py-4">
-            <Label className="text-gray-600">phone</Label>
-            <div className="flex gap-1 pr-1">
-              <p className="text-gray-900">{useinfo?.phone || "017********"}</p>
-              <button className="w-[5px]" onClick={() => seteditfield("phone")}>
-                <Pencil className="text-green-800 text-[5px]" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between px-6 py-4 gap-1">
-            <Input
-              onChange={(e) =>
-                setinputvalue({ ...inputvalue, phone: e.target.value })
-              }
-              placeholder="Enter your phone number"
-            />
-            <button
-              onClick={() => {
-                handleUpdateUser("phone", inputvalue.phone as string);
-                seteditfield("");
-              }}
-            >
-              Save
-            </button>
-          </div>
-        )}
-
-        {/* Role (info only) */}
-        <InfoRow label="Role" value={user.role as string} />
-
-        {/* Status */}
-        <div className="flex items-center justify-between px-6 py-4">
-          <Label className="text-gray-600">Status</Label>
-          <h4>
-            {/* Show a tag for each possible user status, with relevant data */}
-            {user.status === "ACTIVE" ? (
-              <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
-                Active
-                <span className="ml-2 text-gray-500">{user.status}</span>
-              </span>
-            ) : user.status === "BLOCKED" ? (
-              <span className="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">
-                Blocked
-                <span className="ml-2 text-gray-500">{user.status}</span>
-              </span>
-            ) : user.status === "DELETED" ? (
-              <span className="inline-flex items-center px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">
-                Deleted
-                <span className="ml-2 text-gray-500">{user.status}</span>
-              </span>
+            {editfield !== "phone" ? (
+              <p className="text-card-foreground">{useinfo?.phone || "017********"}</p>
             ) : (
-              <span className="inline-flex items-center px-2 py-1 rounded bg-gray-100 text-gray-800 text-xs font-medium">
-                Unknown
-                <span className="ml-2 text-gray-500">{user.status}</span>
-              </span>
+              <motion.div
+                initial={fadeUpAnim.initial}
+                animate={fadeUpAnim.animate}
+                exit={fadeUpAnim.exit}
+                
+                className="flex gap-2 items-center"
+              >
+                <Input
+                  onChange={(e) =>
+                    setinputvalue({ ...inputvalue, phone: e.target.value })
+                  }
+                  placeholder="Enter your phone number"
+                  className="w-44 focus:ring-2 ring-primary focus:border-primary placeholder:text-muted-foreground"
+                />
+                <button
+                  className="text-sm font-medium px-2 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition"
+                  onClick={() => {
+                    handleUpdateUser("phone", inputvalue.phone as string);
+                    seteditfield("");
+                  }}
+                >
+                  Save
+                </button>
+                <button
+                  className="text-sm font-medium px-2 py-1 rounded bg-background border border-border hover:bg-secondary transition"
+                  onClick={() => seteditfield("")}
+                >
+                  Cancel
+                </button>
+              </motion.div>
             )}
-          </h4>
-        </div>
+          </div>
 
-        {/* Email Verified */}
-        <div className="flex items-center justify-between px-6 py-4">
-          <Label className="text-gray-600">Email Verified</Label>
-          <h4>
-            {user.emailVerified ? (
-              <div>
+          <InfoRow label="Role" value={user.role as string} />
+
+          {/* Status */}
+          <div className="flex flex-col gap-1">
+            <Label className="text-foreground">Status</Label>
+            <UserStatusBadge />
+          </div>
+
+          {/* Email Verified */}
+          <div className="flex flex-col gap-1">
+            <Label className="text-foreground">Email Verified</Label>
+            <div>
+              {user.emailVerified ? (
                 <Status variant="success">
                   <StatusIndicator />
-                  <StatusLabel className="text-gray-900">Yes</StatusLabel>
+                  <StatusLabel className="text-foreground">Yes</StatusLabel>
                 </Status>
-              </div>
-            ) : (
-              <>
+              ) : (
                 <Status variant="error">
                   <StatusIndicator />
-                  <StatusLabel className="text-gray-900">No</StatusLabel>
+                  <StatusLabel className="text-foreground">No</StatusLabel>
                 </Status>
-              </>
-            )}
-          </h4>
-        </div>
+              )}
+            </div>
+          </div>
 
-        <div className="flex items-center justify-between px-6 py-4">
-          <Label className="text-gray-600">isActive</Label>
-
-          {editfield !== "isActive" ? (
-            <div className="flex gap-1">
-              <h4>
+          {/* isActive */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Label className="text-foreground">Active Status</Label>
+              {editfield !== "isActive" && (
+                <motion.button
+                  whileHover={{ scale: 1.07 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="p-1 rounded hover:bg-accent transition"
+                  onClick={() => seteditfield("isActive")}
+                  aria-label="Edit active status"
+                >
+                  <Pencil className="w-4 h-4 text-secondary" />
+                </motion.button>
+              )}
+            </div>
+            {editfield !== "isActive" ? (
+              <div>
                 {useinfo.isActive ? (
-                  <div className="">
-                    <Status variant="success">
-                      <StatusIndicator />
-                      <StatusLabel className="text-gray-900">
-                        online
-                      </StatusLabel>
-                    </Status>
-                  </div>
+                  <Status variant="success">
+                    <StatusIndicator />
+                    <StatusLabel className="text-foreground">Online</StatusLabel>
+                  </Status>
                 ) : (
-                  <>
-                    <Status variant="error">
-                      <StatusIndicator />
-                      <StatusLabel className="text-gray-900">
-                        offline
-                      </StatusLabel>
-                    </Status>
-                  </>
+                  <Status variant="error">
+                    <StatusIndicator />
+                    <StatusLabel className="text-foreground">Offline</StatusLabel>
+                  </Status>
                 )}
-              </h4>
-              <button
-                className="w-[5px]"
-                onClick={() => seteditfield("isActive")}
+              </div>
+            ) : (
+              <motion.div
+                initial={fadeUpAnim.initial}
+                animate={fadeUpAnim.animate}
+                exit={fadeUpAnim.exit}
+               
+                className="flex gap-2 items-center"
               >
-                <Pencil className="text-green-800 text-[5px]" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between px-6 py-4 gap-1">
-              <Input
-                type="checkbox"
-                checked={(inputvalue.isActive as boolean) || false}
-                onChange={(e) =>
-                  setinputvalue((prev: any) => ({
-                    ...prev,
-                    isActive: e.target.checked,
-                  }))
-                }
-              />
-              <button
-                onClick={() => {
-                  handleUpdateUser("isActive", inputvalue.isActive as boolean);
-                  seteditfield("");
-                }}
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div>
-        <InfoRow
-          label="createdAt"
-          value={user.createdAt.toLocaleString().slice(0, 10)}
-        />
-        <div className="flex items-center justify-between px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-600">Profile</h2>
-          <ShareProfileButton userId={user.id} userName={user.name} />
-        </div>
-        <div className="flex items-center justify-between px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-600">account</h2>
+                <Input
+                  type="checkbox"
+                  checked={typeof inputvalue.isActive === "boolean" ? inputvalue.isActive : useinfo.isActive}
+                  onChange={(e) =>
+                    setinputvalue((prev: any) => ({
+                      ...prev,
+                      isActive: e.target.checked,
+                    }))
+                  }
+                  className="w-6 h-6 accent-primary focus:ring-2 ring-primary"
+                />
+                <button
+                  className="text-sm font-medium px-2 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition"
+                  onClick={() => {
+                    handleUpdateUser("isActive", inputvalue.isActive as boolean);
+                    seteditfield("");
+                  }}
+                >
+                  Save
+                </button>
+                <button
+                  className="text-sm font-medium px-2 py-1 rounded bg-background border border-border hover:bg-secondary transition"
+                  onClick={() => seteditfield("")}
+                >
+                  Cancel
+                </button>
+              </motion.div>
+            )}
+          </div>
 
-          <button
-            onClick={handleDelete}
-            className="px-4 flex items-center gap-1 py-2 bg-red-600 text-white rounded-md shadow-sm"
-          >
-            <Trash2 /> remove
-          </button>
+          <InfoRow
+            label="Created At"
+            value={user.createdAt.toLocaleString().slice(0, 10)}
+          />
+
+          {/* Profile share */}
+          <div className="flex items-center justify-between pt-2">
+            <h2 className="text-sm font-semibold text-muted-foreground">Profile</h2>
+            <ShareProfileButton userId={user.id} userName={user.name} />
+          </div>
+
+          {/* Account actions */}
+          <div className="flex items-center justify-between pt-2">
+            <h2 className="text-sm font-semibold text-muted-foreground">Account</h2>
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-4 py-2 rounded-md shadow focus:outline-none bg-accent text-accent-foreground border border-[#eb5757] hover:bg-accent/80 transition"
+            >
+              <Trash2 className="w-4 h-4" /> Remove
+            </motion.button>
+          </div>
         </div>
+        {/* Email verification modal or action */}
+        <AnimatePresence>
+          {isEmailverify ? (
+            <motion.div
+              key="verify"
+              initial={fadeUpAnim.initial}
+              animate={fadeUpAnim.animate}
+              exit={{ opacity: 0, y: 60, transition: { duration: 0.2 } }}
+              
+              className="p-6 bg-card rounded-b-2xl w-full"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <button
+                  onClick={() => setisEmailverify(false)}
+                  className="text-sm px-4 py-2 rounded hover:bg-muted transition text-muted-foreground"
+                >
+                  Close
+                </button>
+                <span className="text-sm text-muted-foreground font-medium">
+                  Email Verification
+                </span>
+              </div>
+              <div className="w-full max-w-md mx-auto">
+                <VerifyOtp email={user.email} type="email-verification" />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="trigger"
+              initial={fadeUpAnim.initial}
+              animate={fadeUpAnim.animate}
+              exit={fadeUpAnim.exit}
+              
+              className="flex items-center justify-between px-6 py-4"
+            >
+              <Label className="text-sm sm:text-base text-foreground">
+                Email verification pending?
+              </Label>
+              <motion.button
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.97 }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-accent focus:outline-none transition"
+                onClick={() => setisEmailverify(true)}
+                aria-label="Start email verification"
+              >
+                <Send className="w-4 h-4 text-secondary-foreground" />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      {isEmailverify ? (
-        <div className="pb-6 px-4 sm:px-8">
-          <div className="flex justify-between items-center mb-2">
-            <button
-              onClick={() => setisEmailverify(false)}
-              className="text-sm md:text-base px-2 py-1 rounded hover:bg-gray-100 transition"
-            >
-              Close
-            </button>
-          </div>
-          <div className="w-full max-w-md mx-auto">
-            <VerifyOtp email={user.email} type="email-verification" />
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-wrap items-start sm:items-center justify-between px-4 py-4 sm:px-6 sm:py-4">
-          <Label className="text-gray-600 text-sm sm:text-base mb-2 sm:mb-0">
-            isEmailverify
-          </Label>
-          <div className="flex gap-1 pr-1">
-            <button
-              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-green-100 transition"
-              onClick={() => setisEmailverify(true)}
-              aria-label="Start email verification"
-            >
-              <Send className="text-green-800 w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    </motion.section>
   );
 }
 
