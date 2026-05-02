@@ -242,7 +242,7 @@ export const FilterPanel = ({
 
       <div className="mt-8 flex justify-center gap-4">
         <button
-          onClick={onApply}
+          onClick={handleApplyClick}
           disabled={isPending}
           className="flex items-center gap-2 px-8 py-2.5 rounded-xl text-white font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 transition-all"
         >

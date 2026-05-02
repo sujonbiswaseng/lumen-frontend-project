@@ -1,4 +1,10 @@
-import {  IBaseEvent, ICreateEvent, IUpdateEventInput, TGroupedEventsResponse, TResponseEvent } from "@/types/event.types";
+import {
+  IBaseEvent,
+  ICreateEvent,
+  IUpdateEventInput,
+  TGroupedEventsResponse,
+  TResponseEvent,
+} from "@/types/event.types";
 import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { IgetReviewData } from "@/types/review.types";
 import { IBaseUser } from "@/types/user.types";
@@ -7,9 +13,9 @@ import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export interface ServiceOptionds {
-    cache?: RequestCache;
-    revalidate?: number;
-  }
+  cache?: RequestCache;
+  revalidate?: number;
+}
 
 const EventService = {
   getEvents: async (params?: any, options?: ServiceOptionds) => {
@@ -29,11 +35,14 @@ const EventService = {
       if (options?.revalidate) {
         config.next = { revalidate: options.revalidate };
       }
-      config.next = { ...config.next, tags: ["events","event"] };
+      config.next = { ...config.next, tags: ["events", "event"] };
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
-      const result = data as TGroupedEventsResponse<{reviews:IgetReviewData[],organizer:IBaseUser[]}>;
+      const result = data as TGroupedEventsResponse<{
+        reviews: IgetReviewData[];
+        organizer: IBaseUser[];
+      }>;
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -45,7 +54,7 @@ const EventService = {
         success: result.success,
         message: result.message || "retrieve all events successfully",
         data: result.data.data,
-        pagination:result.data.pagination
+        pagination: result.data.pagination,
       };
     } catch (error) {
       return { message: "something went wrong please try again" };
@@ -55,20 +64,23 @@ const EventService = {
     const storeCookies = await cookies();
     const formData = new FormData();
 
-    const { image, ...rest } = value;
+    const { images, ...rest } = value;
 
     formData.append("data", JSON.stringify(rest));
-    if (image) {
-      formData.append("file", image);
+
+    if (images && images.length > 0) {
+      images.forEach((image) => {
+        formData.append("files", image);
+      });
     }
     try {
       const response = await fetch(`${API_BASE_URL}/event`, {
-        credentials:"include",
+        credentials: "include",
         method: "POST",
-        headers: {Cookie: storeCookies.toString()},
+        headers: { Cookie: storeCookies.toString() },
         body: formData,
       });
-      revalidateTag("event",'max')
+      revalidateTag("event", "max");
       const body = await response.json();
       const result = body as ApiResponse<TResponseEvent>;
       if (!response.ok) {
@@ -84,7 +96,10 @@ const EventService = {
         data: result.data,
       };
     } catch (error) {
-      return { success: false, message: "Something went wrong. Please try again." };
+      return {
+        success: false,
+        message: "Something went wrong. Please try again.",
+      };
     }
   },
   getPaidAndFreeEvent: async () => {
@@ -93,9 +108,9 @@ const EventService = {
         credentials: "include",
         method: "GET",
         headers: { "Content-Type": "application/json" },
-        next:{
-          tags:["event","events"]
-        }
+        next: {
+          tags: ["event", "events"],
+        },
       });
       const data = await res.json();
       if (!res.ok) {
@@ -111,21 +126,23 @@ const EventService = {
         data: data.data,
       };
     } catch (error) {
-      return { success: false, message: "Something went wrong. Please try again." };
+      return {
+        success: false,
+        message: "Something went wrong. Please try again.",
+      };
     }
   },
   getSingleEventByType: async (eventId: string) => {
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/event/${eventId}`,
-        {
-          credentials: "include",
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/event/${eventId}`, {
+        credentials: "include",
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
       const data = await res.json();
-      const result =data as ApiResponse<TResponseEvent<{reviews:IgetReviewData[],organizer:IBaseUser}>>
+      const result = data as ApiResponse<
+        TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser }>
+      >;
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -139,7 +156,10 @@ const EventService = {
         data: result.data,
       };
     } catch (error) {
-      return { success: false, message: "Something went wrong. Please try again." };
+      return {
+        success: false,
+        message: "Something went wrong. Please try again.",
+      };
     }
   },
 
@@ -161,7 +181,7 @@ const EventService = {
       if (options?.revalidate) {
         config.next = { revalidate: options.revalidate };
       }
-      config.next = { ...config.next, tags: ["events","event"] };
+      config.next = { ...config.next, tags: ["events", "event"] };
 
       config.headers = {
         Cookie: cookieStore.toString(),
@@ -169,7 +189,10 @@ const EventService = {
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
-      const result = data as TGroupedEventsResponse<{reviews:any[],organizer:{image:string,name:string,email:string}}>;
+      const result = data as TGroupedEventsResponse<{
+        reviews: any[];
+        organizer: { image: string; name: string; email: string };
+      }>;
       if (!res.ok) {
         const error = data as ApiErrorResponse;
         return {
@@ -182,18 +205,18 @@ const EventService = {
         success: result.success,
         message: result.message,
         data: result.data.data,
-        pagination: result.data.pagination
+        pagination: result.data.pagination,
       };
     } catch (error: any) {
       return {
-        message: "something went wrong please try again"
+        message: "something went wrong please try again",
       };
     }
   },
   updateEvent: async (
-    id: string, 
+    id: string,
     payload: Partial<IUpdateEventInput>,
-    options?: ServiceOptionds
+    options?: ServiceOptionds,
   ) => {
     try {
       const cookieStore = await cookies();
@@ -236,10 +259,7 @@ const EventService = {
       };
     }
   },
-  deleteEvent: async (
-    id: string,
-    options?: ServiceOptionds
-  ) => {
+  deleteEvent: async (id: string, options?: ServiceOptionds) => {
     try {
       const cookieStore = await cookies();
       const config: RequestInit = {
@@ -286,7 +306,7 @@ const EventService = {
       const config: RequestInit = {
         method: "GET",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
       };
       if (options?.cache) {
@@ -319,7 +339,6 @@ const EventService = {
       };
     }
   },
- 
 };
 
 export default EventService;
