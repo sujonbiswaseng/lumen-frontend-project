@@ -11,6 +11,8 @@ import { IBaseEvent, TResponseEvent } from "@/types/event.types";
 import { IBaseUser } from "@/types/user.types";
 import { IgetReviewData } from "@/types/review.types";
 import { getUserNotificationsAction } from "@/actions/notification";
+import Featured from "@/components/module/home/Featured";
+import Services from "@/components/module/home/Services";
 
 export default async function Home() {
   const res = await getUserNotificationsAction();
@@ -29,6 +31,7 @@ export default async function Home() {
     );
   }
 
+  console.log(isfeatured.data,'s')
   return (
     <div className="flex flex-col">
       {/* Removed sdfsdf */}
@@ -37,6 +40,8 @@ export default async function Home() {
       ) : (
         <HeroSlider data={isfeatured.data as IBaseEvent[]} />
       )}
+      <Featured/>
+      <Services/>
      {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
       <CallToAction role={role as string} />
       <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>

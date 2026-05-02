@@ -1,5 +1,5 @@
 "use client";
-
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ const DEFAULT_SLIDE: HeroSlide = {
 export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
   const [current, setCurrent] = useState(0);
   const router = useRouter();
+  console.log(data,'daa')
 
   // Use the provided data as the slides, or a default slide if none exists
   let slides: HeroSlide[];
@@ -40,12 +41,9 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
     // Map API events into the slim shape the hero needs (with safe fallbacks)
     slides = data.map((evt) => ({
       id: evt.id,
-      venue: evt.venue ?? "",
+      venue: evt.location ?? "",
       date: evt.date ?? "",
-      image:
-        evt.image && typeof evt.image === "string" && evt.image.trim() !== ""
-          ? evt.image
-          : DEFAULT_SLIDE.image,
+      image:data[0].images[0],
       title:
         evt.title && typeof evt.title === "string" && evt.title.trim() !== ""
           ? evt.title
@@ -94,9 +92,15 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
                 <span className="text-sm font-medium text-white/90">Featured Event</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.1] mb-4 animate-slide-in">
+              <motion.h1
+                className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-tight mb-4"
+                initial={{ opacity: 0, y: 28 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
                 {slide.title || "Event related"}
-              </h1>
+              </motion.h1>
+         
 
               <p className="text-lg text-cyan-50/90 mb-2 font-medium animate-slide-in" style={{ animationDelay: "0.1s" }}>
                 {slide.description || "Explore a variety of exciting events happening near you."}
