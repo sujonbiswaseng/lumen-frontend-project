@@ -71,7 +71,7 @@ export function CreateEvent() {
         }
         router.refresh();
         toast.success("Event created successfully!");
-        // form.reset();
+        form.reset();
       } catch (error: any) {
         toast.dismiss(toastId);
         toast.error(

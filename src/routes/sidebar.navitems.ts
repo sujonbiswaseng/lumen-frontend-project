@@ -91,6 +91,21 @@ export const ManagerNavItems: NavSection[] = [
         ]
     },
     {
+        title: "Blog Management",
+        items: [
+            {
+                title: "Blogs",
+                href: "/manager/dashboard/blogs",
+                icon: "FileText"
+            },
+            {
+                title: "Create Blog",
+                href: "/manager/dashboard/create-blog",
+                icon: "PlusSquare"
+            }
+        ]
+    },
+    {
         title: "User Management",
         items: [
             {
@@ -142,6 +157,21 @@ export const adminNavItems: NavSection[] = [
                 title: "Invitations",
                 href: "/admin/dashboard/invitations",
                 icon: "Mail"
+            }
+        ]
+    },
+    {
+        title: "Blog Management",
+        items: [
+            {
+                title: "Blogs",
+                href: "/admin/dashboard/blogs",
+                icon: "FileText"
+            },
+            {
+                title: "Create Blog",
+                href: "/admin/dashboard/create-blog",
+                icon: "PlusSquare"
             }
         ]
     },

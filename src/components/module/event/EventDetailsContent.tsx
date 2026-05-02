@@ -135,9 +135,9 @@ const EventDetailsPage = ({
           <div className="lg:col-span-8">
             {/* IMAGE */}
             <div className="relative rounded-2xl overflow-hidden mb-8 border border-slate-200 shadow-lg">
-              {eventData?.image ? (
+              {/* {eventData?.images ? (
                 <Image
-                  src={eventData.image}
+                  src={eventData.images}
                   alt={eventData.title}
                   width={1200}
                   priority
@@ -148,7 +148,7 @@ const EventDetailsPage = ({
                 <div className="w-full h-[380px] flex items-center justify-center bg-linear-to-tr from-cyan-50 to-emerald-50 text-slate-500 font-bold text-xl">
                   No Image Available
                 </div>
-              )}
+              )} */}
               <div className="absolute top-2 left-2">
                 <span className="px-3 py-1 rounded-full bg-linear-to-r from-cyan-700 to-teal-600 text-white text-xs font-bold shadow">
                   {eventData.status}
@@ -227,7 +227,7 @@ const EventDetailsPage = ({
                 <div>
                   <p className={statLabel}>Location</p>
                   <p className="text-base font-medium text-slate-700 mt-2">
-                    {eventData.venue}
+                    {/* {eventData.venue} */}
                   </p>
                 </div>
               </div>
