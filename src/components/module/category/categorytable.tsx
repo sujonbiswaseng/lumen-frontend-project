@@ -1,17 +1,17 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { Eye, Pen, Pencil, Trash2, X } from "lucide-react";
 
+import { useCallback, useEffect, useState } from "react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
+import { Button } from "@/components/ui/button";
 import { createCategoryColumns } from "./CreateCategoriesColumn";
 import { toast } from "react-toastify";
-
 import ViewCategoryData from "./ViewCategory";
 import Categoryupdate from "./UpdateCategoryForm";
 import { TPagination } from "@/types/event.types";
@@ -24,18 +24,21 @@ import { FilterPanel } from "@/components/Filter";
 import { ReusableTable } from "../table/Table";
 import PaginationPage from "../event/Pagination";
 
-const CategoryTable = ({pagination, category }: {pagination:TPagination, category: TResponseCategoryData[] }) => {
+const CategoryTable = ({
+  pagination,
+  category,
+}: {
+  pagination: TPagination;
+  category: TResponseCategoryData[];
+}) => {
   const router = useRouter();
-  const [orders, setOrders] = useState(category);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [status, setstatus] = useState("");
-
   const [tableData, setTableData] = useState<TResponseCategoryData[]>(category);
   const [viewData, setViewData] = useState<TResponseCategoryData | null>(null);
   const { updateFilters, reset, isPending } = useFilter();
   const [open, setOpen] = useState(false);
-
-  const [selectedcategoryid, setselectedcategoryid] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null,
+  );
   const [viewMode, setViewMode] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -45,6 +48,7 @@ const CategoryTable = ({pagination, category }: {pagination:TPagination, categor
     id: "",
   });
 
+  // Table columns
   const columns = createCategoryColumns();
 
   useEffect(() => {
@@ -122,158 +126,206 @@ const CategoryTable = ({pagination, category }: {pagination:TPagination, categor
       icon: Pencil,
       label: "Edit",
       onClick: (item: any) => {
-        setselectedcategoryid(item.id);
+        setSelectedCategoryId(item.id);
         setViewMode(false);
         setViewData(item);
-        setstatus(item.status);
         setOpen(true);
       },
     },
-
     {
       icon: Trash2,
       label: "Delete",
       onClick: (category: TGetCategory) => {
         handleDelete(category.id);
       },
-      className: "text-red-500",
+      className: "text-destructive", // Use appropriate destructive color from your system
     },
   ];
 
-  const handleDelete = useCallback(async (categoryId: string) => {
-    try {
-      if (
-        !window.confirm(
-          "Are you sure you want to delete this category? This action cannot be undone.",
-        )
-      ) {
-        return;
-      }
-      const toastId = toast.loading("Deleting category. Please wait...");
-
-      const resp = await deleteCategory(categoryId);
-      toast.dismiss(toastId);
-      if (resp.success) {
-        router.refresh();
-        setTableData((prev) =>
-          prev.filter((category) => category.id !== categoryId),
-        );
-        toast.success("Category deleted successfully.");
-      } else {
+  const handleDelete = useCallback(
+    async (categoryId: string) => {
+      try {
+        if (
+          !window.confirm(
+            "Are you sure you want to delete this category? This action cannot be undone.",
+          )
+        ) {
+          return;
+        }
+        const toastId = toast.loading("Deleting category. Please wait...");
+        const resp = await deleteCategory(categoryId);
+        toast.dismiss(toastId);
+        if (resp.success) {
+          router.refresh();
+          setTableData((prev) =>
+            prev.filter((category) => category.id !== categoryId),
+          );
+          toast.success("Category deleted successfully.");
+        } else {
+          toast.error(
+            resp.message ||
+              "Failed to delete the category. Please try again. If the issue persists, contact technical support for assistance.",
+          );
+        }
+      } catch (error: any) {
+        toast.dismiss();
         toast.error(
-          resp.message ||
-            "Failed to delete the category. Please try again. If the issue persists, contact technical support for assistance.",
+          "An unexpected error occurred while deleting the category. Please try again." +
+            (error?.message ? ` (${error.message})` : ""),
         );
       }
-    } catch (error: any) {
-      toast.dismiss();
-      toast.error(
-        "An unexpected error occurred while deleting the category. Please try again." +
-          (error?.message ? ` (${error.message})` : ""),
-      );
-    }
-  }, []);
+    },
+    [router],
+  );
 
   return (
-    <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 py-8">
-     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-       <h1 className="flex items-center gap-3 text-2xl md:text-4xl font-extrabold text-indigo-950 dark:text-indigo-100 tracking-tight">
-         <span>
-           <svg
-             className="w-8 h-8 text-indigo-500 dark:text-indigo-300"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             strokeWidth={2.2}
-             strokeLinecap="round"
-             strokeLinejoin="round"
-             aria-hidden="true"
-           >
-             <rect x="3" y="4" width="18" height="16" rx="4" />
-             <path d="M7 8h10M7 12h10M7 16h4" />
-           </svg>
-         </span>
-         <span>Category Management</span>
-       </h1>
-       <div>
-         <button
-         onClick={()=>router.push('/admin/dashboard/create-category')}
-           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-500 text-white font-semibold shadow hover:from-blue-700 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-base md:text-lg"
-           type="button"
-         >
-           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-             <circle cx="12" cy="12" r="10" />
-             <path d="M12 8v8M8 12h8" />
-           </svg>
-           <span>Add Category</span>
-         </button>
-       </div>
-     </div>
+    <motion.div
+      className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-8"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32, ease: "easeOut" }}
+    >
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.36, ease: "easeOut" }}
+          className="flex items-center gap-3"
+        >
+          <span>
+            <svg
+              className="w-9 h-9 text-primary"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="4"
+                className="stroke-primary"
+              />
+              <path
+                d="M7 8h10M7 12h10M7 16h4"
+                className="stroke-primary"
+              />
+            </svg>
+          </span>
+          <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-foreground leading-tight select-none">
+            Category Management
+          </h1>
+        </motion.div>
+        <Button
+          size="lg"
+          className="mt-3 sm:mt-0 font-semibold"
+          variant="default"
+          onClick={() => router.push("/admin/dashboard/create-category")}
+        >
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+          Add Category
+        </Button>
+      </div>
 
-
-      <div className="mb-6 bg-white dark:bg-gray-950 p-3 sm:p-4 md:p-6 rounded-xl shadow border border-gray-100 dark:border-gray-800 transition-all">
-        <section className="mb-8 w-full">
+      {/* Filter panel card */}
+      <motion.section
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.32, ease: "easeOut" }}
+        className="mb-8"
+      >
+        <div className="bg-card border border-border rounded-2xl shadow-sm p-4 md:p-6 transition-all">
           <FilterPanel
             fields={fields}
             onApply={handleApply}
             onReset={handleReset}
             isPending={isPending}
           />
-        </section>
-      </div>
+        </div>
+      </motion.section>
 
-      {/* Table */}
-      <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
-        {isPending && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
-            <p className="text-sm font-medium">Filtering data...</p>
-          </div>
-        )}
-        <div className="mb-6 overflow-x-auto rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
-          {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
-            <div>
-              <ReusableTable
-                columns={columns as any}
-                data={tableData}
-                actions={actions}
+      {/* Table Section */}
+      <div className="relative w-full">
+        {/* Overlay for pending state */}
+        <AnimatePresence>
+          {isPending && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/70 backdrop-blur-[2px] rounded-2xl"
+            >
+              <motion.div
+                className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-2"
+                aria-label="Loading"
               />
-            </div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Filtering data...
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+          className="overflow-x-auto rounded-2xl shadow-sm border border-border bg-card"
+        >
+          {tableData && Array.isArray(tableData) && tableData.length > 0 ? (
+            <ReusableTable
+              columns={columns as any}
+              data={tableData}
+              actions={actions}
+            />
           ) : (
-            <div className="p-8 text-center text-gray-400 dark:text-gray-500 text-base select-none">
+            <div className="p-10 text-center text-muted-foreground text-base select-none">
               No category data found.
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
+      {/* Modal Dialog for View/Edit Category */}
       <Dialog
         open={open}
         onOpenChange={(val) => {
           setOpen(val);
           if (!val) {
-            setselectedcategoryid(null);
+            setSelectedCategoryId(null);
             setViewData(null);
           }
         }}
       >
-        <DialogContent className="max-w-md w-full rounded-xl p-0 sm:p-0 bg-white dark:bg-gray-950">
-          <DialogHeader className="flex flex-col items-center justify-center px-6 pt-8 pb-4 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 rounded-t-xl shadow-none">
-            <DialogTitle className="text-[1.45rem] sm:text-2xl font-bold text-indigo-900 dark:text-indigo-100 mb-1 sm:mb-2 tracking-tight text-center">
+        <DialogContent className="bg-card border border-border p-0 max-w-md w-full rounded-2xl shadow-lg">
+          <DialogHeader className="flex flex-col items-center justify-center px-6 pt-10 pb-4 border-b border-border bg-card rounded-t-2xl shadow-none">
+            <DialogTitle className="text-[1.45rem] sm:text-2xl font-bold text-card-foreground mb-1 sm:mb-2 tracking-tight text-center">
               {viewMode ? "Category Details" : "Edit Category"}
-         
             </DialogTitle>
             <p
               id="dialog-description"
-              className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-0 text-center"
+              className="text-sm sm:text-base text-muted-foreground mb-0 text-center"
             >
               {viewMode
                 ? "Please review all the details of your selected category below."
                 : "You can update the details of your selected category in the form below."}
-           
             </p>
           </DialogHeader>
-
           {/* Make ONLY the modal content scrollable */}
           <div
             className="py-6 px-4 sm:px-8"
@@ -283,23 +335,25 @@ const CategoryTable = ({pagination, category }: {pagination:TPagination, categor
             }}
           >
             <ViewCategoryData
-              viewData={Array.isArray(viewData) ? viewData[0] : viewData ?? undefined}
+              viewData={
+                Array.isArray(viewData) ? viewData[0] : viewData ?? undefined
+              }
               viewMode={viewMode}
             />
-
-            {!viewMode && selectedcategoryid && (
-              <div className="mt-6">
-                <Categoryupdate categoryid={selectedcategoryid}/>
+            {!viewMode && selectedCategoryId && (
+              <div className="mt-6 overflow-hidden">
+                <Categoryupdate categoryid={selectedCategoryId} />
               </div>
             )}
           </div>
         </DialogContent>
       </Dialog>
 
-      <div className="mt-6">
-        <PaginationPage pagination={pagination}/>
+      {/* Pagination */}
+      <div className="mt-8 flex justify-center">
+        <PaginationPage pagination={pagination} />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

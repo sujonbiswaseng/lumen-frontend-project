@@ -64,9 +64,13 @@ export const CategoriesService = {
       const formData = new FormData();
 
       const { image, ...rest } = value;
-  
-      formData.append("data", JSON.stringify(rest));
-      if (image) {
+      const payload = { ...rest } as Record<string, unknown>;
+      if (typeof image === "string" && image.trim()) {
+        payload.image = image.trim();
+      }
+
+      formData.append("data", JSON.stringify(payload));
+      if (image && typeof image !== "string") {
         formData.append("file", image);
       }
 
@@ -101,9 +105,13 @@ export const CategoriesService = {
       const formData = new FormData();
 
       const { image, ...rest } = updateUser;
-  
-      formData.append("data", JSON.stringify(rest));
-      if (image) {
+      const payload = { ...rest } as Record<string, unknown>;
+      if (typeof image === "string" && image.trim()) {
+        payload.image = image.trim();
+      }
+
+      formData.append("data", JSON.stringify(payload));
+      if (image && typeof image !== "string") {
         formData.append("file", image);
       }
       const res = await fetch(`${api_url}/admin/category/${id}`, {

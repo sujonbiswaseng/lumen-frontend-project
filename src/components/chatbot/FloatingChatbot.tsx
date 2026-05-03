@@ -38,13 +38,13 @@ const INITIAL_MESSAGES: Message[] = [
     id: "welcome",
     role: "bot",
     content:
-      "Hello! I'm your AI healthcare assistant 👋\n\nAsk me anything about our doctors — their specialties, experience, fees, or patient reviews. I'll find the best match for you.",
+      "Hello! I'm your AI event assistant 👋\n\nAsk me anything about upcoming events — schedules, speakers, ticket prices, or how to register. I'll help you find the right event information quickly.",
   },
 ];
 const SUGGESTED_QUERIES = [
-  "Best cardiologists available?",
-  "Neurologist in Dhaka?",
-  "Affordable pediatricians?",
+  "What are the upcoming tech events?",
+  "Are there any workshops this weekend?",
+  "How do I register for the conference?",
 ];
 
 // Typing indicator
