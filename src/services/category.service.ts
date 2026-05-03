@@ -5,6 +5,7 @@ import { ApiErrorResponse, ApiResponse } from "@/types/response.type";
 import { IBaseUser } from "@/types/user.types";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
+import { ServiceOptionds } from "./event.services";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
   throw new Error("API_BASE_URL is not defined. Please set NEXT_PUBLIC_API_BASE_URL in your environment variables.");
@@ -69,7 +70,7 @@ export const CategoriesService = {
         formData.append("file", image);
       }
 
-      const response = await fetch(`${api_url}/api/v1/admin/category`, {
+      const response = await fetch(`${api_url}/category`, {
         headers: {
           Cookie: cookieStore.toString(),
         },
@@ -105,7 +106,7 @@ export const CategoriesService = {
       if (image) {
         formData.append("file", image);
       }
-      const res = await fetch(`${api_url}/api/v1/admin/category/${id}`, {
+      const res = await fetch(`${api_url}/admin/category/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -130,7 +131,7 @@ export const CategoriesService = {
   deleteCategory: async (id: string) => {
     try {
       const cookieStore = await cookies()
-      const res = await fetch(`${api_url}/api/v1/admin/category/${id}`, {
+      const res = await fetch(`${api_url}/admin/category/${id}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -150,27 +151,49 @@ export const CategoriesService = {
       return { success: false, error: error.message || "something went wrong please try again" };
     }
   },
-  singlecategory: async (id: string) => {
+  singlecategory: async (id: string,params?: any,options?: ServiceOptionds) => {
     try {
-      const cookieStore = await cookies()
-      const res = await fetch(`${api_url}/api/v1/category/${id}`, {
+      const url = new URL(`${api_url}/category/${id}`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, String(value));
+          }
+        });
+      }
+
+      const cookieStore = await cookies();
+      const config: RequestInit = {
         credentials: "include",
         headers: {
           Cookie: cookieStore.toString(),
-        },
-        next: {
-          tags: ['category']
         }
-      })
-      const data = await res.json();
-      const result = data as ApiResponse<any>
-      if (!res.ok) {
-        const error=data as ApiErrorResponse
-        return { success: false, message: error.message || "category data retrieve fail" }
+      };
+
+      if (options?.cache) {
+        config.cache = options.cache;
       }
-      return {success:result.success,message:result.message,data:result};
+      if (options?.revalidate) {
+        config.next = { revalidate: options.revalidate };
+      }
+      config.next = { ...config.next, tags: ["category"] };
+
+      const res = await fetch(url.toString(), config);
+      const data = await res.json();
+      const result = data as ApiResponse<any>;
+      if (!res.ok) {
+        const error = data as ApiErrorResponse;
+        return {
+          success: error.success ?? false,
+          message: error.message || "category data retrieve fail",
+        };
+      }
+      return {
+        success: result.success,
+        message: result.message || "retrieve category data successfully",
+        data: result.data,
+      };
     } catch (error: any) {
-    
       return { success: false, error: error.message || "something went wrong please try again" };
     }
   },

@@ -1,6 +1,7 @@
 'use server'
 
 import { CategoriesService, Icategory } from "@/services/category.service";
+import { ServiceOptionds } from "@/services/event.services";
 import { ICreateCategory } from "@/types/category.type";
 
 export const categoryCreate = async (data:ICreateCategory) => {
@@ -32,8 +33,8 @@ export const deleteCategory = async (id:string) => {
  
 }
 
-export const singlecategory = async (id:string) => {
-    const res = await CategoriesService.singlecategory(id);
+export const singlecategory = async (id: string,params?: any,options?: ServiceOptionds) => {
+    const res = await CategoriesService.singlecategory(id,params,options);
     return res;
  
 }
