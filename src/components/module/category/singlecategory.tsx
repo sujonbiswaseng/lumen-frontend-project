@@ -33,6 +33,11 @@ const Singlecategory = ({
   const [eventdata, setEventdata] = useState<IBaseEvent[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [search, setsearch] = useState("");
+  const [pricingFilter, setPricingFilter] = useState<"ALL" | "FREE" | "PAID">("ALL");
+  const [visibilityFilter, setVisibilityFilter] = useState<"ALL" | "PUBLIC" | "PRIVATE">("ALL");
+  const [feeFilter, setFeeFilter] = useState("");
+
+  
 
 
   useEffect(() => {
@@ -55,13 +60,36 @@ const Singlecategory = ({
   }, []);
 
 
-  // Filter events based on search input
-  const filteredEvents = eventdata?.filter(
-    (item) =>
-      item.category_name?.toLowerCase().includes(search.toLowerCase()) ||
-      item.description?.toLowerCase().includes(search.toLowerCase()) ||
-      item.location?.toLowerCase().includes(search.toLowerCase())
-  );
+  const inputClass =
+    "px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-base bg-background text-foreground";
+
+  // Filter events: text search + price type + visibility + fee
+  const filteredEvents = eventdata?.filter((item) => {
+    const q = search.trim().toLowerCase();
+    const feeStr = typeof item.fee === "number" ? String(item.fee) : "";
+    const feeQuery = feeFilter.trim();
+
+    const textMatch =
+      q === "" ||
+      item.title?.toLowerCase().includes(q) ||
+      item.category_name?.toLowerCase().includes(q) ||
+      item.description?.toLowerCase().includes(q) ||
+      item.location?.toLowerCase().includes(q) ||
+      item.priceType?.toLowerCase().includes(q) ||
+      item.visibility?.toLowerCase().includes(q) ||
+      feeStr.includes(q);
+
+    const pricingMatch =
+      pricingFilter === "ALL" || item.priceType === pricingFilter;
+
+    const visibilityMatch =
+      visibilityFilter === "ALL" || item.visibility === visibilityFilter;
+
+    const feeMatch =
+      feeQuery === "" || feeStr.includes(feeQuery);
+
+    return textMatch && pricingMatch && visibilityMatch && feeMatch;
+  });
 
   // No events fallback (enterprise grade, centered, design token colors only)
   if (!category.event) {
@@ -154,16 +182,65 @@ const Singlecategory = ({
           </motion.p>
         </div>
 
-        {/* Filter Input */}
-        <section className="mb-8 w-full flex justify-center">
+        {/* Filters */}
+        <section
+          className="mb-8 w-full flex flex-col items-center gap-4"
+          aria-label="Filter events list"
+        >
           <input
-            type="text"
-            className="w-full max-w-md px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-base bg-background"
-            placeholder="Search events by name, description or location..."
+            type="search"
+            className={`w-full max-w-md ${inputClass}`}
+            placeholder="Search title, description, location, price type, visibility, fee…"
             value={search}
             onChange={(e) => setsearch(e.target.value)}
-            aria-label="Filter events"
+            aria-label="Search events by text"
           />
+          <div className="flex w-full flex-wrap items-center justify-center gap-3 max-w-5xl">
+            <label className="flex flex-col gap-1.5 text-sm text-muted-foreground min-w-[140px] flex-1 max-w-[200px]">
+              <span className="font-medium">Price type</span>
+              <select
+                className={`w-full ${inputClass}`}
+                value={pricingFilter}
+                onChange={(e) =>
+                  setPricingFilter(e.target.value as "ALL" | "FREE" | "PAID")
+                }
+                aria-label="Filter by price type"
+              >
+                <option value="ALL">All</option>
+                <option value="FREE">Free</option>
+                <option value="PAID">Paid</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm text-muted-foreground min-w-[140px] flex-1 max-w-[200px]">
+              <span className="font-medium">Visibility</span>
+              <select
+                className={`w-full ${inputClass}`}
+                value={visibilityFilter}
+                onChange={(e) =>
+                  setVisibilityFilter(
+                    e.target.value as "ALL" | "PUBLIC" | "PRIVATE"
+                  )
+                }
+                aria-label="Filter by visibility"
+              >
+                <option value="ALL">All</option>
+                <option value="PUBLIC">Public</option>
+                <option value="PRIVATE">Private</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm text-muted-foreground min-w-[140px] flex-1 max-w-[200px]">
+              <span className="font-medium">Fee</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                className={`w-full ${inputClass}`}
+                placeholder="e.g. 0, 49.99"
+                value={feeFilter}
+                onChange={(e) => setFeeFilter(e.target.value)}
+                aria-label="Filter by fee amount"
+              />
+            </label>
+          </div>
         </section>
 
         {/* Events Grid */}
@@ -197,7 +274,10 @@ const Singlecategory = ({
                 : (
                   <div className="col-span-full flex flex-col items-center justify-center py-16">
                     <div className="text-lg font-semibold text-muted-foreground mb-2">
-                      No events found{search ? ' for your filter.' : ' in this category.'}
+                      No events found
+                      {search || feeFilter || pricingFilter !== "ALL" || visibilityFilter !== "ALL"
+                        ? " for your filters."
+                        : " in this category."}
                     </div>
                   </div>
                 )}

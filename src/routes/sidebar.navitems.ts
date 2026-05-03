@@ -105,7 +105,6 @@ export const ManagerNavItems: NavSection[] = [
             }
         ]
     },
-
     {
         title: "User Management",
         items: [

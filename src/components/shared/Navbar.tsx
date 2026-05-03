@@ -95,7 +95,7 @@ export default function Navbar({ user }: NavbarProps) {
       
           </div>
           <span className="hidden sm:inline font-bold text-lg text-primary group-hover:text-primary/80 transition-colors duration-200">
-            Planora
+            lumen
           </span>
         </Link>
   
@@ -140,14 +140,6 @@ export default function Navbar({ user }: NavbarProps) {
                  <div className='mt-2'>
                  <NavbarNotifications  />
                  </div>
-                  <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              className="rounded-lg"
-            >
-              Log out
-            </Button>
             <ProfileCard profile={user}/>
             </div>
           ) : (
