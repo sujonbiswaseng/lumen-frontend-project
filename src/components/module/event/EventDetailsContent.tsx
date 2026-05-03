@@ -443,8 +443,9 @@ const EventDetailsPage = ({
        {/* Blog list content */}
        <div className="w-full flex flex-wrap justify-center gap-6">
         {isloading ? (
-          <div className="w-full flex justify-center gap-6">
-            {Array.from({ length: 3 }).map((_, idx) => (
+          <div className="w-full max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:
+              grid-cols-4 xl:grid-cols-5 gap-8">
+            {Array.from({ length: 5 }).map((_, idx) => (
               <BlogCardSkeleton
                 key={idx}
                 className="max-w-[400px] min-w-[320px] w-full"
@@ -460,7 +461,8 @@ const EventDetailsPage = ({
 
 {relatedItems && relatedItems.length > 0 ? (
             <motion.div
-              className="w-full max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
+              className="w-full max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:
+              grid-cols-4 xl:grid-cols-5 gap-8"
               initial="hidden"
               animate="visible"
               variants={{

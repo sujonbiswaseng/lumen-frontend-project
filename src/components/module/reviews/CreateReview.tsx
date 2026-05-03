@@ -1,28 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Send } from "lucide-react";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createReview } from "@/actions/review.actions";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, Send } from "lucide-react";
+import { toast } from "react-toastify";
+
+/**
+ * ReviewForm component for submitting reviews or replies.
+ * Premium, scalable, and clean design with only global CSS variables for colors and a max-width centered layout.
+ */
 
 interface Props {
   eventId: string;
-  parentId?: string; // Changed to only string | undefined
+  parentId?: string;
   onSuccess?: (review: any) => void;
   defaultRating?: number;
   defaultComment?: string;
 }
 
+const stars = [1, 2, 3, 4, 5];
+
 export default function ReviewForm({
   eventId,
-  parentId, // no longer defaults to null
+  parentId,
   onSuccess,
   defaultRating = 0,
   defaultComment = "",
 }: Props) {
   const router = useRouter();
-
   const [rating, setRating] = useState(defaultRating);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState(defaultComment);
@@ -68,7 +75,6 @@ export default function ReviewForm({
 
       toast.success(res.message || "Review added successfully");
 
-      // Defensive: some API responses may not have .data
       if ("data" in res && res.data !== undefined) {
         onSuccess?.(res.data);
       } else {
@@ -84,56 +90,129 @@ export default function ReviewForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white p-5 rounded-2xl shadow-md space-y-4"
-    >
-      {/* ⭐ Star Rating */}
-      <div className="flex items-center gap-2">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const active = (hover || rating) >= star;
+    <section className="w-full flex justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="
+          max-w-[1440px]
+          mx-auto
+          w-full
+          bg-card
+          border border-border
+          rounded-2xl
+          shadow
+          p-4 md:p-6
+          space-y-4
+        "
+        aria-label={parentId ? "Reply form" : "Review form"}
+      >
+        {/* Star Rating */}
+        <div className="flex items-center gap-3 md:gap-4">
+          {stars.map((star) => {
+            const active = (hover || rating) >= star;
+            return (
+              <motion.button
+                tabIndex={0}
+                type="button"
+                aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+                key={star}
+                className={`
+                  p-1 rounded-full
+                  focus-visible:outline-none 
+                  focus-visible:ring-2 focus-visible:ring-primary/60
+                  bg-transparent border-0 transition
+                  `}
+                style={{lineHeight:0}}
+                onClick={() => setRating(star)}
+                onMouseEnter={() => setHover(star)}
+                onMouseLeave={() => setHover(0)}
+                initial={false}
+                animate={{ scale: active ? 1.15 : 1, opacity: active ? 1 : 0.6 }}
+                transition={{ type: "spring", stiffness: 320, damping: 19 }}
+              >
+                <Star
+                  size={28}
+                  strokeWidth={1.7}
+                  className={
+                    active
+                      ? "text-primary fill-primary drop-shadow-sm"
+                      : "text-muted-foreground"
+                  }
+                  aria-hidden="true"
+                />
+              </motion.button>
+            );
+          })}
+        </div>
 
-          return (
-            <Star
-              key={star}
-              size={24}
-              onClick={() => setRating(star)}
-              onMouseEnter={() => setHover(star)}
-              onMouseLeave={() => setHover(0)}
-              className={`cursor-pointer transition-all duration-200 ${
-                active
-                  ? "text-yellow-400 fill-yellow-400 scale-110"
-                  : "text-gray-300"
-              }`}
-            />
-          );
-        })}
-      </div>
-
-      {/* 💬 Comment Box */}
-      <div className="relative">
-        <textarea
-          placeholder={
-            parentId ? "Write a reply..." : "Write your review..."
-          }
-          className="w-full border rounded-xl p-3 pr-12 resize-none focus:ring-2 focus:ring-orange-400 outline-none"
-          rows={3}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="absolute right-3 bottom-3 bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-full transition disabled:opacity-50"
-        >
-          {loading ? (
-            <span className="text-xs px-1">...</span>
-          ) : (
-            <Send size={16} />
-          )}
-        </button>
-      </div>
-    </form>
+        {/* Comment Box */}
+        <div className="relative">
+          <textarea
+            id={parentId ? "reply-textarea" : "review-textarea"}
+            placeholder={parentId ? "Write a reply..." : "Write your review..."}
+            className="
+              w-full
+              bg-input
+              border border-input
+              text-card-foreground
+              placeholder:text-muted-foreground
+              rounded-xl
+              p-4 pr-12
+              resize-none
+              focus-visible:ring-2 focus-visible:ring-primary
+              focus-visible:border-primary
+              outline-none
+              transition
+              text-base
+              min-h-[88px]
+              disabled:opacity-60
+            "
+            rows={3}
+            autoComplete="off"
+            spellCheck
+            maxLength={1000}
+            value={comment}
+            disabled={loading}
+            onChange={(e) => setComment(e.target.value)}
+            aria-required="true"
+            aria-label={parentId ? "Reply" : "Review"}
+          />
+          <motion.button
+            type="submit"
+            className="
+              absolute right-3 bottom-3
+              flex items-center justify-center
+              bg-primary text-primary-foreground
+              rounded-full shadow-sm
+              p-2
+              transition
+              hover:bg-primary/90
+              focus-visible:outline-none
+              focus-visible:ring-2 focus-visible:ring-primary/70
+              disabled:bg-muted disabled:text-muted-foreground
+              disabled:cursor-not-allowed
+            "
+            disabled={loading}
+            aria-label="Submit"
+            initial={false}
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+          >
+            {loading ? (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-xs font-medium"
+              >
+                ...
+              </motion.span>
+            ) : (
+              <Send size={17} strokeWidth={2} />
+            )}
+          </motion.button>
+        </div>
+      </form>
+    </section>
   );
 }
