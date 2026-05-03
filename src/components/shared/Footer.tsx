@@ -22,7 +22,7 @@ const footerLinks = {
     { label: "Dashboard", href: "/dashboard" },
   ],
   support: [
-    { label: "Help Center", href: "/help" },
+    { label: "Help/support", href: "/help" },
   ],
   legal: [
     { label: "Terms & Conditions", href: "/terms" },
