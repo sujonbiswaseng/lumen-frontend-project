@@ -127,6 +127,21 @@ export const ManagerNavItems: NavSection[] = [
         ]
     },
     {
+        title: "Category Management",
+        items: [
+            {
+                title: "Categories",
+                href: "/admin/dashboard/categories",
+                icon: "Layers"
+            },
+            {
+                title: "Create Category",
+                href: "/admin/dashboard/create-category",
+                icon: "PlusSquare"
+            }
+        ]
+    },
+    {
         title: "Highlight Management",
         items: [
             {
@@ -187,6 +202,21 @@ export const adminNavItems: NavSection[] = [
             {
                 title: "Create Blog",
                 href: "/admin/dashboard/create-blog",
+                icon: "PlusSquare"
+            }
+        ]
+    },
+    {
+        title: "Category Management",
+        items: [
+            {
+                title: "Categories",
+                href: "/admin/dashboard/categories",
+                icon: "Layers"
+            },
+            {
+                title: "Create Category",
+                href: "/admin/dashboard/create-category",
                 icon: "PlusSquare"
             }
         ]
