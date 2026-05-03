@@ -20,7 +20,7 @@ type HeroSlide = {
 // Default event fallback data
 const DEFAULT_SLIDE: HeroSlide = {
   id: "default-event-id",
-  image: "https://images.pexels.com/photos/15448073/pexels-photo-15448073.jpeg", // You can place this image in public/ folder or use a relevant event default image path
+  image: "https://images.pexels.com/photos/15448073/pexels-photo-15448073.jpeg",
   title: "Discover Amazing Events",
   description: "Create, join, and manage events effortlessly",
   venue: "Your City",
@@ -30,7 +30,7 @@ const DEFAULT_SLIDE: HeroSlide = {
 export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
   const [current, setCurrent] = useState(0);
   const router = useRouter();
-  console.log(data,'daa')
+  console.log(data,'dsfdafdaa')
 
   // Use the provided data as the slides, or a default slide if none exists
   let slides: HeroSlide[];
@@ -43,7 +43,7 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
       id: evt.id,
       venue: evt.location ?? "",
       date: evt.date ?? "",
-      image:data[0].images[0],
+      image:evt.images[0],
       title:
         evt.title && typeof evt.title === "string" && evt.title.trim() !== ""
           ? evt.title
@@ -93,13 +93,38 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
               </div>
 
               <motion.h1
-                className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-tight mb-4"
-                initial={{ opacity: 0, y: 28 }}
+                className={`
+                  text-3xl sm:text-5xl lg:text-6xl font-display font-bold leading-tight mb-4
+                  text-primary-foreground
+                  bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
+                  bg-clip-text text-transparent
+                  dark:bg-gradient-to-r dark:from-[var(--primary)] dark:via-[var(--accent)] dark:to-[var(--secondary)]
+                  dark:bg-clip-text dark:text-transparent
+                  w-full
+                `}
+                initial={{ opacity: 0, y: 32 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                style={{ maxWidth: '100%' }}
               >
-                {slide.title || "Event related"}
+                <motion.span
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.32, ease: "easeOut" }}
+                  className={`
+                    block
+                    text-primary-foreground
+                    bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
+                    bg-clip-text text-transparent
+                    dark:bg-gradient-to-r dark:from-[var(--primary)] dark:via-[var(--accent)] dark:to-[var(--secondary)]
+                    dark:bg-clip-text dark:text-transparent
+                  `}
+                >
+                  {slide.title || "Event related"}
+                </motion.span>
               </motion.h1>
+         
+         
          
 
               <p className="text-lg text-cyan-50/90 mb-2 font-medium animate-slide-in" style={{ animationDelay: "0.1s" }}>

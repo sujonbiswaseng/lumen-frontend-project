@@ -99,7 +99,9 @@ export default async function Home({
             }>[]
           }
         />
-        <NewsLatter />
+       <div className="px-4 md:px-8">
+       <NewsLatter />
+       </div>
         <FAQ />
 
         {!events || !eventsRes.success || !eventsRes.data ? (
