@@ -16,21 +16,23 @@ import { useRouter } from "next/navigation";
 import { initiatePayLater } from "@/actions/payment.actions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 
-const gradientBg =
-  "bg-gradient-to-br from-cyan-50 via-emerald-50 to-amber-50";
-const sidebarCard =
-  "shadow-xl border border-cyan-100 bg-white/95 backdrop-blur-sm";
-const infoCard =
-  "rounded-xl border border-cyan-100 shadow-sm bg-white";
-const statLabel =
-  "bg-linear-to-r from-cyan-700 to-teal-600 text-white px-2 py-1 rounded text-[11px] font-bold uppercase tracking-widest";
+// Responsive shadow and border classes strictly using theme variables
+const cardClass =
+  "bg-card border border-border rounded-2xl shadow-lg";
+const sidebarCardClass =
+  "bg-card border border-border rounded-2xl shadow-lg";
+const infoCardClass =
+  "bg-card border border-border rounded-xl shadow-sm";
+const badgeLabel =
+  "bg-secondary text-secondary-foreground px-2 py-1 rounded text-[11px] font-bold uppercase tracking-widest";
 
 const EventDetailsPage = ({
   user,
   eventData,
 }: {
-  user:IBaseUser,
+  user: IBaseUser;
   eventData: TResponseEvent<{
     reviews: IgetReviewData[];
     organizer: IBaseUser;
@@ -38,7 +40,10 @@ const EventDetailsPage = ({
 }) => {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const router = useRouter();
+  const images = eventData.images?.length ? eventData.images : ["/logo.png"];
+  const [activeImage, setActiveImage] = useState(images[0]);
 
+  // Button Handler Logic
   const handleAddParticipant = async (eventId: string) => {
     const toastId = toast.loading("Registering attendance...");
     try {
@@ -66,10 +71,10 @@ const EventDetailsPage = ({
       toast.dismiss(toastId);
       if (res.success) {
         toast.success(res.message || "Redirecting to your payment page.");
-        return
+        return;
       } else {
         toast.error(res.message || "Pay Later could not be initiated.");
-        return
+        return;
       }
     } catch (err) {
       toast.dismiss(toastId);
@@ -78,11 +83,12 @@ const EventDetailsPage = ({
     }
   };
 
+  // Scalable join button logic using theme button variants
   const renderJoinButton = () => {
     if (eventData.visibility === "PUBLIC" && eventData.priceType === "FREE") {
       return (
         <Button
-          className="bg-linear-to-r from-emerald-500 to-cyan-500 text-white shadow-lg hover:from-emerald-600 hover:to-cyan-600 px-6 py-2"
+          className="min-w-[120px]"
           onClick={() => handleAddParticipant(eventData.id)}
         >
           Join
@@ -94,10 +100,10 @@ const EventDetailsPage = ({
     ) {
       return (
         <Button
-          className="bg-linear-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:from-amber-600 hover:to-orange-600 px-6 py-2"
+          className="min-w-[140px]"
           onClick={() => handleAddParticipant(eventData.id)}
         >
-          Pay &amp; Join
+          Pay&nbsp;&amp;&nbsp;Join
         </Button>
       );
     } else if (
@@ -106,144 +112,216 @@ const EventDetailsPage = ({
     ) {
       return (
         <Button
-          className="bg-linear-to-r from-cyan-500 to-sky-500 text-white shadow-lg hover:from-cyan-600 hover:to-sky-600 px-6 py-2"
+          variant="secondary"
+          className="min-w-[140px]"
           onClick={() => handleAddParticipant(eventData.id)}
         >
           Request to Join
         </Button>
       );
     } else {
-     
       return (
         <Button
-          className="bg-linear-to-r from-teal-600 to-emerald-600 text-white shadow-lg hover:from-teal-700 hover:to-emerald-700 px-6 py-2"
+          variant="secondary"
+          className="min-w-[180px]"
           onClick={() => handleAddParticipant(eventData.id)}
         >
-          Pay &amp; Request
+          Pay&nbsp;&amp;&nbsp;Request
         </Button>
       );
     }
   };
 
+  // Framer Motion Animations
+  const fadeInMotionProps = {
+    initial: { opacity: 0, y: 24 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 24 },
+    transition: { duration: 0.3, ease: "easeOut", type: "spring" as const },
+  };
+
   return (
-    <div className={`min-h-screen mt-11 ${gradientBg}`}>
-      {/* Decorative header */}
-      <div className="absolute left-0 top-0 z-0 opacity-40 pointer-events-none w-full h-[260px] max-h-[28vh] bg-linear-to-b from-cyan-200/70 via-emerald-100/50 to-transparent"></div>
-      <main className="relative z-10 max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-          {/* LEFT */}
-          <div className="lg:col-span-8">
-            {/* IMAGE */}
-            <div className="relative rounded-2xl overflow-hidden mb-8 border border-slate-200 shadow-lg">
-              {/* {eventData?.images ? (
-                <Image
-                  src={eventData.images}
-                  alt={eventData.title}
-                  width={1200}
-                  priority
-                  height={700}
-                  className="w-full h-[260px] sm:h-[340px] md:h-[420px] object-cover transition-transform duration-500 hover:scale-[1.03]"
-                />
-              ) : (
-                <div className="w-full h-[380px] flex items-center justify-center bg-linear-to-tr from-cyan-50 to-emerald-50 text-slate-500 font-bold text-xl">
-                  No Image Available
+    <div className="bg-background min-h-screen w-full pt-8">
+      <main className="relative z-10 max-w-[1440px] mx-auto w-full px-4 md:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
+          {/* LEFT COLUMN */}
+          <div className="lg:col-span-8 flex flex-col gap-8">
+            {/* MAIN IMAGE CARD */}
+            <motion.section
+              className={`${cardClass} relative overflow-hidden`}
+            >
+              {/* Image Gallery */}
+              <div className="flex flex-col gap-6 border-b border-border bg-card p-4 sm:p-6">
+                {/* Main Image */}
+                <div className="relative flex items-center min-h-[15rem] overflow-hidden rounded-2xl border border-border bg-muted aspect-[3/2]">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeImage}
+                      className="w-full h-full relative"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                      <Image
+                        src={activeImage}
+                        alt={eventData.title}
+                        width={1200}
+                        height={600}
+                        priority
+                        className="object-cover w-full h-full transition-transform duration-300 hover:scale-[1.025]"
+                        sizes="(min-width: 1024px) 800px, 100vw"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                  {/* Event status badge */}
+                  <div className="absolute top-4 left-4 px-4 py-1 rounded-full border border-border bg-background/85 backdrop-blur-sm">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-foreground">
+                      {eventData.status}
+                    </span>
+                  </div>
+                  {/* Gallery "Featured" badge (optional, can be dynamic) */}
+                  <div className="absolute left-4 bottom-4 px-4 py-1 rounded-full border border-border bg-card/80 backdrop-blur-sm">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-card-foreground">
+                      Featured
+                    </span>
+                  </div>
                 </div>
-              )} */}
-              <div className="absolute top-2 left-2">
-                <span className="px-3 py-1 rounded-full bg-linear-to-r from-cyan-700 to-teal-600 text-white text-xs font-bold shadow">
-                  {eventData.status}
-                </span>
+                {/* Thumbnails */}
+                <div className="flex flex-wrap gap-4 mt-2 w-full">
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveImage(img)}
+                      aria-label={`Show image ${idx + 1}`}
+                      className={[
+                        "group relative h-12 w-16 rounded-xl border flex items-center justify-center overflow-hidden transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary",
+                        img === activeImage
+                          ? "border-primary ring-2 ring-primary"
+                          : "border-border hover:border-primary hover:shadow-md",
+                      ].join(" ")}
+                      tabIndex={0}
+                    >
+                      <Image
+                        src={img}
+                        alt={`Preview ${idx + 1}`}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="64px"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-            {/* TITLE & DESCRIPTION */}
+            </motion.section>
+
+            {/* ORGANIZER INFO */}
             {eventData?.organizer?.image && (
-              <div className="flex items-center gap-3 mb-4">
-                <Link href={`/profile/${eventData.organizer.id}`}>
-                <Image
-                  src={eventData.organizer.image}
-                  alt={eventData.organizer.name || "Organizer Profile"}
-                  width={46}
-                  height={46}
-                  className="rounded-full object-cover border shadow"
-                /></Link>
+              <motion.div
+           
+                className="flex items-center gap-3"
+              >
+                <Link
+                  href={`/profile/${eventData.organizer.id}`}
+                  className="focus-visible:outline-primary"
+                >
+                  <Image
+                    src={eventData.organizer.image}
+                    alt={eventData.organizer.name || "Organizer Profile"}
+                    width={48}
+                    height={48}
+                    className="rounded-full object-cover border border-border shadow"
+                  />
+                </Link>
                 <div>
-                  <span className="font-semibold text-slate-800">
+                  <div className="font-semibold text-foreground">
                     {eventData.organizer.name || "Event Organizer"}
-                  </span>
+                  </div>
                   {eventData.organizer.email && (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground break-all">
                       {eventData.organizer.email}
                     </p>
                   )}
                 </div>
-              </div>
+              </motion.div>
             )}
-      
-            <div className="mb-6 bg-white rounded-xl px-5 sm:px-7 py-6 sm:py-8 shadow-sm border border-slate-200">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-slate-900">
+
+            {/* TITLE & DESCRIPTION */}
+            <motion.section
+          
+              className={`${cardClass} px-5 sm:px-7 py-6 sm:py-8`}
+            >
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 text-foreground leading-snug">
                 {eventData.title}
               </h1>
-              <p className="text-sm sm:text-base text-slate-700 max-w-2xl mt-3">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed mt-3">
                 {eventData.description}
               </p>
-            </div>
-            {/* RATING */}
-            <div className="flex items-center gap-4 mb-7">
-              <div className="flex">
+            </motion.section>
+
+            {/* STAR RATING */}
+            <motion.div  className="flex items-center gap-4">
+              <div className="flex" aria-label={`Rating: ${eventData.avgRating}`}>
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    size={20}
+                    size={22}
                     className={
                       i < eventData.avgRating
-                        ? "text-yellow-400 drop-shadow-md"
-                        : "text-gray-200"
+                        ? "text-primary drop-shadow"
+                        : "text-border"
                     }
                     fill={i < eventData.avgRating ? "currentColor" : "none"}
+                    aria-hidden="true"
                   />
                 ))}
               </div>
-              <span className="text-xs px-3 py-1 rounded bg-slate-100 text-slate-700 shadow-sm">
+              <span className="text-xs px-3 py-1 rounded bg-muted text-muted-foreground font-medium">
                 ({eventData.totalReviews} Reviews)
               </span>
-            </div>
-            {/* INFO */}
-            <div className="grid md:grid-cols-2 gap-5">
-              <div className={`${infoCard} p-5 flex gap-5 items-center`}>
-                <span className="rounded-full bg-linear-to-br from-cyan-500 to-teal-500 p-3 shadow text-white">
+            </motion.div>
+
+            {/* INFO CARDS */}
+            <motion.div className="grid md:grid-cols-2 gap-6">
+              {/* Date */}
+              <div className={`${infoCardClass} p-5 flex items-center gap-5`}>
+                <span className="rounded-full bg-secondary text-secondary-foreground p-3 shadow">
                   <Calendar size={28} />
                 </span>
                 <div>
-                  <p className={statLabel}>Date</p>
-                  <p className="text-base font-medium text-slate-700 mt-2">
+                  <p className={badgeLabel}>Date</p>
+                  <p className="text-base font-medium text-foreground mt-2">
                     {eventData.time}
                   </p>
                 </div>
               </div>
-              <div className={`${infoCard} p-5 flex gap-5 items-center`}>
-                <span className="rounded-full bg-linear-to-br from-emerald-500 to-cyan-500 p-3 shadow text-white">
+              {/* Location */}
+              <div className={`${infoCardClass} p-5 flex items-center gap-5`}>
+                <span className="rounded-full bg-secondary text-secondary-foreground p-3 shadow">
                   <MapPin size={28} />
                 </span>
                 <div>
-                  <p className={statLabel}>Location</p>
-                  <p className="text-base font-medium text-slate-700 mt-2">
+                  <p className={badgeLabel}>Location</p>
+                  <p className="text-base font-medium text-foreground mt-2">
                     {/* {eventData.venue} */}
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
+
             {/* REVIEWS */}
-            <div className="mt-10 space-y-6">
-              <h2 className="text-xl font-semibold mb-3 text-slate-900">
+            <motion.section  className="mt-4 md:mt-10 space-y-6">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 Reviews
               </h2>
-              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-3 sm:p-4 max-h-[70vh] overflow-auto overscroll-contain [scrollbar-width:thin]">
+              <div className="rounded-2xl border border-border bg-card shadow-sm p-3 sm:p-4 max-h-[70vh] overflow-auto overscroll-contain [scrollbar-width:thin]">
                 {eventData.reviews?.length > 0 ? (
-                  <div className="space-y-3 min-w-max">
+                  <div className="space-y-4 min-w-[280px]">
                     {eventData.reviews.map((review: IgetReviewData) => (
                       <div
                         key={review.id}
-                        className="rounded-xl border border-slate-200 bg-white px-3 sm:px-5 py-4 min-w-[640px] max-h-[420px] overflow-auto"
+                        className="rounded-xl border border-border bg-card px-3 sm:px-5 py-4 min-w-[320px] max-h-[420px] overflow-auto"
                       >
                         <ReviewItem
                           user={user}
@@ -260,79 +338,79 @@ const EventDetailsPage = ({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-600 bg-cyan-50 px-5 py-3 rounded">
+                  <p className="text-sm text-muted-foreground bg-muted px-4 py-3 rounded">
                     No reviews yet. Be the first to review!
                   </p>
                 )}
               </div>
               {/* Add new review */}
-              <div className="rounded-xl border border-slate-200 bg-slate-50 shadow-sm px-4 sm:px-5 py-3">
+              <div className="rounded-xl border border-border bg-muted shadow-sm px-4 sm:px-5 py-3">
                 <ReviewForm eventId={eventData.id} />
               </div>
-            </div>
+            </motion.section>
           </div>
 
           {/* SIDEBAR */}
           <div className="lg:col-span-4">
-            <div className="sticky top-24">
-              <div className={`${sidebarCard} rounded-2xl p-5 sm:p-7`}>
-                <div className="mb-6 flex justify-between flex-wrap items-center gap-4">
+            <motion.aside  className="sticky top-20">
+              <div className={`${sidebarCardClass} p-5 sm:p-7 flex flex-col gap-7`}>
+                {/* Price and Visibility */}
+                <div className="flex justify-between flex-wrap items-center gap-4">
                   <div>
-                    <p className={statLabel}>Price</p>
-                    <h3 className="text-3xl font-extrabold text-slate-900">
+                    <p className={badgeLabel}>Price</p>
+                    <h3 className="text-3xl font-extrabold text-foreground mt-1">
                       {eventData.fee === 0 ? "Free" : `$${eventData.fee}`}
                     </h3>
                   </div>
                   <div>
-                    <p className={statLabel}>Visibility</p>
+                    <p className={badgeLabel}>Visibility</p>
                     <span
-                      className={`text-base sm:text-lg font-bold px-4 py-1 rounded-full shadow-sm ${
-                        eventData.visibility === "PUBLIC"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-blue-100 text-blue-700"
-                      }`}
+                      className={`text-sm sm:text-base font-bold px-4 py-1 rounded-full bg-muted text-muted-foreground`}
                     >
                       {eventData.visibility}
                     </span>
                   </div>
                 </div>
-                <div className="space-y-3 text-sm text-slate-700 mb-5">
-                  <span className="inline-block mr-1 bg-amber-100 text-amber-800 rounded-full px-3 py-1 font-semibold text-xs shadow">
+                {/* Details Section */}
+                <div className="space-y-3 text-sm text-muted-foreground mb-1">
+                  <span className="inline-block mr-1 bg-secondary text-secondary-foreground rounded-full px-3 py-1 font-semibold text-xs">
                     Category
-                  </span>{" "}
+                  </span>
                   {eventData.categories}
                   <br />
-                  <span className="inline-block mr-1 bg-cyan-100 text-cyan-800 rounded-full px-3 py-1 font-semibold text-xs shadow">
+                  <span className="inline-block mr-1 bg-secondary text-secondary-foreground rounded-full px-3 py-1 font-semibold text-xs">
                     Status
-                  </span>{" "}
+                  </span>
                   {eventData.status}
                   <br />
-                  <span className="inline-block mr-1 bg-emerald-100 text-emerald-800 rounded-full px-3 py-1 font-semibold text-xs shadow">
+                  <span className="inline-block mr-1 bg-secondary text-secondary-foreground rounded-full px-3 py-1 font-semibold text-xs">
                     Price Type
-                  </span>{" "}
+                  </span>
                   {eventData.priceType}
                 </div>
-                <div className="flex justify-between flex-wrap gap-3 mt-7">
-                  <div>{renderJoinButton()}</div>
-                  <div>
-                    {eventData.priceType === "PAID" && (
-                      <Button
-                        className="bg-linear-to-r from-amber-500 to-cyan-600 text-white shadow-lg hover:from-amber-600 hover:to-cyan-700 px-4 py-2"
-                        onClick={() => handlePayLater(eventData.id)}
-                      >
-                        Pay Later &amp; {eventData.visibility === "PRIVATE" ? "Request" : "Join"}
-                      </Button>
-                    )}
-                  </div>
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-2">
+                  {renderJoinButton()}
+                  {eventData.priceType === "PAID" && (
+                    <Button
+                      variant="ghost"
+                      onClick={() => handlePayLater(eventData.id)}
+                      className="w-full sm:w-auto"
+                    >
+                      Pay Later&nbsp;&amp;&nbsp;
+                      {eventData.visibility === "PRIVATE" ? "Request" : "Join"}
+                    </Button>
+                  )}
                 </div>
               </div>
-            </div>
+            </motion.aside>
           </div>
         </div>
       </main>
-      <footer className="max-w-[1480px] mx-auto px-7 py-8 border-t mt-10 text-center text-xs text-slate-500 bg-white">
-        Event Created:{" "}
-        <span className="text-slate-800 font-bold">
+      {/* Footer */}
+      <footer className="max-w-[1440px] mx-auto w-full px-4 md:px-8 py-6 border-t border-border mt-12 text-center text-xs bg-card text-muted-foreground">
+        Event Created:&nbsp;
+        <span className="text-foreground font-bold">
           {new Date(eventData.createdAt).toLocaleDateString()}
         </span>
       </footer>
