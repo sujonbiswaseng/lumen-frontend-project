@@ -1,10 +1,13 @@
+import { getCategory } from '@/actions/category.actions'
 import { CreateEvent } from '@/components/module/event/CreateEvent'
+import { TResponseCategoryData } from '@/types/category.type'
 import React from 'react'
 
-const EventCratePage = () => {
+const EventCratePage = async() => {
+  const res=await getCategory()
   return (
     <div>
-      <CreateEvent/>
+      <CreateEvent data={res?.data as TResponseCategoryData[]}/>
         
     </div>
   )

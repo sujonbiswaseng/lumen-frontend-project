@@ -10,13 +10,10 @@ export type IEventPricing=z.infer<typeof PricingTypeEnum>
 export type IEventStatusEnum=z.infer<typeof EventStatusEnum>
 export type IEventTypeEnum=z.infer<typeof EventTypeEnum>
 
-// array
- const EVENT_CATEGORY_ARR =EventCategoryEnum.options ;
  const EVENT_Pricing_ARR =PricingTypeEnum.options ;
  const EVENT_Status_ARR =EventStatusEnum.options ;
  const eventVisibility = ["PUBLIC", "PRIVATE"] as const;
 export const EventArr={
-  EVENT_CATEGORY_ARR,
   EVENT_Pricing_ARR,
   EVENT_Status_ARR,
   eventVisibility

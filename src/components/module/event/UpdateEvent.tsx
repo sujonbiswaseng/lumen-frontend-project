@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { updateEvent } from "@/actions/event.actions";
 import { EventArr, IEventCategory, IEventPricing, IEventStatusEnum, IEventTypeEnum } from "@/types/event.types";
 import { UpdateEventSchema } from "@/validations/event.validation";
+import { getCategory } from "@/actions/category.actions";
+import { TResponseCategoryData } from "@/types/category.type";
 
 
 
@@ -22,8 +24,16 @@ const UpdateEvent = ({
   role: string;
   onSuccess: (updated: any) => void;
 }) => {
+  const [categories,setcategories]=useState<TResponseCategoryData[]>()
   const [eventData, setEventData] = React.useState<IUpdateEventData>({});
 
+  useEffect(()=>{
+    const fetchData= async()=>{
+      const res=await getCategory()
+      setcategories(res?.data as TResponseCategoryData[])
+    }
+    fetchData()
+  },[])
   // zod validation
   const parsedata = UpdateEventSchema.safeParse(eventData);
 
@@ -140,7 +150,7 @@ const UpdateEvent = ({
         {/* Venue */}
         <div className="flex flex-col space-y-2">
           <Label htmlFor="venue" className="font-medium ml-2 ">
-            Venue
+            location
           </Label>
           <input
             id="location"
@@ -237,9 +247,9 @@ const UpdateEvent = ({
             className="w-full border-2 border-gray-300 p-3 rounded-xl focus:outline-none"
           >
             <option value="">Select Category</option>
-            {EventArr.EVENT_CATEGORY_ARR.map((category: string) => (
-              <option key={category} value={category}>
-                {category}
+            {categories?.map((category:TResponseCategoryData) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
               </option>
             ))}
           </select>

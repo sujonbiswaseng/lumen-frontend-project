@@ -36,8 +36,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TResponseCategoryData } from "@/types/category.type";
 
-export function CreateEvent() {
+export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
   const [preview, setPreview] = useState<string[]>([]);
   const router = useRouter();
   const form = useForm({
@@ -414,56 +415,34 @@ export function CreateEvent() {
                 );
               }}
             />
-            <form.Field
+               <form.Field
               name="category_name"
-              validators={{ onChange: CreateEventSchema.shape.category_name }}
+                  validators={{ onChange: CreateEventSchema.shape.category_name }}
               children={(field) => {
                 const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                  field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field
-                    data-invalid={isInvalid}
-                    className="flex flex-col gap-2 mb-4 w-full"
-                  >
-                    <FieldLabel
-                      htmlFor={field.name}
-                      className="flex items-center gap-1 text-base font-medium text-foreground"
-                    >
-                      Categories <span style={{ color: "red" }}>*</span>
-                    </FieldLabel>
-                    <Select
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Category Name</FieldLabel>
+
+                    <select
+                      className="border-amber-50 shadow-sm px-2 py-2.5"
+                      id={field.name}
+                      name={field.name}
                       value={field.state.value}
-                      onValueChange={(value) =>
-                        field.handleChange(value === "__all__" ? "" : value)
-                      }
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
                     >
-                      <SelectTrigger className={` cursor-pointer`}>
-                        <SelectValue placeholder="All" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-[320px]">
-                        <SelectItem value="__all__">All</SelectItem>
-                        {EventArr.EVENT_CATEGORY_ARR.map((option) => (
-                          <SelectItem
-                            key={String(option)}
-                            value={String(option)}
-                          >
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <option value="">Select a category</option>
+                      {data.map((item: any, index: number) => <option key={index}>{item.name}</option>)}
+                    </select>
+
                     {isInvalid && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                        className="text-sm mt-1 font-medium text-[--muted-foreground]"
-                      >
-                        Please select a valid category.
-                      </motion.div>
+                      <FieldError errors={field.state.meta.errors} />
                     )}
                   </Field>
-                );
+                )
               }}
             />
             <form.Field

@@ -15,14 +15,16 @@ import UpdateEvent from "./UpdateEvent";
 import { deleteEvent } from "@/actions/event.actions";
 import CopyableId from "@/components/shared/CopyId";
 import { useFilter } from "@/components/ReusableFilter";
+import { TResponseCategoryData } from "@/types/category.type";
 
 interface MyEventsTableProps {
+  categories:TResponseCategoryData[]
   Events: TGroupedEvents;
   pagination?: TPagination;
   role: string;
 }
 
-export default function EventsTable({ Events, pagination, role }: MyEventsTableProps) {
+export default function EventsTable({ categories,Events, pagination, role }: MyEventsTableProps) {
   const router = useRouter();
   const [selectedStatus, setSelectedStatus] = useState<keyof TGroupedEvents>("UPCOMING");
   const [tableEvents, setTableEvents] = useState<IBaseEvent[]>([]);
@@ -93,7 +95,8 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   const fields: TFilterField[] = [
     { type: "text", name: "search", value: form.search, placeholder: "Search...", onChange: (val) => handleChange("search", val) },
     { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
-    { type: "select", name: "category_name", label: "category_name", value: form.category_name, onChange: (val) => handleChange("category_name", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
+    { type: "select", name: "category_name", label: "category_name", value: form.category_name,onChange: (val) => handleChange("category_name", val), options: categories.map(v => ({ label: v.name, value: v.name }))
+  },
     { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
     { type: "range", name: "fee", label: "Price", value: form.fee as any, min: 0, max: 6000, onChange: (val) => handleChange("fee", Number(val)) },
     { type: "select", name: "status", label: "Status", value: form.status, onChange: (val) => handleChange("status", val), options: EventArr.EVENT_Status_ARR.map(v => ({ label: v, value: v })) },

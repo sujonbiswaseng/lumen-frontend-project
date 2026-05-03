@@ -1,8 +1,10 @@
 import { getSessionAction } from '@/actions/auth.actions';
+import { getCategory } from '@/actions/category.actions';
 import { fetchEvents, getMyEvents } from '@/actions/event.actions';
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ErrorFallback from '@/components/ErrorFallback'
 import EventsTable from '@/components/module/event/Myevent';
+import { TResponseCategoryData } from '@/types/category.type';
 import { TGroupedEvents, TPagination } from '@/types/event.types';
 import React from 'react'
 const EventsPage = async({
@@ -40,6 +42,7 @@ const EventsPage = async({
     console.error("Events fetch error:", err);
     eventsResponse = { data: { UPCOMING: [] }, pagination: { total: 0, page: 1, limit: 10, totalpage: 1 } };
   }
+  const categories=await getCategory()
   return (
     <ErrorBoundary fallback={<ErrorFallback title="Events Error" message="Something went wrong while loading the events page." />}>
       <div>
@@ -51,6 +54,7 @@ const EventsPage = async({
           />
         ) : (
           <EventsTable
+          categories={categories?.data as TResponseCategoryData[]}
           Events={eventsResponse.data as TGroupedEvents}
           pagination={eventsResponse.pagination as TPagination}
           role={role as string}
