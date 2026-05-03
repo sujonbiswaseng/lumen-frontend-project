@@ -1,66 +1,113 @@
-import React from 'react';
-import { Button } from './ui/button';
-import Link from 'next/link';
+"use client";
 
-const CallToAction = ({role}:{role:string}) => {
+import React from "react";
+import { Button } from "./ui/button";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { fadein } from "@/lib/frammer.motion";
+
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const CallToAction = ({ role }: { role: string }) => {
   return (
-    <section className="relative py-16 md:py-24 bg-gradient-to-br from-indigo-900 via-blue-900 to-cyan-900 overflow-hidden">
-      {/* Ambient background shapes */}
+    <section
+      className="relative overflow-hidden"
+      aria-label="Get started with event management"
+    >
+      {/* Ambient background shapes, use bg-accent for effect */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-10 left-0 w-80 h-80 rounded-full bg-cyan-400/20 blur-3xl -z-10"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-indigo-400/20 blur-2xl -z-10"></div>
-        <svg className="absolute top-1/4 right-10 opacity-10 w-80 h-80 -z-10" fill="none" viewBox="0 0 400 400">
-          <circle cx="200" cy="200" r="200" fill="url(#paint0_radial_cta)" />
-          <defs>
-            <radialGradient id="paint0_radial_cta" cx="0" cy="0" r="1" gradientTransform="translate(200 200) scale(200)" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#38bdf8"/>
-              <stop offset="1" stopColor="#818cf8" stopOpacity="0"/>
-            </radialGradient>
-          </defs>
-        </svg>
+        <div className="absolute top-8 left-[-6%] w-80 h-80 rounded-full bg-accent opacity-20 blur-3xl -z-10" />
+        <div className="absolute bottom-[-3%] right-[-5%] w-80 h-80 rounded-full bg-primary opacity-20 blur-2xl -z-10" />
       </div>
-      <div className="container mx-auto max-w-2xl px-4 md:px-8 relative z-10">
-        <div className="bg-gradient-to-tr from-cyan-950/70 via-blue-900/70 to-indigo-950/80 backdrop-blur-xl rounded-2xl shadow-xl border border-cyan-400/10 dark:border-cyan-900/20 px-6 md:px-12 py-10 md:py-16 flex flex-col items-center text-center gap-6 md:gap-8">
-          <h2 className="text-2xl md:text-4xl font-bold md:font-extrabold text-cyan-50 leading-snug md:leading-tight mb-2 md:mb-0 tracking-tight shadow-sm">
-            Your Next Event Starts Here.
-            <br className="hidden md:inline" />
-            <span className="block text-transparent bg-clip-text bg-gradient-to-l from-cyan-200 via-sky-300 to-indigo-200 mt-2 md:mt-3">
-              Host. Create. Inspire.
-            </span>
-          </h2>
-          <p className="text-cyan-100/90 max-w-lg mx-auto text-base md:text-lg leading-relaxed mb-2 md:mb-0">
-            Easily manage, promote, and bring your events to life.<br />
-            <span className="block mt-1 text-slate-50/80 text-sm md:text-base">No complex setup, secure payments, beautiful invites, and actionable analytics.</span>
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-5 justify-center w-full mt-3 md:mt-5">
-            <Link href={role=="ADMIN"?"/admin/dashboard/events/create":"/user/dashboard/create-events"}  >
-         
+      <div className="mx-auto w-full max-w-[1440px] flex justify-center items-center px-4 md:px-8">
+        <div className="w-full max-w-2xl relative z-10 py-12 md:py-20">
+          <motion.div
+           variants={fadein('up',0.14)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.4 }}
+            className="bg-card border border-border shadow-xl backdrop-blur-xl rounded-2xl flex flex-col gap-6 md:gap-8 items-center text-center px-6 md:px-12 py-10 md:py-16"
+          >
+            <motion.h2
+              variants={fadein('right',0.14)}
+              className="text-2xl md:text-4xl font-extrabold text-foreground tracking-tight leading-snug md:leading-tight mb-2"
+            >
+              Your Next Event Starts Here.
+              <br className="hidden md:inline" />
+              <span className="block text-transparent bg-clip-text bg-gradient-to-l from-primary to-accent mt-2 md:mt-3">
+                Host. Create. Inspire.
+              </span>
+            </motion.h2>
+            <motion.p
+               variants={fadein('left',0.14)}
+              className="text-muted-foreground max-w-lg mx-auto text-base md:text-lg leading-relaxed"
+            >
+              Easily manage, promote, and bring your events to life.
+              <br />
+              <span className="block mt-1 text-muted-foreground text-sm md:text-base">
+                No complex setup, secure payments, beautiful invites, &amp; actionable analytics.
+              </span>
+            </motion.p>
+            <motion.div
+              variants={fadein('left',0.14)}
+              className="flex flex-col sm:flex-row gap-4 md:gap-6 w-full justify-center mt-3 md:mt-5"
+            >
+              <Link
+                href={
+                  role === "ADMIN"
+                    ? "/admin/dashboard/events/create-event"
+                    : "/user/dashboard/create-events"
+                }
+                className="w-full sm:w-auto"
+              >
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600 hover:from-cyan-400 hover:via-teal-500 hover:to-blue-700 text-white text-base md:text-lg font-semibold px-7 py-3 rounded-xl shadow-lg hover:scale-105 transition-all duration-150 border-none"
+                  className="w-full sm:w-auto bg-primary text-primary-foreground font-semibold text-base md:text-lg px-7 py-3 rounded-xl focus-visible:ring-2 ring-primary ring-offset-2 shadow hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+                  
                 >
-                  <span className="mr-2 md:mr-3">🚀</span> create event
+                  <span className="flex items-center justify-center gap-2">
+                    <span aria-hidden>🚀</span>
+                    Create Event
+                  </span>
                 </Button>
-         
-            </Link>
-            <Link href="/events"  >
-            
+              </Link>
+              <Link href="/events" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto border-2 border-cyan-300 text-black hover:text-white hover:bg-cyan-700/90 hover:border-cyan-400 transition-colors duration-150 px-7 py-3 rounded-xl shadow"
+                  variant="secondary"
+                  className="w-full sm:w-auto border border-border text-foreground hover:bg-accent hover:text-accent-foreground px-7 py-3 rounded-xl font-semibold transition-colors duration-300"
+                 
                 >
-                  <span className="mr-2 md:mr-3">🔑</span> join events
+                  <span className="flex items-center justify-center gap-2">
+                    <span aria-hidden>🔑</span>
+                    Join Events
+                  </span>
                 </Button>
-           
-            </Link>
-          </div>
-          <div className="mt-5 md:mt-7 w-full flex items-center justify-center gap-1.5 text-xs md:text-sm text-cyan-100/80 font-semibold tracking-tight">
-            <svg className="w-4 h-4 text-green-400 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M16.707 7.293a1 1 0 10-1.414 1.414l1.793 1.793a1 1 0 010 1.414l-7 7a1 1 0 01-1.414-1.414l7-7zm-2.829 2.12l-7 7a1 1 0 01-1.415-1.415l7-7a1 1 0 011.415 1.415z"/>
-            </svg>
-            No credit card required <span aria-hidden className="mx-1">|</span> Cancel anytime
-          </div>
+              </Link>
+            </motion.div>
+            <motion.div
+               variants={fadein('left',0.14)}
+              className="mt-5 md:mt-7 w-full flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-semibold tracking-tight"
+            >
+              <svg
+                className="w-4 h-4 text-accent inline-block mr-1"
+                fill="currentColor"
+                aria-label="check mark"
+                viewBox="0 0 20 20"
+                focusable="false"
+              >
+                <path d="M16.707 7.293a1 1 0 10-1.414 1.414l1.793 1.793a1 1 0 010 1.414l-7 7a1 1 0 01-1.414-1.414l7-7zm-2.829 2.12l-7 7a1 1 0 01-1.415-1.415l7-7a1 1 0 011.415 1.415z" />
+              </svg>
+              No credit card required <span aria-hidden className="mx-1">|</span> Cancel anytime
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>

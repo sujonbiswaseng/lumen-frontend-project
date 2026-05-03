@@ -1,9 +1,6 @@
 import { getSessionAction } from "@/actions/auth.actions";
 import { fetchEvents, fetchPaidAndFreeEvents, getFeaturedEvent } from "@/actions/event.actions";
 import CallToAction from "@/components/CallToAction";
-import EventsList from "@/components/Category";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import ErrorFallback from "@/components/ErrorFallback";
 import HeroSlider from "@/components/hero-slider";
 import UpcommingEvent from "@/components/UpcommingEvent";
 import NotFoundItem from "@/components/NotFoundItem";
@@ -24,83 +21,107 @@ import BlogsContent from "@/components/module/home/Blogs";
 import { TResponseBlog } from "@/types/blog.type";
 import NewsLatter from "@/components/module/home/NewsLatter";
 import { FAQ } from "@/components/module/home/FAQ";
+import React from "react";
+
+function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <div>
+      <NotFoundItem content="Sorry, there was an error loading this page. Please try again later." emoji="💥" />
+      {process.env.NODE_ENV === "development" && (
+        <pre className="bg-destructive/20 text-xs text-red-700 p-4 rounded mt-4 whitespace-pre-wrap">{error.message}</pre>
+      )}
+    </div>
+  );
+}
 
 export default async function Home({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const search = await searchParams;
-  const res = await getUserNotificationsAction();
-  const userinfo = await getSessionAction();
-  const role = userinfo.data?.role;
-  const eventsRes = await fetchEvents();
-  const events = eventsRes.data?.UPCOMING.filter((item) => (item.visibility == "PUBLIC") && item);
+  try {
+    const search = await searchParams;
+    const res = await getUserNotificationsAction();
+    const userinfo = await getSessionAction();
+    const role = userinfo.data?.role;
+    const eventsRes = await fetchEvents();
+    const events = eventsRes.data?.UPCOMING.filter(
+      (item) => item.visibility == "PUBLIC" && item
+    );
 
-  let paidAndFreeEvents = await fetchPaidAndFreeEvents();
-  let isfeatured = await getFeaturedEvent();
-  if (!isfeatured.success || !isfeatured.data) {
+    let paidAndFreeEvents = await fetchPaidAndFreeEvents();
+    let isfeatured = await getFeaturedEvent();
+    if (!isfeatured.success || !isfeatured.data) {
+      return (
+        <div>
+          <NotFoundItem content="Sorry, no featured event available at this time." />
+        </div>
+      );
+    }
+
+    let highlightResponse;
+    try {
+      highlightResponse = await getAllHighlightsAction(search);
+    } catch (err) {
+      console.error("Highlights fetch error:", err);
+      highlightResponse = {
+        data: [],
+        pagination: { total: 0, page: 1, limit: 10, totalpage: 1 },
+        success: false,
+      };
+    }
+    const getpublicstats = await getPublicStatsAction();
+    const blogsResponse = await getAllBlogsAction(search);
+
     return (
-      <div>
-        <NotFoundItem content="Sorry, no featured event available at this time." />
+      <div className="flex flex-col">
+        {/* Error checked components */}
+        {!isfeatured || !isfeatured.success || !isfeatured.data ? (
+          <NotFoundItem content="hero section data not found" />
+        ) : (
+          <HeroSlider data={isfeatured.data as IBaseEvent[]} />
+        )}
+
+        <Featured />
+        <Services />
+        <HighLightContent
+          highlight={
+            highlightResponse.data as TResponseHighlight<{ user: IBaseUser }>[]
+          }
+        />
+        <Statics stats={getpublicstats.data as PublicStats} />
+
+        <BlogsContent
+          blogs={
+            blogsResponse.data as TResponseBlog<{
+              author: IBaseUser;
+              event: IBaseEvent;
+            }>[]
+          }
+        />
+        <NewsLatter />
+        <FAQ />
+
+        {!events || !eventsRes.success || !eventsRes.data ? (
+          <NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴" />
+        ) : (
+          <UpcommingEvent
+            events={
+              events as (
+                | TResponseEvent<{
+                    reviews: IgetReviewData[];
+                    organizer: IBaseUser[];
+                  }>
+                | null
+              )[]
+            }
+          />
+        )}
+        <CallToAction role={role as string} />
       </div>
     );
+  } catch (error: any) {
+    // Error boundary catch block
+    return <ErrorBoundary error={error instanceof Error ? error : new Error("Unknown error")} />;
   }
-
-  
-  let highlightResponse;
-  try {
-    
-    highlightResponse = await getAllHighlightsAction(search);
-  } catch (err) {
-    console.error("Highlights fetch error:", err);
-    highlightResponse = {
-      data: [],
-      pagination: { total: 0, page: 1, limit: 10, totalpage: 1 },
-      success: false,
-    };
-  }
-  const getpublicstats=await getPublicStatsAction()
- const blogsResponse = await getAllBlogsAction(search);
-  
-  return (
-    <div className="flex flex-col">
-      {/* Removed sdfsdf */}
-      {!isfeatured || !isfeatured.success || !isfeatured.data ? (
-        <NotFoundItem content="hero section data not found" />
-      ) : (
-        <HeroSlider data={isfeatured.data as IBaseEvent[]} />
-      )}
-      <Featured/>
-      <Services/>
-      <HighLightContent highlight={highlightResponse.data as TResponseHighlight<{user:IBaseUser}>[]} />
-
-        <Statics stats={getpublicstats.data as PublicStats}/>
-
-
-        <BlogsContent  blogs={blogsResponse.data as TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[]}/>
-              <NewsLatter/>
-              <FAQ />
- 
-     {!events || !eventsRes.success ||!eventsRes.data?<NotFoundItem content="Upcoming Event Data Not found" emoji="⁴⁰⁴"/>: <UpcommingEvent events={events as (TResponseEvent<{ reviews: IgetReviewData[]; organizer: IBaseUser[]; }> | null)[]} />}
-      <CallToAction role={role as string} />
-      <ErrorBoundary fallback={<ErrorFallback title="Failed to load events list." />}>
-        {!paidAndFreeEvents || !paidAndFreeEvents.data || !paidAndFreeEvents.success ? (
-          <ErrorBoundary
-            fallback={
-              <ErrorFallback title={paidAndFreeEvents?.message || "No events data returned from server."} />
-            }
-          >
-            <NotFoundItem
-              content="No Events Available"
-              filter="Sorry, we couldn't find any upcoming events right now. Please check back later or explore other sections of our site."
-              emoji="😔"
-            />
-          </ErrorBoundary>
-        ) : (
-          <EventsList events={paidAndFreeEvents.data} />
-        )}
-      </ErrorBoundary>
-    </div>
-  );
 }

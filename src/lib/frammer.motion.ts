@@ -1,11 +1,12 @@
 import type { Variants } from "framer-motion";
 
+/** Use with `hidden` / `visible` — matches stagger parents using `whileInView="visible"`. */
 export const fadein = (
   direction: "up" | "down" | "left" | "right",
   delay: number
 ): Variants => {
-  let x = 0,
-    y = 0;
+  let x = 0;
+  let y = 0;
   if (direction === "up") y = 40;
   if (direction === "down") y = -40;
   if (direction === "left") x = 40;
@@ -21,9 +22,9 @@ export const fadein = (
         duration: 1.2,
         delay,
         ease: [0.25, 0.25, 0.25, 0.75],
-      }
+      },
     },
-    show: {
+    visible: {
       y: 0,
       x: 0,
       opacity: 1,
@@ -32,7 +33,7 @@ export const fadein = (
         duration: 1.2,
         delay,
         ease: [0.25, 0.25, 0.25, 0.75],
-      }
-    }
+      },
+    },
   };
 };
