@@ -14,8 +14,8 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Planora - Professional Event Management Platform",
-  description: "Planora is a platform for discovering, creating, and managing professional events.",
+  title: "lumen - Professional Event Management Platform",
+  description: "lumen is a platform for discovering, creating, and managing professional events.",
 };
 
 export default function RootLayout({

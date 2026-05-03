@@ -1,8 +1,10 @@
 import { getSessionAction } from '@/actions/auth.actions';
+import { getCategory } from '@/actions/category.actions';
 import { fetchEvents, getMyEvents } from '@/actions/event.actions';
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ErrorFallback from '@/components/ErrorFallback'
 import EventsTable from '@/components/module/event/Myevent';
+import { TResponseCategoryData } from '@/types/category.type';
 import { TGroupedEvents, TPagination } from '@/types/event.types';
 import React from 'react'
 const EventsPage = async({
@@ -11,6 +13,7 @@ const EventsPage = async({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const userinfo = await getSessionAction();
+  const res=await getCategory()
   const role = userinfo.data?.role;
   if (!userinfo || !userinfo.data) {
     return (
@@ -51,6 +54,7 @@ const EventsPage = async({
           />
         ) : (
           <EventsTable
+          categories={res?.data as TResponseCategoryData[]}
           Events={eventsResponse.data as TGroupedEvents}
           pagination={eventsResponse.pagination as TPagination}
           role={role as string}

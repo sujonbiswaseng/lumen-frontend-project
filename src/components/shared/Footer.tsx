@@ -43,7 +43,7 @@ const Footer = () => {
               <Link href={"/"}>
               <Image
                 src="/logo.png"
-                alt="Planora Logo"
+                alt="lumen Logo"
                 width={48}
                 height={48}
                 className="object-contain rounded-lg shadow-lg border border-gray-800 bg-white p-1 transition-transform duration-200 hover:scale-105"
@@ -51,7 +51,7 @@ const Footer = () => {
               />
         
               </Link>
-              <p>planora</p>
+              <p>lumen</p>
               
             </div>
 

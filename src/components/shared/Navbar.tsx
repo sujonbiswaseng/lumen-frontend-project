@@ -76,12 +76,12 @@ export default function Navbar({ user }: NavbarProps) {
       <div className="w-full mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group" aria-label="Planora Home">
+        <Link href="/" className="flex items-center gap-3 group" aria-label="lumen Home">
           <div className="flex items-center h-10 w-10 relative">
             <div className="relative bg-white rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center w-10 h-10 overflow-hidden p-1">
               <Image
                 src="/logo.png"
-                alt="Planora logo"
+                alt="lumen logo"
                 fill
                 sizes="40px"
                 className="object-cover rounded-full"
