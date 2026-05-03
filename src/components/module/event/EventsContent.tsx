@@ -6,22 +6,16 @@ import EventCardSkeleton from "./evenCardSkeleton";
 import { EventArr, TPagination, TResponseEvent } from "@/types/event.types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFilter } from "@/components/ReusableFilter";
-import EventFilterUI from "./EventFilterInput";
-import { Search } from "lucide-react";
+
 import PaginationPage from "./Pagination";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { TFilterField } from "@/types/filter.types";
 import { FilterPanel } from "@/components/Filter";
-import LoadingContentPage from "@/components/LoadingPage";
+import { IBaseUser } from "@/types/user.types";
+
 
 interface EventContentProps {
-  events: TResponseEvent<{ reviews: any[] }>[];
+  events: TResponseEvent<{ reviews: any[],organizer:IBaseUser }>[];
   pagination: TPagination;
 }
 
@@ -53,7 +47,7 @@ export default function EventContent({
   const [form, setForm] = useState({
     is_featured: false,
     date: "",
-    categories: "",
+    category_name: "",
     priceType: "",
     visibility: "",
     fee: null,
@@ -72,7 +66,7 @@ export default function EventContent({
     const defaultForm = {
       is_featured: false,
     date: "",
-    categories: "",
+    category_name: "",
     priceType: "",
     visibility: "",
     fee: null,
@@ -86,7 +80,7 @@ export default function EventContent({
   const fields: TFilterField[] = [
     { type: "text", name: "search", value: form.search, placeholder: "Search...", onChange: (val) => handleChange("search", val) },
     { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
-    { type: "select", name: "categories", label: "Categories", value: form.categories, onChange: (val) => handleChange("categories", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
+    { type: "select", name: "category_name", label: "category_name", value: form.category_name, onChange: (val) => handleChange("category_name", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
     { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
     { type: "range", name: "fee", label: "Price", value: form.fee as any, min: 0, max: 6000, onChange: (val) => handleChange("fee", Number(val)) },
     { type: "select", name: "visibility", label: "Visibility", value: form.visibility, onChange: (val) => handleChange("visibility", val), options: [{ label: "Public", value: "PUBLIC" }, { label: "Private", value: "PRIVATE" }] },
@@ -129,7 +123,7 @@ export default function EventContent({
                 <EventCardSkeleton key={i} />
               ))
             : events.map((event) => (
-                <EventCard key={event.id} {...event} />
+                <EventCard key={event.id} {...event as  TResponseEvent<{ reviews: any[],organizer:IBaseUser }>} />
               ))}
         </div>
         </div>

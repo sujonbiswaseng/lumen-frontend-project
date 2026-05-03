@@ -8,9 +8,9 @@ const ViewInvitationData = ({viewMode,viewData}:{viewMode:any,viewData:any}) => 
     <div className="rounded-2xl border border-gray-100 bg-white shadow-xl px-4 sm:px-6 py-6 space-y-8">
       <div className="flex flex-col sm:flex-row gap-6 items-center">
         <div className="flex-shrink-0 w-28 h-28 flex items-center justify-center border border-blue-100 rounded-xl bg-gradient-to-tr from-blue-50 to-indigo-50 shadow-inner overflow-hidden">
-          {viewData?.event?.image ? (
+          {viewData?.event?.images ? (
             <img
-              src={viewData.event.image}
+              src={viewData.event.images[0]}
               alt={viewData?.event?.title ?? "Event"}
               className="w-full h-full object-cover rounded-lg"
             />

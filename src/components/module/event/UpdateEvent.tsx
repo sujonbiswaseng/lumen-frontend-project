@@ -225,14 +225,14 @@ const UpdateEvent = ({
         </div>
         {/* Categories */}
         <div className="flex flex-col space-y-2">
-          <Label htmlFor="categories" className="font-medium ml-2 ">
-            Categories
+          <Label htmlFor="category_name" className="font-medium ml-2 ">
+          category_name
           </Label>
           <select
-            id="categories"
-            value={eventData.categories ?? ""}
+            id="category_name"
+            value={eventData.category_name ?? ""}
             onChange={e =>
-              setEventData({ ...eventData, categories: e.target.value as IEventCategory })
+              setEventData({ ...eventData, category_name: e.target.value as string })
             }
             className="w-full border-2 border-gray-300 p-3 rounded-xl focus:outline-none"
           >

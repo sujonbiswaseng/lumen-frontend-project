@@ -35,7 +35,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   const [form, setForm] = useState({
     is_featured: false,
     date: "",
-    categories: "",
+    category_name: "",
     priceType: "",
     status: "",
     visibility: "",
@@ -53,7 +53,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
 
   const handleReset = () => {
     const defaultForm = {
-      is_featured: false, date: "", categories: "", priceType: "",
+      is_featured: false, date: "", category_name: "", priceType: "",
       status: "", visibility: "", fee: null, search: "", createdAt: "",
     };
     setForm(defaultForm);
@@ -93,7 +93,7 @@ export default function EventsTable({ Events, pagination, role }: MyEventsTableP
   const fields: TFilterField[] = [
     { type: "text", name: "search", value: form.search, placeholder: "Search...", onChange: (val) => handleChange("search", val) },
     { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
-    { type: "select", name: "categories", label: "Categories", value: form.categories, onChange: (val) => handleChange("categories", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
+    { type: "select", name: "category_name", label: "category_name", value: form.category_name, onChange: (val) => handleChange("category_name", val), options: EventArr.EVENT_CATEGORY_ARR.map(v => ({ label: v, value: v })) },
     { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
     { type: "range", name: "fee", label: "Price", value: form.fee as any, min: 0, max: 6000, onChange: (val) => handleChange("fee", Number(val)) },
     { type: "select", name: "status", label: "Status", value: form.status, onChange: (val) => handleChange("status", val), options: EventArr.EVENT_Status_ARR.map(v => ({ label: v, value: v })) },

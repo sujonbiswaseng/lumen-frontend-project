@@ -3,6 +3,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import EventContent from "@/components/module/event/EventsContent";
 import { TPagination, TResponseEvent } from "@/types/event.types";
 import { IgetReviewData } from "@/types/review.types";
+import { IBaseUser } from "@/types/user.types";
 import React from "react";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ const EventsPage = async ({
      <React.Suspense fallback={<div>Loading events...</div>}>
        <ErrorBoundary fallback={<div>Failed to load events.</div>}>
          <EventContent
-           events={eventsResponse.data?.UPCOMING as TResponseEvent<{ reviews: IgetReviewData[] }>[]} 
+           events={eventsResponse.data?.UPCOMING as TResponseEvent<{ reviews: any[]; organizer: IBaseUser; }>[]} 
            pagination={eventsResponse.pagination as TPagination}
          />
        </ErrorBoundary>

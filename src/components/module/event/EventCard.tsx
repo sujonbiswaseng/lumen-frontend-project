@@ -6,26 +6,10 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
-type EventCardProps = {
-  id: string;
-  title: string;
-  description: string;
-  priceType: string;
-  status?: string;
-  visibility: string;
-  organizer: { id: string; image: string; name?: string };
-  date: string;
-  time: string;
-  venue: string;
-  images: string[] | null;
-  fee: number | null;
-  avgRating?: number;
-  totalReviews?: number;
-  categories?: string;
-  image?: string[];
-  name?: string;
-  is_featured?: boolean;
-};
+import { TResponseEvent } from "@/types/event.types";
+import { IBaseUser } from "@/types/user.types";
+
+export type EventCardProps = TResponseEvent<{ reviews: any[],organizer:IBaseUser }>;
 
 export default function EventCard({
   id,
@@ -36,14 +20,13 @@ export default function EventCard({
   organizer,
   date,
   time,
-  venue,
+  location,
   images,
   fee,
   avgRating,
   totalReviews,
-  categories,
-  image: profile,
-  name,
+  category_name,
+  images: profile,
   is_featured,
 }: EventCardProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
@@ -94,7 +77,7 @@ export default function EventCard({
               <Image
                 height={28}
                 width={28}
-                src={organizer.image}
+                src={organizer.image|| ""}
                 loading="lazy"
                 alt={organizer.name || "Organizer"}
                 className="w-7 h-7 rounded-full object-cover border-2 border-background shadow-sm"
@@ -105,9 +88,7 @@ export default function EventCard({
                 +{profile.length - 5}
               </span>
             )}
-            {name &&
-              <span className="text-xs font-medium text-muted-foreground max-w-[8rem] truncate">{name}</span>
-            }
+            
           </div>
           {organizer?.name && (
             <span className="text-xs text-muted-foreground leading-tight max-w-[85%] truncate">
@@ -129,8 +110,8 @@ export default function EventCard({
         {/* Categories, Ratings, Meta */}
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-y-1 gap-x-4 mt-1">
           <div className="flex flex-wrap gap-2">
-            {categories &&
-              categories.split(",").map((cat: string) => (
+            {category_name &&
+              category_name.split(",").map((cat: string) => (
                 <span
                   key={cat.trim()}
                   className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded font-medium border border-border"
@@ -158,7 +139,7 @@ export default function EventCard({
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <MapPin size={14} className="text-muted-foreground" />
-            <span className="truncate max-w-[10ch] sm:max-w-[19ch] md:max-w-[32ch]">{venue}</span>
+            <span className="truncate max-w-[10ch] sm:max-w-[19ch] md:max-w-[32ch]">{location}</span>
           </div>
         </div>
 
@@ -185,7 +166,7 @@ export default function EventCard({
             tabIndex={0}
             aria-label="View event details"
           >
-            View
+            View Details
           </Link>
         </div>
       </div>

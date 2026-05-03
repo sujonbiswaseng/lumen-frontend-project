@@ -192,7 +192,7 @@ function Sidebar({
 
   if (isMobile) {
     const userRole = userinfo?.role as UserRole;
-    const navItems: NavSection[] = getNavItemsByRole(userRole);
+    const navItems: NavSection[] = getNavItemsByRole(userRole) ??[];
     const dashboardHome = getDefaultDashboardRoute(userRole);
 
     return (

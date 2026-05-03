@@ -36,8 +36,8 @@ const EventCategoryCard: React.FC<EventCategoryCardProps> = ({ event }) => {
       : "Paid";
 
   const eventType =
-    event.categories && typeof event.categories === "string"
-      ? event.categories
+    event.category_name && typeof event.category_name === "string"
+      ? event.category_name
       : event.status;
 
   // professional backdrop gradient for header
@@ -57,9 +57,9 @@ const EventCategoryCard: React.FC<EventCategoryCardProps> = ({ event }) => {
       <div
         className={`relative w-full h-32 sm:h-40 flex items-center justify-center ${headerBg} overflow-hidden`}
       >
-        {event.image ? (
+        {event.images ? (
           <img
-            src={event.image}
+            src={event.images[0]}
             alt={event.title}
             loading="lazy"
             className="object-cover object-center absolute-inset w-full h-full transition-transform group-hover:scale-103 duration-300"
@@ -120,7 +120,7 @@ const EventCategoryCard: React.FC<EventCategoryCardProps> = ({ event }) => {
           </span>
           <span className="flex items-center gap-1">
             <svg width="13" height="13" fill="none" className="text-emerald-500" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="1.6" d="M21 10.5C21 18 12 21 12 21S3 18 3 10.5A9 9 0 0 1 12 3a9 9 0 0 1 9 7.5z"/><circle cx="12" cy="10.5" r="2.5" stroke="currentColor" strokeWidth="1.6"/></svg>
-            {truncate(event.venue || "TBA", 20)}
+            {truncate(event.location || "TBA", 20)}
           </span>
         </div>
 

@@ -27,10 +27,8 @@ const fadeUpAnim = {
 
 function ProfileModal({
   user,
-  notification,
 }: {
   user: IBaseUser;
-  notification?: TNotification<{ user: IBaseUser; event: IBaseEvent }>[];
 }) {
   const router = useRouter();
   const [useinfo, setuserinfo] = useState<IBaseUser>({ ...user });
@@ -153,12 +151,6 @@ function ProfileModal({
       }}
     >
       <div className="w-full max-w-2xl mx-auto bg-card shadow-lg rounded-2xl border border-border flex flex-col divide-y divide-border">
-        {/* Notification summary */}
-        <div className="flex justify-end px-6 pt-6">
-          <span className="text-sm text-muted-foreground">
-            Notifications: {notification?.length ?? 0}
-          </span>
-        </div>
 
         {/* Profile header section */}
         <div

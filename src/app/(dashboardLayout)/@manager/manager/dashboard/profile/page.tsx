@@ -29,7 +29,7 @@ const ProfilePage = async() => {
           }
         >
             <div>
-            <ProfileUserInfo user={userinfo.data as IBaseUser} notification={notification.data ?? []}/>
+            <ProfileUserInfo user={userinfo.data as IBaseUser}/>
             </div>
           {/* Your profile page content goes here */}
         </ErrorBoundary>

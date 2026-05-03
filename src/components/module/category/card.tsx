@@ -1,88 +1,120 @@
-'use client'
+'use client';
+
 import { TGetCategory } from "@/types/category.type";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import * as React from "react";
 
-export default function FoodCategories({ categories }: { categories: TGetCategory[] }) {
+const CARD_ANIMATION = {
+  initial: { opacity: 0, y: 32, scale: 0.97 },
+  animate: { opacity: 1, y: 0, scale: 1 },
+  exit: { opacity: 0, y: 24, scale: 0.97 },
+  transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+};
+
+const STAGGER = {
+  animate: {
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.10,
+    },
+  },
+};
+
+export default function EventCategories({ categories }: { categories: TGetCategory[] }) {
   const router = useRouter();
 
   return (
-    <section className="w-full bg-gray-50 py-10 sm:py-12 px-4 md:py-14 lg:py-16">
-      <div
-        className="w-full mx-auto max-w-[98vw] sm:max-w-[760px] md:max-w-[1024px] lg:max-w-[1280px] xl:max-w-[1480px] px-2 xs:px-4 sm:px-6 md:px-8 lg:px-10 2xl:px-0"
-      >
-        {/* Section Header */}
-        <div className="text-center mb-8 md:mb-10 lg:mb-12">
-          <h2 className="text-[1.8rem] xs:text-3xl sm:text-4xl md:text-[2.5rem] lg:text-4xl xl:text-[2.6rem] font-bold text-gray-800 leading-tight">
+    <section
+      className="w-full bg-background py-10 md:py-14 lg:py-16 px-4"
+      aria-label="Category selection"
+    >
+      <div className="w-full mx-auto max-w-[1440px] flex flex-col items-center px-2 sm:px-6 md:px-8 2xl:px-0">
+        {/* Header */}
+        <header className="w-full text-center mb-8 md:mb-12 flex flex-col items-center">
+          <h2 className="font-bold leading-tight tracking-tight text-2xl xs:text-3xl sm:text-4xl md:text-[2.5rem] xl:text-5xl text-foreground mb-2">
             Explore Our Categories
           </h2>
-          <p className="text-gray-500 mt-2 sm:mt-3 max-w-xl sm:max-w-2xl mx-auto text-sm md:text-base">
+          <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg font-normal">
             Discover the best restaurants and dishes carefully selected to satisfy your cravings.
           </p>
-        </div>
+        </header>
 
         {/* Categories Grid */}
-        <div
+        <motion.div
           className="
             grid 
             grid-cols-2 
             sm:grid-cols-3 
             md:grid-cols-4 
             lg:grid-cols-6 
-            gap-3 
-            xs:gap-4 
-            md:gap-6 
-            xl:gap-8"
+            gap-4 md:gap-6 xl:gap-8 w-full
+            "
+          variants={STAGGER}
+          initial="initial"
+          animate="animate"
+          exit="exit"
         >
-          {categories.map((category, index: number) => (
-            <div
-              onClick={() => router.push(`/category/${category.id}`)}
-              key={index}
-              className="
-                group 
-                bg-white 
-                rounded-2xl 
-                shadow-xs 
-                hover:shadow-xl 
-                transition 
-                duration-300 
-                overflow-hidden 
-                cursor-pointer 
-                flex flex-col
-                hover:-translate-y-1
-                "
-              style={{
-                minHeight: 0,
-              }}
-            >
-              {/* Image */}
-              <div className="relative w-full h-[95px] xs:h-[110px] sm:h-[138px] md:h-[145px] lg:h-[172px] xl:h-[180px] 2xl:h-[190px]">
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  className="object-cover group-hover:scale-110 transition duration-500"
-                  sizes="
-                    (max-width: 375px) 93vw,
-                    (max-width: 640px) 43vw,
-                    (max-width: 768px) 29vw,
-                    (max-width: 1024px) 22vw,
-                    (max-width: 1480px) 15vw,
-                    240px
-                  "
-                  priority={index < 6}
-                />
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 flex flex-col justify-center p-3 sm:p-4 text-center">
-                <h3 className="text-[13px] xs:text-sm sm:text-base md:text-[17px] font-semibold text-gray-800 group-hover:text-orange-600 transition">
-                  {category.name}
-                </h3>
-              </div>
-            </div>
-          ))}
-        </div>
+          <AnimatePresence initial={false}>
+            {categories.map((category, index: number) => (
+              <motion.div
+                key={category.id || index}
+                variants={CARD_ANIMATION}
+                onClick={() => router.push(`/category/${category.id}`)}
+                role="button"
+                tabIndex={0}
+                aria-label={`View category: ${category.name}`}
+                className={`
+                  group
+                  bg-card border border-border
+                  rounded-2xl
+                  shadow-sm
+                  hover:shadow-md
+                  focus:shadow-ring focus-visible:outline-none
+                  transition duration-300
+                  overflow-hidden
+                  cursor-pointer
+                  flex flex-col
+                  hover:-translate-y-1
+                  focus-visible:ring-2 focus-visible:ring-primary
+                  active:scale-98
+                  min-h-0
+                `}
+                whileHover={{ scale: 1.025 }}
+                whileTap={{ scale: 0.98 }}
+                onKeyPress={e => {
+                  if (e.key === "Enter" || e.key === " ") router.push(`/category/${category.id}`);
+                }}
+              >
+                {/* Image */}
+                <div className="relative w-full h-[96px] xs:h-[110px] sm:h-[136px] md:h-[145px] lg:h-[172px] xl:h-[184px] 2xl:h-[200px] bg-muted">
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    sizes="
+                      (max-width: 375px) 100vw,
+                      (max-width: 640px) 43vw,
+                      (max-width: 768px) 30vw,
+                      (max-width: 1024px) 22vw,
+                      (max-width: 1440px) 15vw,
+                      240px
+                    "
+                    priority={index < 6}
+                  />
+                </div>
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-center items-center px-4 py-3 sm:py-4 gap-1 text-center">
+                  <h3 className="font-semibold text-[14px] xs:text-base md:text-lg text-card-foreground group-hover:text-accent transition-colors duration-300">
+                    {category.name}
+                  </h3>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

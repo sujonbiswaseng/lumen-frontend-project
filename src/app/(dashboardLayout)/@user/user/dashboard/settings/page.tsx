@@ -12,7 +12,7 @@ const SettingPage = async() => {
       <ErrorBoundary fallback={<ErrorFallback title="Password Change Error" message="Something went wrong while attempting to change your password." />}>
       <div className='py-10'>
       <div className='mb-4'>
-      <ProfileModal notification={<NavbarNotifications/>} user={userinfo.data as IBaseUser}/>
+      <ProfileModal user={userinfo.data as IBaseUser}/>
       </div>
       <div>
       <ChangePasswordForm/>

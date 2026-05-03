@@ -18,8 +18,7 @@ export interface Icategory {
 export const CategoriesService = {
   getcategory: async (params?: any) => {
     try {
-      const cookieStore = await cookies();
-      const url = new URL(`${api_url}/api/v1/category`);
+      const url = new URL(`${api_url}/category`);
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== "") {
@@ -28,15 +27,13 @@ export const CategoriesService = {
         });
       }
       const res = await fetch(url.toString(), {
-        credentials: "include",
-        headers: {
-          Cookie: cookieStore.toString(),
-        },
+    
         next: {
           tags: ["category","categories"]
         },
       });
       const data = await res.json();
+      console.log(data,'data')
       const result = data.data.result as TResponseCategoryData<{ meals: IBaseEvent; user: IBaseUser; }>[]
       if (!res.ok) {
         const error = data as ApiErrorResponse;

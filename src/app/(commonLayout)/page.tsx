@@ -2,6 +2,8 @@ import { getSessionAction } from "@/actions/auth.actions";
 import { fetchEvents, fetchPaidAndFreeEvents, getFeaturedEvent } from "@/actions/event.actions";
 import CallToAction from "@/components/CallToAction";
 import HeroSlider from "@/components/hero-slider";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorFallback from "@/components/ErrorFallback";
 import UpcommingEvent from "@/components/UpcommingEvent";
 import NotFoundItem from "@/components/NotFoundItem";
 import { IBaseEvent, TResponseEvent } from "@/types/event.types";
@@ -22,17 +24,11 @@ import { TResponseBlog } from "@/types/blog.type";
 import NewsLatter from "@/components/module/home/NewsLatter";
 import { FAQ } from "@/components/module/home/FAQ";
 import React from "react";
+import { getCategory } from "@/actions/category.actions";
+import FoodCategories from "@/components/module/category/card";
+import { TResponseCategoryData } from "@/types/category.type";
+import EventCategories from "@/components/module/category/card";
 
-function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <div>
-      <NotFoundItem content="Sorry, there was an error loading this page. Please try again later." emoji="💥" />
-      {process.env.NODE_ENV === "development" && (
-        <pre className="bg-destructive/20 text-xs text-red-700 p-4 rounded mt-4 whitespace-pre-wrap">{error.message}</pre>
-      )}
-    </div>
-  );
-}
 
 export default async function Home({
   searchParams,
@@ -72,6 +68,17 @@ export default async function Home({
     }
     const getpublicstats = await getPublicStatsAction();
     const blogsResponse = await getAllBlogsAction(search);
+    const categories = await getCategory();
+    if (!categories?.success) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[40vh]">
+          <NotFoundItem
+            content="Required data not found! Please try again later."
+            emoji="⚠️"
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="flex flex-col">
@@ -82,8 +89,25 @@ export default async function Home({
           <HeroSlider data={isfeatured.data as IBaseEvent[]} />
         )}
 
+
+
         <Featured />
         <Services />
+
+     
+        <ErrorBoundary fallback={<NotFoundItem content="Categories could not be loaded!" emoji="📦" filter="category" />} >
+   
+   
+          {!categories?.success || !categories.data ? (
+            <NotFoundItem content="categories data not found" />
+          ) : (
+            <EventCategories
+              categories={categories?.data as TResponseCategoryData[]}
+            />
+          )}
+        </ErrorBoundary>
+  
+      
         <HighLightContent
           highlight={
             highlightResponse.data as TResponseHighlight<{ user: IBaseUser }>[]
@@ -124,6 +148,18 @@ export default async function Home({
     );
   } catch (error: any) {
     // Error boundary catch block
-    return <ErrorBoundary error={error instanceof Error ? error : new Error("Unknown error")} />;
+  return (
+    <ErrorBoundary
+      fallback={
+        <ErrorFallback
+          message="Something went wrong while loading the Common Layout page."
+          title="Error Loading Page"
+          key="common-layout-error"
+        />
+      }
+    >
+      <ErrorFallback  />
+    </ErrorBoundary>
+  );
   }
 }

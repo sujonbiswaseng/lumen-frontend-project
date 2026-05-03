@@ -46,7 +46,7 @@ export type IBaseEvent = {
     priceType?: IEventPricing;
     status: IEventStatusEnum;
     is_featured: boolean;
-    categories: string;
+    category_name: string;
     fee: number;
     organizerId: string;
     createdAt: string;
@@ -63,7 +63,7 @@ export type IBaseEvent = {
     time?: string;
     location?: string;
     images?: string[];
-    categories?: IEventCategory;
+    category_name?: IEventCategory;
     priceType?: "FREE" | "PAID";
     status?: IEventStatusEnum;
     visibility?: "PUBLIC" | "PRIVATE";

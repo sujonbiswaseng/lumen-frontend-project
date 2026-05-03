@@ -51,7 +51,7 @@ export function CreateEvent() {
       visibility: "PUBLIC",
       priceType: "FREE",
       status: "",
-      categories: "", // Or set to a default category as needed, e.g. eventcategoryArr[0]
+      category_name: "", // Or set to a default category as needed, e.g. eventcategoryArr[0]
       fee: null,
     },
     validators: {
@@ -415,8 +415,8 @@ export function CreateEvent() {
               }}
             />
             <form.Field
-              name="categories"
-              validators={{ onChange: CreateEventSchema.shape.categories }}
+              name="category_name"
+              validators={{ onChange: CreateEventSchema.shape.category_name }}
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;

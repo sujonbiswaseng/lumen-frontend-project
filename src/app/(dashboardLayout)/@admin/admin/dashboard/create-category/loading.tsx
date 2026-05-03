@@ -1,7 +1,8 @@
-import LoadingContent from "@/components/LoadingContent";
+import LoadingContentPage from "@/components/LoadingPage";
+
 
 export default function CreateCategoryLoading() {
   return <p>
-    <LoadingContent data="Loading the page, please wait..."/>
+    <LoadingContentPage data="Loading the page, please wait..."/>
     </p>
 }
