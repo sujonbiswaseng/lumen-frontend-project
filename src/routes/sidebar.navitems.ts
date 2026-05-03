@@ -114,6 +114,12 @@ export const ManagerNavItems: NavSection[] = [
                 icon: "UserCog"
             },
             {
+                title: "Newsletter",
+                href: "/manager/dashboard/newsletters",
+                icon: "MailOpen"
+            },
+       
+            {
                 title: "Participants",
                 href: "/manager/dashboard/participants",
                 icon: "Users"
@@ -247,6 +253,11 @@ export const adminNavItems: NavSection[] = [
                 title: "Participants",
                 href: "/admin/dashboard/participants",
                 icon: "Users"
+            },
+            {
+                title: "Newsletter",
+                href: "/admin/dashboard/newsletters",
+                icon: "MailOpen"
             },
             {
                 title: "Reviews",

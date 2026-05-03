@@ -111,7 +111,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                     <Input
                       id={field.name}
                       name={field.name}
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
@@ -139,7 +139,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                     <Input
                       id={field.name}
                       name={field.name}
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
@@ -168,7 +168,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                       id={field.name}
                       name={field.name}
                       type="date"
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
@@ -197,7 +197,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                       id={field.name}
                       name={field.name}
                       type="time"
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
@@ -225,7 +225,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                     <Input
                       id={field.name}
                       name={field.name}
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
@@ -327,7 +327,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                       Visibility <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onValueChange={(value) =>
                         field.handleChange(value === "__all__" ? "" : value)
                       }
@@ -381,7 +381,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                       Price Type <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onValueChange={(value) =>
                         field.handleChange(value === "__all__" ? "" : value)
                       }
@@ -429,7 +429,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                       className="border-amber-50 shadow-sm px-2 py-2.5"
                       id={field.name}
                       name={field.name}
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
@@ -463,7 +463,7 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                       Status <span style={{ color: "red" }}>*</span>
                     </FieldLabel>
                     <Select
-                      value={field.state.value}
+                      value={field.state.value ?? ""}
                       onValueChange={(value) =>
                         field.handleChange(value === "__all__" ? "" : value)
                       }

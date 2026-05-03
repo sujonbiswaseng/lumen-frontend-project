@@ -246,8 +246,8 @@ const DashboardContent = ({
           </p>
         </div>
       </div>
-      <FreeAndPublic statsCount={stats.priceType as IPriceType} />
-      <StatsCounts role={role} statsCount={stats.counts as ICounts} />
+      <FreeAndPublic statsCount={stats?.priceType as IPriceType} />
+      <StatsCounts role={role} statsCount={stats?.counts as ICounts} />
       <VisibilityPublicPrivate statsCount={eventVisivility} />
       <EventStatusCounts eventStatus={stats.eventStatus} />
       <Earnings

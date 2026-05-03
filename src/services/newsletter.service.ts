@@ -60,6 +60,13 @@ export const NewsletterService = {
         });
       }
       const config: RequestInit = {};
+      const storeCookies = await cookies();
+      config.credentials = "include";
+      config.headers = {
+        ...(config.headers || {}),
+        Cookie: storeCookies.toString(),
+      };
+ 
       if (options?.cache) {
         config.cache = options.cache;
       }

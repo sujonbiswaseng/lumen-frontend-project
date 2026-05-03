@@ -48,6 +48,15 @@ export default function ContactPage() {
     event.preventDefault();
     const toastid=toast.loading("sending......",{autoClose:2000})
     const formData = new FormData(event.target);
+    const name = formData.get("name")?.toString().trim();
+    const email = formData.get("email")?.toString().trim();
+    console.log(email,'dsf',name,'na')
+
+    if (!email) {
+      toast.dismiss(toastid);
+      toast.error("Please fill in all fields before submitting.");
+      return;
+    }
     formData.append("access_key", "a6e254d6-1e3c-4309-9ef9-58f65f27d1d4");
 
     const response = await fetch("https://api.web3forms.com/submit", {
@@ -56,14 +65,8 @@ export default function ContactPage() {
     });
 
     if(!response.ok){
-    toast.update(toastid, {
-      render: "Failed to send. Please try again.",
-      type: "error",
-      isLoading: false,
-      autoClose: 3500,
-      closeOnClick: true,
-      pauseOnHover: true,
-    });
+      toast.dismiss(toastid)
+    toast.error("failed to message send");
     setLoading(false);
     setResult("Error");
     return;
@@ -72,15 +75,10 @@ export default function ContactPage() {
 
     const data = await response.json();
     if (data.success) {
-      toast.update(toastid, {
-        render: "Message sent successfully!",
-        type: "success",
-        isLoading: false,
-        autoClose: 3500,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
+     toast.dismiss(toastid)
+     toast.success("Message sent successfully!")
       setForm({ name: "", email: "", message: "" }); // Optionally reset form
+      return
     }
     setResult(data.success ? "Success!" : "Error");
   };
@@ -170,7 +168,8 @@ export default function ContactPage() {
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Name" error={errors.name}>
-              <Input
+              <input
+              name="name"
                 value={form.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="Your full name"
@@ -182,7 +181,9 @@ export default function ContactPage() {
             </Field>
             <Field label="Email" error={errors.email}>
               <Input
+              name="email"
                 type="email"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                 value={form.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 placeholder="you@email.com"
