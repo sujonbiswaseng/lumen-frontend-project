@@ -30,8 +30,8 @@ import { createAuthClient } from "better-auth/react";
 const Admin_Demo_Email = "admin1@gmail.com";
 const Admin_Demo_PASSWORD = "Admin12!@";
 
-const Demo_User_Email = "user1@gmail.com";
-const Demo_User_Password = "User12!@";
+const Demo_User_Email = "sujonbiswas.devpro@gmail.com";
+const Demo_User_Password = "Sujon12!@";
 
 export function SigninForm() {
   const router = useRouter();

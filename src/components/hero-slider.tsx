@@ -94,35 +94,36 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
 
               <motion.h1
                 className={`
-                  text-3xl sm:text-5xl lg:text-6xl font-display font-bold leading-tight mb-4
-                  text-primary-foreground
-                  bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
-                  bg-clip-text text-transparent
-                  dark:bg-gradient-to-r dark:from-[var(--primary)] dark:via-[var(--accent)] dark:to-[var(--secondary)]
-                  dark:bg-clip-text dark:text-transparent
+                  text-[2rem] sm:text-[2.75rem] lg:text-[3.25rem]
+                  font-display font-bold leading-tight
+                  mb-4
+                  text-transparent bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
+                  bg-clip-text
                   w-full
+                  max-w-full
+                  [text-wrap:balance]
+                  select-text
                 `}
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                style={{ maxWidth: '100%' }}
+                initial={{ opacity: 0, y: 36 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.32, ease: "easeOut" }}
+                aria-label={slide.title || "Event related"}
               >
                 <motion.span
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.32, ease: "easeOut" }}
+                  transition={{ duration: 0.36, ease: "easeOut" }}
                   className={`
                     block
-                    text-primary-foreground
-                    bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
-                    bg-clip-text text-transparent
-                    dark:bg-gradient-to-r dark:from-[var(--primary)] dark:via-[var(--accent)] dark:to-[var(--secondary)]
-                    dark:bg-clip-text dark:text-transparent
+                    text-transparent bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
+                    bg-clip-text
                   `}
                 >
                   {slide.title || "Event related"}
                 </motion.span>
               </motion.h1>
+         
          
          
          
