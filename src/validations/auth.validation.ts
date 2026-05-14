@@ -20,7 +20,11 @@ export const createUserSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters").regex(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
     "Password must be at least 8 characters long, contain uppercase, lowercase, number and special character"),
-  phone: z.string().optional(),
+  phone: z.string()
+    .optional()
+    .refine(val => !val || /^\d{11}$/.test(val), {
+      message: "Phone number must be exactly 11 digits",
+    }),
   image: z.any()
 });
 

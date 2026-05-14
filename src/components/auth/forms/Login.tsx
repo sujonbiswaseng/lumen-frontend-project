@@ -44,19 +44,18 @@ export function SigninForm() {
       provider: "google",
     });
   };
-
   const handleForgetPassword = async (email: string) => {
     if (!email) {
       toast.error("Please enter your email first.", { theme: "dark" });
       return { success: false };
     }
     try {
-      const toastId = toast.loading("Sending reset OTP...");
+      const toastId = toast.loading("Sending forget OTP...");
       const res = await forgotPasswordEmailOtpAction({ email });
       toast.dismiss(toastId);
 
       if (res.success) {
-        toast.success(res.message || "Password reset OTP sent!", {
+        toast.success(res.message || "Password forget OTP sent!", {
           theme: "dark",
         });
         alert("You have only 10 minutes to validate the OTP sent to your email.");
@@ -85,12 +84,12 @@ export function SigninForm() {
         const res = await loginUserAction(value);
         if (!res.success) {
           toast.dismiss(toastId);
-          toast.error(res.message || "Login failed", { theme: "dark" });
+          toast.error(res.message || "Login failed", {autoClose:3000, theme: "dark" });
           return;
         }
         router.refresh();
         toast.dismiss(toastId);
-        toast.success(res.message || "User logged in successfully!", {
+        toast.success(res.message || "User logged in successfully!", {autoClose:3000,
           theme: "dark",
         });
         router.push("/dashboard");

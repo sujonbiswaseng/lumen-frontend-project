@@ -17,6 +17,7 @@ import PaginationPage from "../event/Pagination";
 import UpdateBlog from "./UpdateHighLight";
 import { deleteBlogAction } from "@/actions/blog.actions";
 import ViewHighLightData from "./ViewHighLightData";
+import { deleteHighlightAction } from "@/actions/highlight.action";
 
 interface MyHighlightsTableProps {
   highlights: TResponseBlog[];
@@ -68,7 +69,7 @@ export default function HighlightTable({ highlights, pagination, role }: MyHighl
     }
     const toastId = toast.loading("Deleting highlight...");
     try {
-      const res = await deleteBlogAction(highlightId);
+      const res = await deleteHighlightAction(highlightId);
       toast.dismiss(toastId);
       if (res?.success) {
         toast.success(res.message || "Highlight deleted successfully.");

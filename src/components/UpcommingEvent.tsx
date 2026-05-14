@@ -11,6 +11,7 @@ import { IgetReviewData } from '@/types/review.types';
 const CARDS_PER_SLIDE = 4;
 
 import { motion, AnimatePresence } from "framer-motion";
+import Link from 'next/link';
 
 const UpcommingEvent = ({
   events,
@@ -94,7 +95,25 @@ const UpcommingEvent = ({
             id="upcoming-events-header"
             className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground mb-2"
           >
-            Upcoming Events
+           <span className="flex items-center justify-center gap-3">
+             <span className="inline-block mr-2">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-primary" xmlns="http://www.w3.org/2000/svg">
+                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                 <path d="M8 12h8M12 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+               </svg>
+             </span>
+             Explore Upcoming Events
+             <Link
+               href="/events"
+               className="ml-3 px-4 py-1.5 rounded-lg bg-primary text-white font-semibold text-base shadow hover:bg-primary/90 transition-colors border border-primary inline-flex items-center gap-1"
+             >
+               See All
+               <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+               </svg>
+             </Link>
+           </span>
+      
           </h2>
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground font-medium max-w-xl">
             Browse {upcomingEvent.length || 9} upcoming public events and join in seconds.

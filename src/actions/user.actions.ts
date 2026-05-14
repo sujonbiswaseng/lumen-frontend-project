@@ -1,12 +1,14 @@
 
 'use server'
 import { userService } from "@/services/user.services";
-import { UserCreateInput } from "@/types/auth.types";
+import { TUpdateUserInput } from "@/types/user.types";
 
 
-export async function updateUserProfileAction( updateData: Partial<UserCreateInput>) {
-    const result = await userService.updateUser(updateData);
-    return result;
+export async function updateUserProfileAction(
+  updateData: Partial<TUpdateUserInput>,
+) {
+  const result = await userService.updateUser(updateData);
+  return result;
 }
 
 export async function deleteuserown() {

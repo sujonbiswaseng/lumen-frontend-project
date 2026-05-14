@@ -47,7 +47,7 @@ export function SignupForm() {
         setPreview(null);
         if (!result.success) {
           toast.dismiss(toastId);
-          toast.error(result.message || "Something went wrong, hai!");
+          toast.error(result.message || "user create failed");
           return;
         }
         toast.dismiss(toastId);

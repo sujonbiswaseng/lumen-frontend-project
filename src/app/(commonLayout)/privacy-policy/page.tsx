@@ -53,7 +53,7 @@ const PrivacyPolicy = () => {
        
        
             <p className="text-base md:text-lg text-muted-foreground mb-2">
-              Your privacy matters to us. This policy explains how lumen collects, uses, and protects your data.
+              Your privacy matters to us. This policy explains how Lumen collects, uses, and protects your data.
             </p>
             <p className="text-xs text-muted-foreground">
               Last updated: {new Date().toLocaleDateString()}
@@ -107,7 +107,7 @@ const PrivacyPolicy = () => {
                     Introduction
                   </h2>
                   <p className="text-muted-foreground">
-                    We value your privacy and are committed to protecting your personal information. This Privacy Policy explains how lumen handles your data when you use our platform.
+                    We value your privacy and are committed to protecting your personal information. This Privacy Policy explains how Lumen handles your data when you use our platform.
                   </p>
                 </motion.section>
                 <motion.section id="data" variants={fadein("down", 0.4)}>

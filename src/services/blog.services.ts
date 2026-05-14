@@ -52,6 +52,7 @@ export const BlogService = {
     try {
       const url = new URL(`${API_BASE_URL}/blogs`);
       if (params) {
+        console.log(params,'params')
         Object.entries(params).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== "") {
             url.searchParams.append(key, String(value));

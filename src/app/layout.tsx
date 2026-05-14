@@ -14,8 +14,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "lumen - Professional Event Management Platform",
-  description: "lumen is a platform for discovering, creating, and managing professional events.",
+  title: "Lumen - Professional Event Management Platform",
+  description:
+    "Lumen is a platform for discovering, creating, and managing professional events.",
 };
 
 export default function RootLayout({

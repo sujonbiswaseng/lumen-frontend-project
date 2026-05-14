@@ -8,6 +8,7 @@ import BlogTable from "@/components/module/blog/BlogTable";
 import BlogsTable from "@/components/module/blog/BlogTable";
 import { IBaseUser } from "@/types/user.types";
 import BlogCard from "@/components/module/blog/BlogCard";
+import NotFoundItem from "@/components/NotFoundItem";
 
 const BlogsPage = async ({
   searchParams,
@@ -25,6 +26,16 @@ const BlogsPage = async ({
       pagination: { total: 0, page: 1, limit: 10, totalpage: 1 },
       success: false,
     };
+  }
+  if(!blogsResponse.success || !blogsResponse.data){
+    return (
+      <NotFoundItem
+        content="No blogs found"
+        emoji="📝"
+        filter="rating"
+        key="no-blogs"
+      />
+    );
   }
   return (
     <ErrorBoundary

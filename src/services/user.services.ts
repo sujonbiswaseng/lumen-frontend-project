@@ -11,7 +11,7 @@ if (!API_BASE_URL) {
 }
 
 export const userService={
-    updateUser:async(updateUser:TUpdateUserInput)=>{  
+    updateUser: async (updateUser: Partial<TUpdateUserInput>) => {
   try {
     const cookieStore = await cookies()
     const res = await fetch(`${API_BASE_URL}/profile/update`, {

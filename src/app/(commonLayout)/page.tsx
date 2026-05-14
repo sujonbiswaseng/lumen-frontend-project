@@ -86,7 +86,9 @@ export default async function Home({
         {!isfeatured || !isfeatured.success || !isfeatured.data ? (
           <NotFoundItem content="hero section data not found" />
         ) : (
-          <HeroSlider data={isfeatured.data as IBaseEvent[]} />
+         <div className="pb-10">
+           <HeroSlider data={isfeatured.data as IBaseEvent[]} />
+         </div>
         )}
 
 

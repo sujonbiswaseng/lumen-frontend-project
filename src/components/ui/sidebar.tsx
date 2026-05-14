@@ -218,7 +218,7 @@ function Sidebar({
             {/* Logo / Brand */}
             <div className="h-16 flex items-center border-b px-6 flex-shrink-0">
               <button onClick={() => router.push(dashboardHome || "/")} className="">
-                <span className="text-xl font-bold text-primary">lumen</span>
+                <span className="text-xl font-bold text-primary">Lumen</span>
               </button>
             </div>
             {/* Navigation Area */}

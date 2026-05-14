@@ -461,8 +461,7 @@ const EventDetailsPage = ({
 
 {relatedItems && relatedItems.length > 0 ? (
             <motion.div
-              className="w-full max-w-[1440px] px-4 md:px-8 mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:
-              grid-cols-4 xl:grid-cols-5 gap-8"
+              className="w-full grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-4 md:px-8 py-4 gap-8"
               initial="hidden"
               animate="visible"
               variants={{

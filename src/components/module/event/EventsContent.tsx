@@ -53,9 +53,12 @@ export default function EventContent({
     category_name: "",
     priceType: "",
     visibility: "",
+    rating:0,
     fee: null,
     search: "",
     createdAt: "",
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
   const handleChange = useCallback((key: keyof typeof form, value: string | number | boolean) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -75,21 +78,73 @@ export default function EventContent({
     fee: null,
     search: "",
     createdAt: "",
+    rating:0,
+    sortBy: "createdAt",
+    sortOrder: "desc",
     };
     setForm(defaultForm);
     reset();
   };
 
+  console.log(events,'tenve')
+
   const fields: TFilterField[] = [
-    { type: "text", name: "search", value: form.search, placeholder: "Search...", onChange: (val) => handleChange("search", val) },
+    {
+      type: "select",
+      name: "sortBy",
+      label: "Sort By",
+      value: form.sortBy,
+      onChange: (val) => handleChange("sortBy", val),
+      options: [
+        { label: "Newest", value: "createdAt" },
+        { label: "Price", value: "fee" },
+      ],
+    },
+    {
+      type: "select",
+      name: "sortOrder",
+      label: "Order",
+      value: form.sortOrder,
+      onChange: (val) => handleChange("sortOrder", val),
+      options: [
+        { label: "Descending", value: "desc" },
+        { label: "Ascending", value: "asc" },
+      ],
+    },
+    { type: "text", name: "search", value: form.search, placeholder: "title,description,location...", onChange: (val) => handleChange("search", val) },
     { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
     { type: "select", name: "category_name", label: "category_name", value: form.category_name,onChange: (val) => handleChange("category_name", val), options: categories.map(v => ({ label: v.name, value: v.name }))
   },
     { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
+    { 
+      type: "select", 
+      name: "is_featured", 
+      label: "is_featured", 
+      value: form.is_featured ? "true" : "false", 
+      onChange: (val) => handleChange("is_featured", val === "true"), 
+      options: [
+        { label: "Yes", value: "true" },
+        { label: "No", value: "false" }
+      ] 
+    },
     { type: "range", name: "fee", label: "Price", value: form.fee as any, min: 0, max: 6000, onChange: (val) => handleChange("fee", Number(val)) },
     { type: "select", name: "visibility", label: "Visibility", value: form.visibility, onChange: (val) => handleChange("visibility", val), options: [{ label: "Public", value: "PUBLIC" }, { label: "Private", value: "PRIVATE" }] },
+    {
+      type: "range",
+      name: "rating",
+      label: "Minimum Rating",
+      min: 0,
+      max: 5,
+      value: form.rating,
+      onChange: (val) => handleChange("rating", Number(val)),
+    },
   ];
-
+  
+  const rating = searchParams.get('rating')
+  const filterData = events?.filter((item) => {
+    if (!rating) return true;
+    return Number(item.avgRating) >= Number(rating);
+  });
   return (
     <section className="w-full flex justify-center px-4 md:px-8 lg:px-12 py-10 max-w-[1480px] mx-auto">
       <div className="w-full">
@@ -126,7 +181,7 @@ export default function EventContent({
             ? Array.from({ length: events.length || 8 }).map((_, i) => (
                 <EventCardSkeleton key={i} />
               ))
-            : events.map((event) => (
+            : filterData.map((event) => (
                 <EventCard key={event.id} {...event as  TResponseEvent<{ reviews: any[],organizer:IBaseUser }>} />
               ))}
         </div>

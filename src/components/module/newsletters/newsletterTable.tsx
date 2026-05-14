@@ -11,10 +11,7 @@ import { TPagination } from "@/types/event.types";
 import { TFilterField } from "@/types/filter.types";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { useFilter } from "@/components/ReusableFilter";
-import { TResponseBlog } from "@/types/blog.type";
 import PaginationPage from "../event/Pagination";
-import UpdateBlog from "./Updatenewsletter";
-import { deleteBlogAction } from "@/actions/blog.actions";
 import ViewHighLightData from "./Viewnewsletter";
 import { createNewsLetterColumns } from "./CreateNewslettercolumn";
 import { deleteNewsletterAction } from "@/actions/newsletter.actions";
@@ -102,15 +99,6 @@ export default function NewsletterTable({ newsletters, pagination, role }: MyNew
       className: "text-green-500",
     },
     {
-      icon: Pencil,
-      label: "Edit",
-      onClick: (newsletter: any) => {
-        setSelectedNewsletterId(newsletter.id);
-        setOpen(true);
-      },
-      className: "text-blue-500",
-    },
-    {
       icon: Trash2,
       label: "Delete",
       onClick: (newsletter: any) => handleDeleteNewsletter(newsletter.id),
@@ -178,11 +166,6 @@ export default function NewsletterTable({ newsletters, pagination, role }: MyNew
             viewData={viewData }
           />
         )}
-
-        {selectedNewsletterId && !viewMode && (
-           <UpdateBlog id={selectedNewsletterId as string}/>
-        )}
-
         </DialogContent>
       </Dialog>
 

@@ -13,6 +13,7 @@ import { useFilter } from "@/components/ReusableFilter";
 import { TFilterField } from "@/types/filter.types";
 import { FilterPanel } from "@/components/Filter";
 import Link from "next/link";
+import NotFoundItem from "@/components/NotFoundItem";
 
 const DEFAULT_AUTHOR_AVATAR = "/logo.png";
 const DEFAULT_BLOG_IMAGE = "/logo.png";
@@ -38,6 +39,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+
   const [BlogsData, setBlogsData] = useState<
     TResponseBlog<{ author: IBaseUser; event: IBaseEvent }>[]
   >();
@@ -55,12 +57,11 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
   // Filters logic
   const { updateFilters, reset, isPending } = useFilter();
   const [form, setForm] = useState({
-    search: "",
-    createdAt: "",
+    search: ""
   });
 
   const handleChange = useCallback(
-    (key: keyof typeof form, value: string | number | boolean) => {
+    (key: keyof typeof form, value: string ) => {
       setForm((prev) => ({ ...prev, [key]: value }));
     },
     [],
@@ -68,7 +69,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
 
   const handleApply = () => updateFilters(form);
   const handleReset = () => {
-    setForm({ search: "", createdAt: "" });
+    setForm({ search: ""});
     reset();
   };
 
@@ -80,13 +81,6 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
       placeholder: "Search...",
       onChange: (val) => handleChange("search", val),
     },
-    {
-      type: "date",
-      name: "createdAt",
-      value: form.createdAt,
-      label: "Created At",
-      onChange: (val) => handleChange("createdAt", val),
-    },
   ];
 
   // Handle view navigation
@@ -94,6 +88,9 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
     router.push(`/blogs/${id}`);
   };
 
+  if(!blogs.length){
+    <NotFoundItem content="No blogs found." emoji="📝" /> 
+  }
   return (
     <section
       className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 py-6"
@@ -110,7 +107,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
 
       {/* Blog list content */}
       <div className="w-full flex flex-wrap justify-center gap-6">
-        {isLoading ? (
+        {isLoading && blogs.length!==0 ? (
           <div className="w-full flex justify-center gap-6">
             {Array.from({ length: 3 }).map((_, idx) => (
               <BlogCardSkeleton
@@ -128,7 +125,8 @@ const BlogCard: React.FC<BlogCardProps> = ({ blogs, pagination }) => {
 
 {BlogsData && BlogsData.length > 0 ? (
             <motion.div
-              className="w-full max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
+              className="w-full max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+               gap-8"
               initial="hidden"
               animate="visible"
               variants={{

@@ -422,27 +422,49 @@ export function CreateEvent({data}:{data:TResponseCategoryData[]}) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Category Name</FieldLabel>
-
-                    <select
-                      className="border-amber-50 shadow-sm px-2 py-2.5"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value ?? ""}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
+                  <Field
+                    data-invalid={isInvalid}
+                    className="flex flex-col gap-2 mb-4 w-full"
+                  >
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="flex items-center gap-1 text-base font-medium text-foreground"
                     >
-                      <option value="">Select a category</option>
-                      {data.map((item: any, index: number) => <option key={index}>{item.name}</option>)}
-                    </select>
-
+                      Status <span style={{ color: "red" }}>*</span>
+                    </FieldLabel>
+                    <Select
+                      value={field.state.value ?? ""}
+                      onValueChange={(value) =>
+                        field.handleChange(value === "__all__" ? "" : value)
+                      }
+                    >
+                      <SelectTrigger className={` cursor-pointer`}>
+                        <SelectValue placeholder="All" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[320px]">
+                        <SelectItem value="__all__">All</SelectItem>
+                        {data.map((option) => (
+                          <SelectItem
+                            key={String(option.id)}
+                            value={String(option.name)}
+                          >
+                            {option.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <motion.div
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="text-sm mt-1 font-medium text-[--muted-foreground]"
+                      >
+                        Please select a valid status.
+                      </motion.div>
                     )}
                   </Field>
-                )
+                );
               }}
             />
             <form.Field

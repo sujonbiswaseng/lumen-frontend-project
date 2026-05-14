@@ -103,7 +103,7 @@ const HighLightContent = ({ highlight }: HighLightContentProps) => (
                     {item.description || "No description available."}
                   </p>
                   <div className="mt-auto pt-2 flex items-center justify-between text-xs text-muted-foreground gap-2">
-                    <span className="truncate max-w-[60%]">{item.user?.name || "lumen Team"}</span>
+                    <span className="truncate max-w-[60%]">{item.user?.name || "Lumen Team"}</span>
                     <span className="font-normal">{createdDate}</span>
                   </div>
                 </div>

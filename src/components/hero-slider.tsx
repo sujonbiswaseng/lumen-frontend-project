@@ -1,9 +1,10 @@
 "use client";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { ChevronRight, Sparkles } from "lucide-react";
 import { IBaseEvent } from "@/types/event.types";
 import { Button } from "./ui/button";
 
@@ -17,7 +18,6 @@ type HeroSlide = {
   date: string;
 };
 
-// Default event fallback data
 const DEFAULT_SLIDE: HeroSlide = {
   id: "default-event-id",
   image: "https://images.pexels.com/photos/15448073/pexels-photo-15448073.jpeg",
@@ -30,33 +30,29 @@ const DEFAULT_SLIDE: HeroSlide = {
 export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
   const [current, setCurrent] = useState(0);
   const router = useRouter();
-  console.log(data,'dsfdafdaa')
 
-  // Use the provided data as the slides, or a default slide if none exists
-  let slides: HeroSlide[];
-
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    slides = [DEFAULT_SLIDE];
-  } else {
-    // Map API events into the slim shape the hero needs (with safe fallbacks)
-    slides = data.map((evt) => ({
-      id: evt.id,
-      venue: evt.location ?? "",
-      date: evt.date ?? "",
-      image:evt.images[0],
-      title:
-        evt.title && typeof evt.title === "string" && evt.title.trim() !== ""
-          ? evt.title
-          : "Event related",
-      description:
-        evt.description && typeof evt.description === "string" && evt.description.trim() !== ""
-          ? evt.description
-          : "Explore a variety of exciting events happening near you.",
-    }));
-  }
+  const slides: HeroSlide[] =
+    !data || !Array.isArray(data) || data.length === 0
+      ? [DEFAULT_SLIDE]
+      : data.map((evt) => ({
+          id: evt.id,
+          venue: evt.location ?? "",
+          date: evt.date ?? "",
+          image: evt.images?.[0] ?? DEFAULT_SLIDE.image,
+          title:
+            evt.title && typeof evt.title === "string" && evt.title.trim() !== ""
+              ? evt.title
+              : "Event related",
+          description:
+            evt.description &&
+            typeof evt.description === "string" &&
+            evt.description.trim() !== ""
+              ? evt.description
+              : "Explore a variety of exciting events happening near you.",
+        }));
 
   useEffect(() => {
-    if (slides.length < 2) return; // Don't auto-slide if 0 or 1 item
+    if (slides.length < 2) return;
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 6000);
@@ -64,121 +60,150 @@ export default function HeroSlider({ data }: { data: IBaseEvent[] }) {
   }, [slides.length]);
 
   return (
-    <section className="relative w-full h-[70vh] min-h-[450px] max-h-[620px] overflow-hidden">
+    <section
+      className="relative mx-auto min-h-[70vh] w-full max-w-[1440px] overflow-hidden md:min-h-[80vh]"
+      aria-roledescription="carousel"
+      aria-label="Featured events"
+    >
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 mb-4 transition-opacity duration-1000 ${
-            index === current ? "opacity-100 z-20" : "opacity-0 z-10"
+          className={`absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none ${
+            index === current ? "z-20 opacity-100" : "z-10 opacity-0"
           }`}
+          aria-hidden={index !== current}
         >
-          {/* Background Image */}
           <Image
             src={slide.image || DEFAULT_SLIDE.image}
-            alt={slide.title || DEFAULT_SLIDE.title}
+            alt={slide.title || "Featured event"}
             fill
             className="object-cover"
-            priority
+            priority={index === 0}
+            sizes="(max-width: 1440px) 100vw, 1440px"
           />
 
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-linear-to-r from-slate-900/80 via-cyan-900/45 to-emerald-900/40"></div>
+          <div className="absolute inset-0 bg-gradient-hero" aria-hidden />
 
-          {/* Content */}
-          <div className="relative w-full max-w-screen-xl mb-4 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center h-full pb-7" style={{ minHeight: "100%", paddingTop: "5.5rem" }}>
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 bg-cyan-500/20 backdrop-blur-sm border border-cyan-200/40 rounded-full px-4 py-1.5 mb-6 animate-fade-in">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span className="text-sm font-medium text-white/90">Featured Event</span>
-              </div>
+          {/* Extra scrim so body copy stays readable on bright photos */}
+          <div
+            className="absolute inset-0 bg-linear-to-r from-background/75 via-background/45 to-background/25"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 bg-linear-to-t from-background via-background/60 to-transparent"
+            aria-hidden
+          />
 
-              <motion.h1
-                className={`
-                  text-[2rem] sm:text-[2.75rem] lg:text-[3.25rem]
-                  font-display font-bold leading-tight
-                  mb-4
-                  text-transparent bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
-                  bg-clip-text
-                  w-full
-                  max-w-full
-                  [text-wrap:balance]
-                  select-text
-                `}
-                initial={{ opacity: 0, y: 36 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.32, ease: "easeOut" }}
-                aria-label={slide.title || "Event related"}
+          <div className="relative z-20 flex min-h-[70vh] flex-col justify-center px-4 pt-24 pb-20 md:min-h-[80vh] sm:px-6 sm:pt-28 lg:px-8">
+            <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{
+                  opacity: index === current ? 1 : 0,
+                  y: index === current ? 0 : 16,
+                }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card/85 px-4 py-1.5 shadow-sm backdrop-blur-md"
               >
-                <motion.span
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.36, ease: "easeOut" }}
-                  className={`
-                    block
-                    text-transparent bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-[var(--secondary)]
-                    bg-clip-text
-                  `}
+                <Sparkles className="size-4 shrink-0 text-primary" aria-hidden />
+                <span className="text-sm font-medium text-card-foreground">
+                  Featured Event
+                </span>
+              </motion.div>
+
+              <div className="max-w-2xl space-y-4">
+                <motion.h1
+                  className="font-display text-balance text-3xl font-bold leading-[1.15] tracking-tight text-secondary sm:text-4xl lg:text-[2.75rem]"
+                  initial={{ opacity: 0, y: 22 }}
+                  animate={{
+                    opacity: index === current ? 1 : 0,
+                    y: index === current ? 0 : 22,
+                  }}
+                  transition={{ duration: 0.38, ease: "easeOut", delay: 0.03 }}
                 >
                   {slide.title || "Event related"}
-                </motion.span>
-              </motion.h1>
-         
-         
-         
-         
+                </motion.h1>
 
-              <p className="text-lg text-cyan-50/90 mb-2 font-medium animate-slide-in" style={{ animationDelay: "0.1s" }}>
-                {slide.description || "Explore a variety of exciting events happening near you."}
-              </p>
-
-              <p className="text-base text-white/75 mb-8 max-w-lg leading-relaxed animate-slide-in" style={{ animationDelay: "0.15s" }}>
-                {slide.venue && slide.date
-                  ? `${new Date(slide.date).toLocaleDateString()} · ${slide.venue}`
-                  : "Your all-in-one event management platform. Browse events, join communities, and create unforgettable experiences."}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 animate-slide-in" style={{ animationDelay: "0.2s" }}>
-                <button
-                  onClick={() => router.push('/events')}
-                  className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-semibold text-slate-900 bg-white/90 hover:bg-amber-300 transition-colors shadow-xl shadow-cyan-900/20 border border-white/40 focus:outline-none focus:ring-2 focus:ring-amber-300/60 focus:ring-offset-2 active:scale-95 active:shadow-inner animate-fade-in duration-200"
-                  style={{
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
-                    boxShadow: "0 4px 24px 0 rgba(16,185,129,.22), 0 1.5px 4px 0 rgba(0,0,0,.1)"
+                <motion.p
+                  className="max-w-xl text-lg font-medium leading-relaxed text-foreground sm:text-xl"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{
+                    opacity: index === current ? 1 : 0,
+                    y: index === current ? 0 : 14,
                   }}
-                  aria-label="Browse All Events"
+                  transition={{ duration: 0.35, ease: "easeOut", delay: 0.06 }}
                 >
-                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-2">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  Browse All Events
-                </button>
-                <Button
-                  style={{
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
-                    boxShadow: "0 4px 24px 0 rgba(99,102,241,.15), 0 1.5px 4px 0 rgba(0,0,0,.05)"
+                  {slide.description ||
+                    "Explore a variety of exciting events happening near you."}
+                </motion.p>
+
+                <motion.p
+                  className="max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{
+                    opacity: index === current ? 1 : 0,
+                    y: index === current ? 0 : 12,
                   }}
-                  onClick={() => router.push(`/events/${slide.id ?? ""}`)}
-                  className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-semibold text-white bg-linear-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 transition-colors shadow-xl shadow-cyan-900/20 border border-cyan-200/40 focus:outline-none focus:ring-2 focus:ring-cyan-200/60 focus:ring-offset-2 active:scale-95 active:shadow-inner animate-fade-in duration-200"
+                  transition={{ duration: 0.35, ease: "easeOut", delay: 0.09 }}
                 >
-                  join
-                </Button>
+                  {slide.venue && slide.date
+                    ? `${new Date(slide.date).toLocaleDateString()} · ${slide.venue}`
+                    : "Browse events, join communities, and create unforgettable experiences."}
+                </motion.p>
+
+                <motion.div
+                  className="flex flex-wrap items-center gap-3 pt-2 sm:gap-4"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{
+                    opacity: index === current ? 1 : 0,
+                    y: index === current ? 0 : 12,
+                  }}
+                  transition={{ duration: 0.35, ease: "easeOut", delay: 0.12 }}
+                >
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="rounded-full px-6 shadow-md transition-smooth hover:shadow-lg"
+                    onClick={() => router.push("/events")}
+                    aria-label="Browse all events"
+                  >
+                    <ChevronRight className="size-4" aria-hidden />
+                    Browse All Events
+                  </Button>
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="secondary"
+                    className="rounded-full border border-border px-6 shadow-sm backdrop-blur-sm transition-smooth hover:bg-secondary/90"
+                    onClick={() => router.push(`/events/${slide.id}`)}
+                    aria-label="View this event"
+                  >
+                    Join
+                  </Button>
+                </motion.div>
               </div>
             </div>
           </div>
         </div>
       ))}
 
-      {/* Dots */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-3 z-40">
+      <div
+        className="absolute bottom-6 left-0 right-0 z-40 flex justify-center gap-2 sm:bottom-8 sm:gap-3"
+        role="tablist"
+        aria-label="Slide indicators"
+      >
         {slides.map((_, index) => (
           <button
             key={index}
+            type="button"
+            role="tab"
+            aria-selected={current === index}
+            aria-label={`Go to slide ${index + 1}`}
             onClick={() => setCurrent(index)}
-            className={`w-3 h-3 rounded-full transition ${
-              current === index ? "bg-amber-300 scale-125" : "bg-white/50"
+            className={`size-2.5 rounded-full transition-all duration-300 sm:size-3 ${
+              current === index
+                ? "scale-125 bg-primary ring-2 ring-background"
+                : "bg-muted-foreground/45 hover:bg-muted-foreground/75"
             }`}
           />
         ))}

@@ -76,12 +76,12 @@ export default function Navbar({ user }: NavbarProps) {
       <div className="w-full mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group" aria-label="lumen Home">
+        <Link href="/" className="flex items-center gap-3 group" aria-label="Lumen Home">
           <div className="flex items-center h-10 w-10 relative">
             <div className="relative bg-white rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center w-10 h-10 overflow-hidden p-1">
               <Image
                 src="/logo.png"
-                alt="lumen logo"
+                alt="Lumen logo"
                 fill
                 sizes="40px"
                 className="object-cover rounded-full"
@@ -95,7 +95,7 @@ export default function Navbar({ user }: NavbarProps) {
       
           </div>
           <span className="hidden sm:inline font-bold text-lg text-primary group-hover:text-primary/80 transition-colors duration-200">
-            lumen
+            Lumen
           </span>
         </Link>
   

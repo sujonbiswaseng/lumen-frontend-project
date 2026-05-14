@@ -217,16 +217,17 @@ export const FilterPanel = ({
                     type="range"
                     min={field.min}
                     max={field.max}
-                    value={field.value}
+                    value={field.value === null ? '' : field.value}
                     onChange={(e) =>
                       field.onChange(Number(e.target.value))
                     }
                     className="w-full accent-blue-500"
                   />
                   <span className="text-sm font-bold text-blue-600">
-                    ${field.value}
+                    ${field.value === null ? '' : field.value}
                   </span>
                 </div>
+          
 
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>${field.min}</span>

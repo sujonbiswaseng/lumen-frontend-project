@@ -60,7 +60,7 @@ export default function ProfileCard({ profile }: { profile: IBaseUser }) {
           <DropdownMenuItem>
             <Link className='w-full' href={`${profile.role == 'USER' ? "/profile/user" : profile.role == "ADMIN" ? "/admin/dashboard/profile" : profile.role == 'MANAGER' ? "/manager/dashboard/profile" : "/"}`}>👤 profile</Link>
           </DropdownMenuItem>
-          {profile.role === 'USER' ? "" : <DropdownMenuItem><Link className='w-full' href={'/dashboard'}> 📊 Dashboard</Link></DropdownMenuItem>}
+          {<DropdownMenuItem><Link className='w-full' href={'/dashboard'}> 📊 Dashboard</Link></DropdownMenuItem>}
           <DropdownMenuItem>
             <Settings />
             <Link href={profile.role==="USER"?"/settings":profile.role=="MANAGER"?"/manager/dashboard/setting":profile.role==="ADMIN"?"/admin/dashboard/setting":"/"}><span>Settings</span></Link>
