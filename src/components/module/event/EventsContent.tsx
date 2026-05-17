@@ -111,6 +111,7 @@ export default function EventContent({
         { label: "Ascending", value: "asc" },
       ],
     },
+    { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
     { type: "text", name: "search", value: form.search, placeholder: "title,description,location...", onChange: (val) => handleChange("search", val) },
     { type: "select", name: "category_name", label: "category_name", value: form.category_name,onChange: (val) => handleChange("category_name", val), options: categories.map(v => ({ label: v.name, value: v.name }))
   },
