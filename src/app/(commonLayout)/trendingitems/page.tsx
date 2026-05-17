@@ -1,5 +1,5 @@
 import { fetchEvents } from '@/actions/event.actions'
-import Trending, { TrendingItem } from '@/components/chatbot/Trending'
+import Trending from '@/components/chatbot/Trending'
 import { IBaseEvent, TResponseEvent } from '@/types/event.types';
 import React from 'react'
 
@@ -11,10 +11,9 @@ const TrendingPage = async() => {
     .slice(0, 8);
     const result =events as IBaseEvent[]
   return (
-    <div>
-        <Trending events={result as IBaseEvent[]} />
-   
-    </div>
+    <main className="min-h-screen py-8">
+      <Trending events={result as IBaseEvent[]} />
+    </main>
   )
 }
 

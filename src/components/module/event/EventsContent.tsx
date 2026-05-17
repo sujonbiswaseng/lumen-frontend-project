@@ -13,6 +13,7 @@ import { TFilterField } from "@/types/filter.types";
 import { FilterPanel } from "@/components/Filter";
 import { IBaseUser } from "@/types/user.types";
 import { TResponseCategoryData } from "@/types/category.type";
+import Link from "next/link";
 
 
 interface EventContentProps {
@@ -111,21 +112,8 @@ export default function EventContent({
       ],
     },
     { type: "text", name: "search", value: form.search, placeholder: "title,description,location...", onChange: (val) => handleChange("search", val) },
-    { type: "date", name: "date", value: form.date, label: "Date", onChange: (val) => handleChange("date", val) },
     { type: "select", name: "category_name", label: "category_name", value: form.category_name,onChange: (val) => handleChange("category_name", val), options: categories.map(v => ({ label: v.name, value: v.name }))
   },
-    { type: "select", name: "priceType", label: "Price Type", value: form.priceType, onChange: (val) => handleChange("priceType", val), options: [{ label: "Free", value: "FREE" }, { label: "Paid", value: "PAID" }] },
-    { 
-      type: "select", 
-      name: "is_featured", 
-      label: "is_featured", 
-      value: form.is_featured ? "true" : "false", 
-      onChange: (val) => handleChange("is_featured", val === "true"), 
-      options: [
-        { label: "Yes", value: "true" },
-        { label: "No", value: "false" }
-      ] 
-    },
     { type: "range", name: "fee", label: "Price", value: form.fee as any, min: 0, max: 6000, onChange: (val) => handleChange("fee", Number(val)) },
     { type: "select", name: "visibility", label: "Visibility", value: form.visibility, onChange: (val) => handleChange("visibility", val), options: [{ label: "Public", value: "PUBLIC" }, { label: "Private", value: "PRIVATE" }] },
     {
@@ -167,6 +155,15 @@ export default function EventContent({
       </section>
 
         {/* EVENTS GRID */}
+        <div className="mb-8 w-full flex justify-end">
+          <Link
+            href="/recomandation"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 transition"
+          >
+            <span>✨ Get AI Recommsendations</span>
+          </Link>
+        </div>
+   
 
         <div className="relative dark:bg-gray-950">
         {isPending && (

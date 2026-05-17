@@ -224,14 +224,14 @@ export const FilterPanel = ({
                     className="w-full accent-blue-500"
                   />
                   <span className="text-sm font-bold text-blue-600">
-                    ${field.value === null ? '' : field.value}
+                  {field.name==="rating"?"":"$"} {field.value === null ? '' : field.value}
                   </span>
                 </div>
           
 
                 <div className="flex justify-between text-xs text-gray-400">
-                  <span>${field.min}</span>
-                  <span>${field.max}</span>
+                  <span>{field.name==="rating"?"":"$"} {field.min}</span>
+                  <span>{field.name==="rating"?"":"$"} {field.max}</span>
                 </div>
               </div>
             );
