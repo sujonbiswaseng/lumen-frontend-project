@@ -41,7 +41,6 @@ const EventDetailsPage = ({
     organizer: IBaseUser;
   }>;
 }) => {
-  console.log(eventData,'eventda')
   const [relatedItems,setrelatedItems]=useState<TResponseEvent<{organizer:any}>[]>()
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const router = useRouter();

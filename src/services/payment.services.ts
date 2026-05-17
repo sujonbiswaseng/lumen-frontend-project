@@ -102,7 +102,7 @@ export const PaymentService={
             },
             credentials: "include",
         });
-        // Remove merge conflict markers and duplicate/console.log/data lines, use only the correct code:
+      
         const data = await res.json();
         if (!res.ok) {
             return {

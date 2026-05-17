@@ -34,7 +34,6 @@ export const CategoriesService = {
         },
       });
       const data = await res.json();
-      console.log(data,'data')
       const result = data.data.result as TResponseCategoryData<{ meals: IBaseEvent; user: IBaseUser; }>[]
       if (!res.ok) {
         const error = data as ApiErrorResponse;

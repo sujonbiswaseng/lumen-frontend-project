@@ -44,6 +44,7 @@ export function SigninForm() {
       provider: "google",
     });
   };
+  console.log(signIn,'sing')
   const handleForgetPassword = async (email: string) => {
     if (!email) {
       toast.error("Please enter your email first.", { theme: "dark" });

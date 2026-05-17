@@ -49,7 +49,7 @@ export default function ReviewItem({
         comment: editComment,
         rating: editRating,
       });
-      console.log(result,'dsdfds')
+  
       if (result?.success) {
         toast.dismiss(toastId)
         toast.success("review updated successfully")

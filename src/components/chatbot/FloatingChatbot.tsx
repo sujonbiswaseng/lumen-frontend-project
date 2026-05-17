@@ -9,11 +9,19 @@ import {
   Bot,
   User,
   ChevronDown,
+  SearchIcon,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getSessionAction } from "@/actions/auth.actions";
 import { IngestEvent, QueryEvent } from "@/actions/rag.actions";
 import Link from "next/link";
+import { getAiSuggestAction } from "@/actions/ai.actions";
+import { AiSuggestion } from "@/types/ai.types";
+import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
+import { Skeleton } from "../ui/skeleton";
+import { AnimatePresence,motion } from "framer-motion";
 
 // Types
 type MessageSource = {
@@ -173,6 +181,38 @@ function MessageBubble({
   );
 }
 
+
+function SuggestionItem({
+  title,
+  selected,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+}: {
+  title: string;
+  selected: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onClick: (title: string) => void;
+}) {
+  return (
+    <li
+      className={cn(
+        "px-6 py-4 flex items-center gap-3 text-base border-b last:border-none border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/70 cursor-pointer select-none transition-colors duration-150 focus:outline-none group rounded-none",
+        selected && "bg-indigo-50 dark:bg-indigo-900/30"
+      )}
+      tabIndex={0}
+      aria-selected={selected}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={() => onClick(title)}
+    >
+      <span className="text-indigo-500 dark:text-indigo-300 text-xl group-hover:scale-110 transition-transform">🎯</span>
+      <span className="font-medium truncate">{title}</span>
+    </li>
+  );
+}
+
 // Main Component
 export default function FloatingChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -184,6 +224,41 @@ export default function FloatingChatbot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<AiSuggestion[]>([]);
+  const [focusedIdx, setFocusedIdx] = useState<number>(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Debounced AI Suggest API call
+  useEffect(() => {
+    if (!query) {
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    const delay = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await getAiSuggestAction(query);
+        if (!res.success) {
+          toast.error(res.message || "suggestion failded");
+        }
+        setSuggestions(res.data || []);
+      } catch (err) {
+        setSuggestions([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      clearTimeout(delay);
+      controller.abort();
+    };
+  }, [query]);
+
   useEffect(() => {
     const fetchRole = async () => {
       const user = await getSessionAction();
@@ -191,6 +266,29 @@ export default function FloatingChatbot() {
     };
     fetchRole();
   }, []);
+
+  useEffect(() => {
+    if (!suggestions.length) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        setFocusedIdx((v) => Math.min(v + 1, suggestions.length - 1));
+      } else if (e.key === "ArrowUp") {
+        setFocusedIdx((v) => Math.max(v - 1, 0));
+      } else if (e.key === "Enter" && focusedIdx >= 0) {
+        setQuery(suggestions[focusedIdx].title);
+        setSuggestions([]);
+        setFocusedIdx(-1);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [suggestions, focusedIdx]);
+
+  const handleSuggestionClick = (title: string) => {
+    setQuery(title);
+    setSuggestions([]);
+    setFocusedIdx(-1);
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -311,7 +409,7 @@ export default function FloatingChatbot() {
             {/* Close button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-muted transition-colors cursor-pointer text-foreground"
+              className="w-5 h-5 rounded-full mt-6 md:mt-8 flex items-center justify-center hover:bg-muted transition-colors cursor-pointer text-foreground"
               aria-label="Close chat"
               type="button"
             >
@@ -362,22 +460,75 @@ export default function FloatingChatbot() {
             borderColor: "var(--border)",
           }}
         >
+
+{loading && (
+              <span className="absolute right-4 top-1/2 -translate-y-1/2">
+                <Loader2 className="w-5 h-5 animate-spin text-zinc-400" />
+              </span>
+            )}
+                <AnimatePresence>
+              {((suggestions.length > 0 && query) || loading) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 16 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  className={cn(
+                    "absolute z-20 mt-2 left-0 right-0 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xl overflow-hidden",
+                    loading && suggestions.length === 0 && "py-6"
+                  )}
+                >
+                  {loading && suggestions.length === 0 ? (
+                    <div className="flex flex-col gap-3 px-6">
+                      {/* <Skeleton className="h-6 w-1/2 rounded-xl my-2" />
+                      <Skeleton className="h-6 w-5/6 rounded-xl my-2" />
+                      <Skeleton className="h-6 w-2/3 rounded-xl my-2" /> */}
+                    </div>
+                  ) : (
+                    <ul>
+                      {suggestions.map((item, i) => (
+                        <SuggestionItem
+                          key={item.title + i}
+                          title={item.title}
+                          selected={i === focusedIdx}
+                          onMouseEnter={() => setFocusedIdx(i)}
+                          onMouseLeave={() => setFocusedIdx(-1)}
+                          onClick={handleSuggestionClick}
+                        />
+                      ))}
+                    </ul>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 pt"
           >
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Ask about doctors, specialties..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              disabled={isQuerying}
-              className="flex-1 text-sm rounded-xl px-3 py-2.5 bg-input text-foreground placeholder:text-muted-foreground border border-input focus:border-primary focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-50"
+           
+           <Input
+              value={query}
+              spellCheck={false}
+              autoCorrect="off"
+              placeholder="Search for events, topics, or actions…"
+              className={cn(
+                "bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-12 pr-4 py-4 text-lg font-medium focus:ring-2 focus:ring-indigo-400/40 focus:border-indigo-300 dark:focus:border-indigo-700 transition-shadow duration-200 shadow-sm",
+                loading && "pr-12"
+              )}
+              aria-label="Search events"
+              onChange={e => {
+                setQuery(e.target.value);
+                setFocusedIdx(-1);
+              }}
+              autoFocus
             />
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600">
+              <SearchIcon className="w-6 h-6" />
+            </span>
             <button
               type="submit"
               disabled={isQuerying || !inputValue.trim()}
@@ -390,7 +541,7 @@ export default function FloatingChatbot() {
         </div>
       </div>
       {/* Floating Trigger Button */}
-      <button
+    {!isOpen &&   <button
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
         className={`fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer bg-primary text-primary-foreground border-2 border-accent ${isOpen ? "rotate-90" : "rotate-0"} focus:outline-none focus:ring-4 focus:ring-primary`}
@@ -406,7 +557,7 @@ export default function FloatingChatbot() {
             }}
           />
         )}
-      </button>
+      </button>}
     </>
   );
 }

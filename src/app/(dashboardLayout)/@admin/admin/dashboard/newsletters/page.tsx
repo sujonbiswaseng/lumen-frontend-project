@@ -10,7 +10,6 @@ const NewsletterPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
-  console.log('slkdjflkasjfkljsadfjsdajfjsadf')
   const userinfo = await getSessionAction();
   if(!userinfo || !userinfo.success){
   return (
@@ -33,7 +32,7 @@ const NewsletterPage = async ({
       success: false,
     };
   }
-  console.log(newsletterResponse,'news')
+
 
   return (
     <ErrorBoundary

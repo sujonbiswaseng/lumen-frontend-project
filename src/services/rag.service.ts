@@ -47,9 +47,11 @@ export const RagService = {
               "Content-Type": "application/json",
               Cookie: storeCookies.toString(),
             },
-            body:JSON.stringify({query:prompt})
+            body: JSON.stringify({ query: prompt }),
           });
+
           const body = await response.json();
+
           if (!response.ok) {
             const error = body as ApiErrorResponse;
             return {

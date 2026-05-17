@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import FloatingChatbot from "@/components/chatbot/FloatingChatbot";
 
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",

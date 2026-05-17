@@ -50,7 +50,7 @@ export default function ContactPage() {
     const formData = new FormData(event.target);
     const name = formData.get("name")?.toString().trim();
     const email = formData.get("email")?.toString().trim();
-    console.log(email,'dsf',name,'na')
+
 
     if (!email) {
       toast.dismiss(toastid);

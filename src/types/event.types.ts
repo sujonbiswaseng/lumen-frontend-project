@@ -48,7 +48,8 @@ export type IBaseEvent = {
     organizerId: string;
     createdAt: string;
     updatedAt: string;
-    avgRating:number
+    avgRating:number;
+    totalReviews:number;
   };
 
   export interface IUpdateEventInput {

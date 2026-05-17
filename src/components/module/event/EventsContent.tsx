@@ -86,7 +86,6 @@ export default function EventContent({
     reset();
   };
 
-  console.log(events,'tenve')
 
   const fields: TFilterField[] = [
     {

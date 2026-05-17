@@ -56,7 +56,6 @@ export function BlogDetailsCard({
       day: "numeric",
     });
   }, [blog.createdAt]);
-  console.log(activeImage,'actionve')
   return (
     <section
       className="w-full bg-background min-h-[calc(100dvh-5rem)] pt-16 sm:pt-20 pb-8 sm:pb-12 lg:pb-14"

@@ -12,7 +12,6 @@ export const NewsletterService = {
   // Create a new newsletter
   createNewsletter: async (value: any) => {
     const storeCookies = await cookies();
-    console.log(value,'value')
    
     try {
       const response = await fetch(`${API_BASE_URL}/newsletter`, {

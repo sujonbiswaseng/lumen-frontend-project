@@ -42,7 +42,6 @@ const BlogsPage = async ({
     console.error("Blogs fetch error:", err);
     blogsResponse = { data: [], pagination: { total: 0, page: 1, limit: 10, totalpage: 1 }, success: false };
   }
-  console.log(blogsResponse,'s')
   return (
     <ErrorBoundary fallback={<ErrorFallback title="Blogs Error" message="Something went wrong while loading the blogs page." />}>
       <div>

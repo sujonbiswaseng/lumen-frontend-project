@@ -49,7 +49,6 @@ const HighlightPage = async ({
       success: false,
     };
   }
-console.log(highlightResponse,'gh')
   return (
     <ErrorBoundary
       fallback={
