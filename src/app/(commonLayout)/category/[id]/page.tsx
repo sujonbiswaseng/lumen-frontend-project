@@ -18,6 +18,10 @@ const SingleCategoryPage = async({
   const search = await searchParams;
     const {id}=await params
     const categorybyId=await singlecategory(id,search)
+
+    console.log(categorybyId,"bosdf")
+  
+ 
     return (
       <div className="mt-14 sm:mt-20 lg:mt-24">
         <title>Category Details</title>
@@ -29,7 +33,7 @@ const SingleCategoryPage = async({
             <div className="">
               <Singlecategory
               pagination={categorybyId.data}
-              events={categorybyId.data?.data?.eventdata as IBaseEvent[]}
+              events={categorybyId.data?.data?.result.event as IBaseEvent[]}
                category={categorybyId.data?.data?.result as TResponseCategoryData<{event:IBaseEvent[],user:IBaseUser}>}/>
             </div>
           )}

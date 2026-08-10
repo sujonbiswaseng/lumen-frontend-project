@@ -84,11 +84,11 @@ function SingleProfile({user}:{user:IBaseUser}) {
           </Status>
         </div>
 
-        <InfoRow label="Created At" value={singleuser.createdAt.toString().slice(0, 10)} />
+        <InfoRow label="Created At" value={singleuser?.createdAt?.toString().slice(0, 10)} />
         <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-600">Profile</h2>
 
-          <ShareProfileButton userId={user.id} userName={user.name} />
+          <ShareProfileButton userId={user.id} userName={user?.name || "unknown"} />
         </div>
       </div>
     </div>

@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadein } from '@/lib/frammer.motion';
 import PaginationPage from '../event/Pagination';
+import EventCategoryCard from './EventCategoryCard';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -30,14 +31,14 @@ const Singlecategory = ({
   events: IBaseEvent[];
   pagination: TPagination;
 }) => {
-  const [eventdata, setEventdata] = useState<IBaseEvent[]>();
+  const [eventdata, setEventdata] = useState<IBaseEvent[]>(events || []);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setsearch] = useState("");
   const [pricingFilter, setPricingFilter] = useState<"ALL" | "FREE" | "PAID">("ALL");
   const [visibilityFilter, setVisibilityFilter] = useState<"ALL" | "PUBLIC" | "PRIVATE">("ALL");
   const [feeFilter, setFeeFilter] = useState("");
 
-  
+
 
 
   useEffect(() => {
@@ -90,7 +91,7 @@ const Singlecategory = ({
 
     return textMatch && pricingMatch && visibilityMatch && feeMatch;
   });
-
+console.log(filteredEvents,"efsfd")
   // No events fallback (enterprise grade, centered, design token colors only)
   if (!category.event) {
     return (
@@ -259,28 +260,36 @@ const Singlecategory = ({
             animate="animate"
             exit="exit"
           >
-            {isLoading
-              ? Array.from({ length: eventdata?.length || 8 }).map((_, i) => (
-                  <motion.div key={i}>
-                    <EventCardSkeleton />
+           {
+            filteredEvents.length === 0 ? (
+
+              <div className="col-span-full flex flex-col items-center justify-center gap-2 py-16">
+                <span className="text-2xl font-semibold text-muted-foreground">
+                  No events found
+
+                </span>
+                <span className="text-muted-foreground text-center">
+                  Try adjusting your filters or search to find events.
+                </span>
+              </div>
+
+            ) : (
+              <AnimatePresence>
+                {filteredEvents.map((event) => (
+                  <motion.div
+                    key={event.id}
+                    
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
+                 <EventCategoryCard {...event} />
+
                   </motion.div>
-                ))
-              : filteredEvents && filteredEvents.length
-                ? filteredEvents.map((event) => (
-                    <motion.div key={event.id}>
-                      <EventCard {...(event as TResponseEvent<{ reviews: any[]; organizer: IBaseUser }>)}/>
-                    </motion.div>
-                  ))
-                : (
-                  <div className="col-span-full flex flex-col items-center justify-center py-16">
-                    <div className="text-lg font-semibold text-muted-foreground mb-2">
-                      No events found
-                      {search || feeFilter || pricingFilter !== "ALL" || visibilityFilter !== "ALL"
-                        ? " for your filters."
-                        : " in this category."}
-                    </div>
-                  </div>
-                )}
+                ))}
+              </AnimatePresence>
+            ) 
+           }
           </motion.div>
         </section>
 

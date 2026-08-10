@@ -174,7 +174,7 @@ export function BlogDetailsCard({
                       <Link href={blog.author.id}>
                       <Image
                         src={blog.author.image || "/placeholder.png"}
-                        alt={blog.author.name}
+                        alt={blog.author.name || "Author"}
                         fill
                         className="object-cover"
                         sizes="56px"
